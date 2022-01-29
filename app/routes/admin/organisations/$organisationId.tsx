@@ -21,11 +21,11 @@ export default function Organisation() {
   const data = useLoaderData<LoaderData>();
 
   return (
-    <div className="h-full border border-red-500">
+    <div className="flex flex-col border border-red-500">
       <div id="header" className="p-4 flex items-center bg-gray-300">
         <h1>{data?.organisation?.name}</h1>
       </div>
-      <div className="p-2">
+      <div className="flex-grow p-2 border-4 border-green-400">
         <div id="tabs" className="px-2 flex border-b border-blue-800">
           <Tab onClickHandler={() => redirect('employees')} to="employees">
             Medewerkers
