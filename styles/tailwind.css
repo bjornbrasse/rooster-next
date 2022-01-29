@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  h1 {
+    @apply text-xl font-bold;
+  }
+
+  .container {
+    @apply h-full w-full max-w-none flex justify-center items-center overflow-hidden;
+  }
+
+  .card {
+    @apply p-2 inline-block border border-gray-200 rounded-lg;
+  }
+
+  .btn {
+    @apply px-2 py-1;
+  }
+  .btn-save {
+    @apply bg-blue-700 text-white rounded-lg;
+  }
+
+  .arrow-right {
+    width: 0;
+    height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+
+    border-left: 12px solid red;
+  }
+
+  .fc {
+    @apply items-center p-4;
+  }
+
+  .fc-line {
+    @apply w-max h-2 shrink place-self-auto border-4 border-red-500;
+  }
+
+  .fc-start,
+  .fc-end {
+    @apply px-8 bg-gray-300 rounded-full;
+  }
+
+  .fc-step {
+    @apply mx-4 bg-blue-200/30 rounded-xl drop-shadow-lg;
+  }
+
+  .fc-action {
+    @apply border-2 border-purple-700;
+  }
+
+  .fc-empty {
+    @apply place-self-stretch hover:bg-purple-600;
+  }
+}
