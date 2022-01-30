@@ -16,36 +16,49 @@ export default function OrganisationsRoute() {
   const { organisations } = useLoaderData<LoaderData>();
 
   return (
-    <div className="h-full border border-red-600">
+    <div className="h-full flex flex-col">
       <div
         id="header"
-        className="p-4 flex justify-between items-center bg-gray-400"
+        className="px-4 py-1 flex justify-between items-center bg-gray-300"
       >
         <h1>Organisaties</h1>
         <Link to="create" className="btn btn-save">
           <i className="fas fa-plus"></i>
         </Link>
       </div>
-      <table>
-        <thead className="border-b-2 border-blue-800">
-          <th>Organisatie</th>
-          <th>Naam voluit</th>
-          <th>Edit</th>
-        </thead>
-        <tbody>
-          {organisations.map((organisation) => (
-            <tr key={organisation.id} className="border-b border-gray-300">
-              <td>{organisation.nameShort}</td>
-              <td>{organisation.name}</td>
-              <td>
-                <Link to={organisation.id}>
-                  <i className="fas fa-pencil-alt"></i>
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="flex-grow p-12">
+        <table>
+          <thead className="border-b-2 border-blue-800">
+            <th>Organisatie</th>
+            <th>Naam voluit</th>
+            <th>Edit</th>
+          </thead>
+          <tbody>
+            {organisations.map((organisation) => (
+              <tr
+                key={organisation.id}
+                className="border-b border-gray-300 hover:bg-blue-300 cursor-pointer"
+              >
+                <td>
+                  <Link to={`../${organisation.slugName}/admin`}>
+                    {organisation.nameShort}
+                  </Link>
+                </td>
+                <td>
+                  <Link to={`../${organisation.slugName}/admin`}>
+                    {organisation.name}
+                  </Link>
+                </td>
+                <td>
+                  <Link to={organisation.id}>
+                    <i className="fas fa-pencil-alt"></i>
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

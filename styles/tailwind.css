@@ -6,6 +6,9 @@
   h1 {
     @apply text-xl font-bold;
   }
+  h2 {
+    @apply text-lg;
+  }
 
   .container {
     @apply h-full w-full max-w-none flex justify-center items-center overflow-hidden;

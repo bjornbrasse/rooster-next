@@ -13,7 +13,10 @@ model Organisation {
   updatedAt DateTime @updatedAt
   name      String
   nameShort String
+  slugName  String   @unique
   User      User[]
+
+  @@unique([id])
 }
 
 model User {

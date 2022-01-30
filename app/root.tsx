@@ -8,6 +8,7 @@ import {
 } from 'remix';
 import type { MetaFunction } from 'remix';
 import styles from './tailwind.css';
+import Layout from './components/Layout';
 
 export function links() {
   return [{ rel: 'stylesheet', href: styles }];
@@ -34,7 +35,8 @@ export default function App() {
         <Links />
       </head>
       <body className="h-screen">
-        <Outlet />
+        {/* <Outlet /> */}
+        <Layout />
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
