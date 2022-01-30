@@ -13,7 +13,7 @@ type ActionData = {
   };
 };
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
 
   const name = form.get('name');
@@ -37,23 +37,31 @@ export const action: ActionFunction = async ({ request }) => {
   if (Object.values(fieldErrors).some(Boolean))
     return badRequest({ fieldErrors, fields });
 
-  const organisation = await db.organisation.create({
-    data: { name, nameShort, slugName },
+  const organisation = await db.organisation.findUnique({
+    where: { slugName: params.organisationSlug as string },
   });
 
-  if (!organisation)
+  if (!organisation) {
+    return badRequest({ formError: 'Something went wrong' });
+  }
+
+  const department = await db.department.create({
+    data: { name, nameShort, slugName, organisationId: organisation.id },
+  });
+
+  if (!department)
     return badRequest<ActionData>({ formError: 'Something went wrong.' });
 
-  return redirect(`/${organisation.slugName}/admin/employees`);
+  return redirect(`..`);
 };
 
 export default function OrganisationCreate() {
   return (
     <div className="container">
-      <h1>Maak een organisatie aan</h1>
+      <h1>Nieuwe afdeling</h1>
       <form method="POST" className="grid grid-cols-2 gap-y-4">
         <label htmlFor="name">Naam</label>
-        <input type="text" name="name" id="name" autoFocus />
+        <input type="text" name="name" id="name" />
         <label htmlFor="nameShort">Verkorte naam</label>
         <input type="text" name="nameShort" id="nameShort" />
         <label htmlFor="slugName">Adres naam</label>

@@ -22,11 +22,14 @@ export default function Organisation() {
   const { organisation } = useLoaderData<LoaderData>();
 
   return (
-    <div className="h-full">
-      <div id="header" className="px-4 py-1 flex items-center bg-gray-300">
+    <div className="relative h-full flex flex-col">
+      <div
+        id="header"
+        className="px-4 py-1 flex items-center bg-gray-300 border-b border-purple-800"
+      >
         <h2>{organisation?.name}</h2>
       </div>
-      <div className="p-2">
+      <div className="flex-grow">
         <Outlet />
       </div>
     </div>

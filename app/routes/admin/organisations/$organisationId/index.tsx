@@ -63,7 +63,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Organisation() {
-  const data = useLoaderData<LoaderData>();
+  const { organisation } = useLoaderData<LoaderData>();
 
   return (
     <div className="container">
@@ -74,12 +74,23 @@ export default function Organisation() {
           type="text"
           name="name"
           id="name"
-          defaultValue={data.organisation.name}
+          defaultValue={organisation.name}
         />
         <label htmlFor="nameShort">Verkorte naam</label>
-        <input type="text" name="nameShort" id="nameShort" />
+        <input
+          type="text"
+          name="nameShort"
+          id="nameShort"
+          defaultValue={organisation.nameShort}
+        />
         <label htmlFor="slugName">Adres naam</label>
-        <input type="text" name="slugName" id="slugName" />
+        <input
+          type="text"
+          name="slugName"
+          id="slugName"
+          defaultValue={organisation.slugName}
+          disabled={true}
+        />
         <button type="submit" className="btn btn-save">
           Opslaan
         </button>
