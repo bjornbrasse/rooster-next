@@ -1,4 +1,5 @@
-import { ActionFunction, redirect } from 'remix';
+import type { ActionFunction } from 'remix';
+import { redirect } from 'remix';
 import { db } from '~/utils/db.server';
 import { badRequest } from '~/utils/helpers';
 import { validateText } from '~/utils/validation';
@@ -52,7 +53,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (!department)
     return badRequest<ActionData>({ formError: 'Something went wrong.' });
 
-  return redirect(`..`);
+  return redirect(`.`);
 };
 
 export default function OrganisationCreate() {
