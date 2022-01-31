@@ -10,6 +10,7 @@ import {
 } from 'remix';
 import { db } from '~/utils/db.server';
 import { unstable_useKeyDown } from '@reach/combobox';
+import LinkedTableData from '~/components/LinkedTableData';
 
 type Sort = 'firstName' | 'lastName';
 
@@ -34,20 +35,9 @@ export default function EmployeesLayout() {
   const { employees } = useLoaderData<LoaderData>();
   const [order, setOrder] = React.useState<Sort>('firstName');
 
-  interface IProps {
-    href: string;
-    className?: string;
-  }
-  const LinkedCell: React.FC<IProps> = ({ children, className, href }) => {
-    return (
-      <td className={className}>
-        <Link to={href}>{children}</Link>
-      </td>
-    );
-  };
   return (
-    <div className="h-full flex">
-      <div className="relative w-1/2 flex-grow px-3 py-5 border-r-2 border-purple-800">
+    <div className="h-full flex flex-col">
+      <div className="relative h-1/2 flex-grow px-3 py-5">
         <Link to="create" className="absolute top-1 right-1 btn btn-save">
           <i className="fas fa-plus"></i>
         </Link>
@@ -79,18 +69,18 @@ export default function EmployeesLayout() {
                   className="hover:bg-blue-200 cursor-pointer"
                   key={employee.id}
                 >
-                  <LinkedCell href={employee.id}>
+                  <LinkedTableData href={employee.id}>
                     {employee.firstName}
-                  </LinkedCell>
-                  <LinkedCell
+                  </LinkedTableData>
+                  <LinkedTableData
                     href={employee.id}
                     className="px-1 border-r border-gray-400"
                   >
                     {employee.lastName}
-                  </LinkedCell>
-                  <LinkedCell href={employee.id} className="px-1">
+                  </LinkedTableData>
+                  <LinkedTableData href={employee.id} className="px-1">
                     {employee.email}
-                  </LinkedCell>
+                  </LinkedTableData>
                   <td className="text-right">
                     <Link to={employee.id}>
                       <i className="fas fa-pencil-alt" />

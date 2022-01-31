@@ -98,8 +98,7 @@ export default function EmployeeEdit() {
   const fieldErrors = data?.fieldErrors;
 
   return (
-    <div className="h-full p-24">
-      <h1>Gebruiker bewerken</h1>
+    <div className="h-full p-4 border-t-2 border-gray-400">
       <form method="POST" className="xl:w-2/3">
         <fieldset className="grid grid-cols-2 gap-y-4">
           <label htmlFor="firstName">Voornaam</label>
