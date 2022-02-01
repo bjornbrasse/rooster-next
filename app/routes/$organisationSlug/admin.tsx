@@ -1,13 +1,42 @@
-import { NavLink, Outlet, useParams } from 'remix';
+import * as React from 'react';
+import { Department, Organisation } from '@prisma/client';
+import { LoaderFunction, useLoaderData, useLocation } from 'remix';
+import { NavLink, Outlet } from 'remix';
+import { db } from '~/utils/db.server';
 import { classNames } from '~/utils/helpers';
 
+type LoaderData = {
+  department: Department | null;
+  organisation: Organisation | null;
+};
+
+export const loader: LoaderFunction = async ({
+  params,
+}): Promise<LoaderData> => {
+  const { organisationSlug, departmentId } = params;
+
+  const organisation = await db.organisation.findUnique({
+    where: { slugName: organisationSlug ?? '' },
+  });
+  const department = await db.department.findUnique({
+    where: { id: departmentId ?? '' },
+  });
+
+  return { department, organisation };
+};
+
 export default function AdminLayout() {
-  const { departmentId, employeeId } = useParams();
+  const location = useLocation();
+  const { department, organisation } = useLoaderData<LoaderData>();
+
+  React.useEffect(() => {}, [location]);
 
   return (
     <div className="h-full flex">
-      {!departmentId && (
-        <div id="menu" className="w-1/4 lg:w-1/5 border-r-2 border-purple-800">
+      <div id="menu" className="w-1/4 lg:w-1/5 border-r-2 border-purple-800">
+        {department ? (
+          <h1>Test</h1>
+        ) : (
           <div className="py-4 pr-4 flex flex-col">
             <NavLink
               to="employees"
@@ -34,8 +63,8 @@ export default function AdminLayout() {
               Afdelingen
             </NavLink>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <div id="content" className="flex-grow">
         <Outlet />
       </div>

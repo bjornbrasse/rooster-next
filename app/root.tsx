@@ -9,6 +9,7 @@ import {
 import type { MetaFunction } from 'remix';
 import styles from './tailwind.css';
 import Layout from './components/Layout';
+import { DialogProvider } from '~/contexts/dialog';
 
 export function links() {
   return [{ rel: 'stylesheet', href: styles }];
@@ -35,8 +36,9 @@ export default function App() {
         <Links />
       </head>
       <body className="h-screen">
-        {/* <Outlet /> */}
-        <Layout />
+        <DialogProvider>
+          <Layout />
+        </DialogProvider>
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
