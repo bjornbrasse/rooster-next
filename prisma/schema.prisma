@@ -21,28 +21,42 @@ model Organisation {
 }
 
 model Department {
-  id             String       @id @default(cuid())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  name           String
-  nameShort      String
-  slugName       String       @unique
-  organisation   Organisation @relation(fields: [organisationId], references: [id])
-  organisationId String
+  id                 String               @id @default(cuid())
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  name               String
+  nameShort          String
+  slugName           String               @unique
+  organisation       Organisation         @relation(fields: [organisationId], references: [id])
+  organisationId     String
+  DepartmentEmployee DepartmentEmployee[]
 
   @@unique([id])
 }
 
 model User {
-  id             String       @id @default(cuid())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  firstName      String
-  lastName       String
-  email          String
-  passwordHash   String
-  organisation   Organisation @relation(fields: [organisationId], references: [id])
-  organisationId String
+  id                 String               @id @default(cuid())
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  firstName          String
+  lastName           String
+  email              String
+  passwordHash       String
+  organisation       Organisation         @relation(fields: [organisationId], references: [id])
+  organisationId     String
+  DepartmentEmployee DepartmentEmployee[]
+}
+
+model DepartmentEmployee {
+  department          Department @relation(fields: [departmentId], references: [id])
+  departmentId        String
+  employee            User       @relation(fields: [employeeId], references: [id])
+  employeeId          String
+  isDefaultDepartment Boolean    @default(false)
+  assignedAt          DateTime   @default(now())
+  assignedBy          String?
+
+  @@id([departmentId, employeeId])
 }
 
 model Booking {
