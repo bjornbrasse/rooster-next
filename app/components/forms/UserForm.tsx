@@ -8,14 +8,14 @@ const UserForm = ({
   user,
 }: {
   redirectTo?: string;
-  user: User;
+  user?: User;
 }) => {
   const data = useActionData<ActionData>();
   const [changingPassword, setChangingPassword] = React.useState(false);
 
   return (
     <form method="POST" action="/users/save">
-      <input type="hidden" name="userId" value={user.id} />
+      <input type="hidden" name="userId" value={user?.id} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <fieldset className="flex flex-col">
         <label htmlFor="firstName">Voornaam</label>
@@ -23,7 +23,7 @@ const UserForm = ({
           type="text"
           name="firstName"
           id="firstName"
-          defaultValue={user.firstName}
+          defaultValue={user?.firstName}
         />
         {data?.fieldErrors?.firstName && (
           <p>Fout - {data?.fieldErrors.firstName}</p>
@@ -33,10 +33,10 @@ const UserForm = ({
           type="text"
           name="lastName"
           id="lastName"
-          defaultValue={user.lastName}
+          defaultValue={user?.lastName}
         />
         <label htmlFor="email">Email</label>
-        <input type="text" name="email" id="email" defaultValue={user.email} />
+        <input type="text" name="email" id="email" defaultValue={user?.email} />
         <button
           type="button"
           onClick={() => setChangingPassword(!changingPassword)}

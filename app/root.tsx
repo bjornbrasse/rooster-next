@@ -32,6 +32,7 @@ export default function App() {
         <DialogProvider>
           <Layout />
         </DialogProvider>
+        <div id="dialog" />
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}

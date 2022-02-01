@@ -12,6 +12,8 @@ import { db } from '~/utils/db.server';
 import { unstable_useKeyDown } from '@reach/combobox';
 import LinkedTableData from '~/components/LinkedTableData';
 import UserTable from '~/components/tables/UserTable';
+import { useDialog } from '~/contexts/dialog';
+import UserForm from '~/components/forms/UserForm';
 
 type LoaderData = {
   employees: User[];
@@ -32,13 +34,27 @@ export const loader: LoaderFunction = async ({
 
 export default function EmployeesLayout() {
   const { employees } = useLoaderData<LoaderData>();
+  const { openDialog } = useDialog();
+
+  const addUserHandler = () => {
+    openDialog('maak een gebruiker aan', <UserForm />);
+  };
 
   return (
     <div className="h-full flex flex-col">
       <div className="relative h-1/2 flex-grow px-3 py-5">
-        <Link to="create" className="absolute top-1 right-1 btn btn-save">
+        <div
+          onClick={addUserHandler}
+          className="absolute top-1 right-1 btn btn-save bg-red-600"
+        >
           <i className="fas fa-plus"></i>
-        </Link>
+        </div>
+        {/* <Link
+          to="create"
+          className="absolute top-1 right-1 btn btn-save bg-red-600"
+        >
+          <i className="fas fa-plus"></i>
+        </Link> */}
         <UserTable users={employees} />
       </div>
       <Outlet />
