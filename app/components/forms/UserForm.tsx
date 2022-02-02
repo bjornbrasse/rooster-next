@@ -4,9 +4,11 @@ import { redirect, useActionData } from 'remix';
 import { ActionData } from '~/user';
 
 const UserForm = ({
+  organisationId,
   redirectTo = '/users',
   user,
 }: {
+  organisationId: string;
   redirectTo?: string;
   user?: User;
 }) => {
@@ -14,8 +16,9 @@ const UserForm = ({
   const [changingPassword, setChangingPassword] = React.useState(false);
 
   return (
-    <form method="POST" action="/users/save">
+    <form method="POST" action="/user">
       <input type="hidden" name="userId" value={user?.id} />
+      <input type="hidden" name="organisationId" value={organisationId} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <fieldset className="flex flex-col">
         <label htmlFor="firstName">Voornaam</label>

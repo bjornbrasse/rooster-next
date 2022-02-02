@@ -1,16 +1,7 @@
-import * as React from 'react';
-import { User } from '@prisma/client';
-import {
-  Link,
-  LoaderFunction,
-  Outlet,
-  redirect,
-  useLoaderData,
-  useLocation,
-} from 'remix';
+import { Organisation, User } from '@prisma/client';
+import type { LoaderFunction } from 'remix';
+import { Outlet, useLoaderData, useMatches, useParams } from 'remix';
 import { db } from '~/utils/db.server';
-import { unstable_useKeyDown } from '@reach/combobox';
-import LinkedTableData from '~/components/LinkedTableData';
 import UserTable from '~/components/tables/UserTable';
 import { useDialog } from '~/contexts/dialog';
 import UserForm from '~/components/forms/UserForm';
@@ -36,8 +27,18 @@ export default function EmployeesLayout() {
   const { employees } = useLoaderData<LoaderData>();
   const { openDialog } = useDialog();
 
+  const { organisationSlug } = useParams();
+  const { organisation } = useMatches().find(
+    (m) => m.pathname === `/${organisationSlug}`
+  )?.data as {
+    organisation: Organisation;
+  };
+
   const addUserHandler = () => {
-    openDialog('maak een gebruiker aan', <UserForm />);
+    openDialog(
+      'maak een gebruiker aan',
+      <UserForm organisationId={organisation.id} />
+    );
   };
 
   return (

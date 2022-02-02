@@ -1,6 +1,5 @@
 import type { ActionFunction } from 'remix';
 import { redirect } from 'remix';
-import { Organisation, User } from '@prisma/client';
 import { db } from '~/utils/db.server';
 import { badRequest } from '~/utils/helpers';
 import { validateText } from '~/utils/validation';
@@ -25,11 +24,13 @@ export const action: ActionFunction = async ({ request, params }) => {
   const firstName = form.get('firstName');
   const lastName = form.get('lastName');
   const email = form.get('email');
+  const organisationId = form.get('organisationId');
 
   if (
     typeof firstName !== 'string' ||
     typeof lastName !== 'string' ||
-    typeof email !== 'string'
+    typeof email !== 'string' ||
+    typeof organisationId !== 'string'
   ) {
     return badRequest({
       FormError: `Form not submitted correctly.`,
@@ -48,28 +49,21 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (Object.values(fieldErrors).some(Boolean))
     return badRequest({ fieldErrors, fields });
 
-  const organisation = await db.organisation.findUnique({
-    where: { slugName: params.organisationSlug as string },
-  });
-
-  if (!organisation) {
-    return badRequest({ formError: 'Organisation not found' });
-  }
-
   const user = await db.user.create({
     data: {
       firstName,
       lastName,
       email,
       passwordHash: '123',
-      organisationId: organisation.id,
+      organisationId,
     },
   });
 
   if (!user)
     return badRequest<ActionData>({ formError: 'Something went wrong.' });
 
-  return redirect(`/${organisation.slugName}/admin/employees`);
+  // return redirect(`/${organisation.slugName}/admin/employees`);
+  return null;
 };
 
 export default () => null;
