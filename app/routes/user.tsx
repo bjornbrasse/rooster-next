@@ -1,21 +1,42 @@
+import { User } from '@prisma/client';
 import type { ActionFunction } from 'remix';
-import { redirect } from 'remix';
-import { db } from '~/utils/db.server';
+import { createUser } from '~/controllers/user';
 import { badRequest } from '~/utils/helpers';
 import { validateText } from '~/utils/validation';
 
-type ActionData = {
-  formError?: string;
-  fields?: {
-    firstName: string;
-    lastName: string;
-    email: string;
+// type ActionData = {
+//   formError?: string;
+//   fields?: {
+//     id: string;
+//     firstName: string;
+//     lastName: string;
+//     email: string;
+//   };
+//   fieldErrors?: {
+//     firstName: string | undefined;
+//     lastName: string | undefined;
+//     email: string | undefined;
+//   };
+// };
+type Fields = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+};
+
+type FieldErrors = {
+  firstName?: string[] | undefined;
+  lastName?: string[] | undefined;
+  email?: string[] | undefined;
+};
+
+export type UserActionData = {
+  error?: {
+    form?: string;
+    fields?: FieldErrors;
   };
-  fieldErrors?: {
-    firstName: string | undefined;
-    lastName: string | undefined;
-    email: string | undefined;
-  };
+  fields?: Fields;
+  user?: User | null;
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -32,13 +53,13 @@ export const action: ActionFunction = async ({ request, params }) => {
     typeof email !== 'string' ||
     typeof organisationId !== 'string'
   ) {
-    return badRequest({
-      FormError: `Form not submitted correctly.`,
+    return badRequest<UserActionData>({
+      error: { form: `Form not submitted correctly.` },
     });
   }
   const fields = { firstName, lastName, email };
 
-  const fieldErrors = {
+  const fieldErrors: FieldErrors = {
     firstName: validateText(firstName, {
       min: { length: 2, errorMessage: 'MOORE than 2' },
     }),
@@ -47,23 +68,31 @@ export const action: ActionFunction = async ({ request, params }) => {
     }),
   };
   if (Object.values(fieldErrors).some(Boolean))
-    return badRequest({ fieldErrors, fields });
+    return badRequest<UserActionData>({
+      error: { fields: fieldErrors },
+      fields,
+    });
 
-  const user = await db.user.create({
-    data: {
-      firstName,
-      lastName,
-      email,
-      passwordHash: '123',
-      organisationId,
-    },
+  const user = await createUser({
+    userData: { ...fields, organisationId },
   });
+  // const user = await db.user.create({
+  //   data: {
+  //     firstName,
+  //     lastName,
+  //     email,
+  //     passwordHash: '123',
+  //     organisationId,
+  //   },
+  // });
 
   if (!user)
-    return badRequest<ActionData>({ formError: 'Something went wrong.' });
+    return badRequest<UserActionData>({
+      error: { form: 'Something went wrong.' },
+      fields,
+    });
 
-  // return redirect(`/${organisation.slugName}/admin/employees`);
-  return null;
+  return { user };
 };
 
 export default () => null;

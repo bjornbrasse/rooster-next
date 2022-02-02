@@ -6,15 +6,16 @@ import LinkedTableData from '../LinkedTableData';
 type Sort = 'firstName' | 'lastName';
 
 interface IProps {
+  baseUrl: string;
   users: User[];
 }
 
-const UserTable: React.FC<IProps> = ({ users }) => {
+const UserTable: React.FC<IProps> = ({ baseUrl, users }) => {
   const [order, setOrder] = React.useState<Sort>('firstName');
 
   return (
-    <table className="w-full table-auto">
-      <thead className="text-left border-b-2 border-gray-600">
+    <table className="w-full table-auto border-2 border-blue-600">
+      <thead className="text-left bg-red-300 border-b-2 border-gray-600 sticky top-0">
         <th onClick={() => setOrder('firstName')}>
           Voornaam
           {order === 'firstName' && <i className="fas fa-sort-down" />}
@@ -28,7 +29,7 @@ const UserTable: React.FC<IProps> = ({ users }) => {
         <th>Email</th>
         {/* <th>Edit</th> */}
       </thead>
-      <tbody>
+      <tbody className="overflow-auto">
         {users
           .sort((a, b) => {
             if (order === 'firstName') {
@@ -38,18 +39,20 @@ const UserTable: React.FC<IProps> = ({ users }) => {
           })
           .map((user) => (
             <tr className="hover:bg-blue-200 cursor-pointer" key={user.id}>
-              <LinkedTableData href={user.id}>{user.firstName}</LinkedTableData>
+              <LinkedTableData href={`${baseUrl}/${user.id}`}>
+                {user.firstName}
+              </LinkedTableData>
               <LinkedTableData
-                href={user.id}
+                href={`${baseUrl}/${user.id}`}
                 className="px-1 border-r border-gray-400"
               >
                 {user.lastName}
               </LinkedTableData>
-              <LinkedTableData href={user.id} className="px-1">
+              <LinkedTableData href={`${baseUrl}/${user.id}`} className="px-1">
                 {user.email}
               </LinkedTableData>
               <td className="text-right">
-                <Link to={user.id}>
+                <Link to={`${baseUrl}/${user.id}`}>
                   <i className="fas fa-pencil-alt" />
                 </Link>
               </td>

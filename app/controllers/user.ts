@@ -1,5 +1,6 @@
 import { db } from '~/utils/db.server';
 import bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 
 export const createUser = async ({
   userData,
@@ -8,16 +9,31 @@ export const createUser = async ({
     email: string;
     firstName: string;
     lastName: string;
-    organisation: string;
-    password: string;
+    organisationId: string;
+    // password: string;
   };
-}) => {
-  const { password, ...userDataWithoutPassword } = userData;
+}): Promise<User> => {
+  // const { password, ...userDataWithoutPassword } = userData;
 
-  const user = await db.user.create({
-    data: {
-      ...userDataWithoutPassword,
-      passwordHash: await bcrypt.hash(userData.password, 10),
+  return await db.user.create({
+    // data: {
+    //   ...userDataWithoutPassword,
+    //   passwordHash: await bcrypt.hash(userData.password, 10),
+    // },
+    data: { ...userData },
+  });
+};
+
+export const getOrganisationEmployees = async ({
+  organisationId,
+  organisationSlug,
+}: {
+  organisationId?: string;
+  organisationSlug?: string;
+}): Promise<User[]> => {
+  return await db.user.findMany({
+    where: {
+      OR: { organisationId, organisation: { slugName: organisationSlug } },
     },
   });
 };

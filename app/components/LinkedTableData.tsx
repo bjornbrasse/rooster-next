@@ -1,4 +1,5 @@
-import { Link } from 'remix';
+import { NavLink } from 'remix';
+import { classNames } from '~/utils/helpers';
 
 interface IProps {
   href: string;
@@ -7,7 +8,12 @@ interface IProps {
 const LinkedTableData: React.FC<IProps> = ({ children, className, href }) => {
   return (
     <td className={className}>
-      <Link to={href}>{children}</Link>
+      <NavLink
+        to={href}
+        className={({ isActive }) => classNames(isActive ? 'bg-green-400' : '')}
+      >
+        {children}
+      </NavLink>
     </td>
   );
 };

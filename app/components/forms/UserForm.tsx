@@ -1,22 +1,30 @@
 import * as React from 'react';
 import { User } from '@prisma/client';
-import { redirect, useActionData } from 'remix';
-import { ActionData } from '~/user';
+import { useFetcher } from 'remix';
+import { UserActionData } from '~/routes/user';
 
 const UserForm = ({
+  onSaved: savedHandler,
   organisationId,
-  redirectTo = '/users',
+  redirectTo = '/',
   user,
 }: {
+  onSaved: (user: User) => void;
   organisationId: string;
-  redirectTo?: string;
+  redirectTo: string;
   user?: User;
 }) => {
-  const data = useActionData<ActionData>();
+  const fetcher = useFetcher<UserActionData>();
   const [changingPassword, setChangingPassword] = React.useState(false);
 
+  React.useEffect(() => {
+    if (fetcher.data?.user) {
+      savedHandler(fetcher.data.user);
+    }
+  }, [fetcher]);
+
   return (
-    <form method="POST" action="/user">
+    <fetcher.Form method="post" action="/user">
       <input type="hidden" name="userId" value={user?.id} />
       <input type="hidden" name="organisationId" value={organisationId} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
@@ -28,8 +36,8 @@ const UserForm = ({
           id="firstName"
           defaultValue={user?.firstName}
         />
-        {data?.fieldErrors?.firstName && (
-          <p>Fout - {data?.fieldErrors.firstName}</p>
+        {fetcher.data?.error?.fields?.firstName && (
+          <p>Fout - {fetcher.data?.error?.fields?.firstName}</p>
         )}
         <label htmlFor="lastName">Achternaam</label>
         <input
@@ -59,7 +67,7 @@ const UserForm = ({
       <button type="submit" className="btn btn-save">
         Opslaan
       </button>
-    </form>
+    </fetcher.Form>
   );
 };
 
