@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import type { ActionFunction } from 'remix';
-import { createUser } from '~/controllers/user';
+import { createUser } from '~/models/user';
 import { badRequest } from '~/utils/helpers';
 import { validateText } from '~/utils/validation';
 

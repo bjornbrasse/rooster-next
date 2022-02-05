@@ -3,6 +3,8 @@ import { Link, Outlet, useLoaderData, useParams } from 'remix';
 import { db } from '~/utils/db.server';
 import { Department } from '@prisma/client';
 import LinkedTableData from '~/components/LinkedTableData';
+import { useDialog } from '~/contexts/dialog';
+import DepartmentForm from '~/components/forms/DepartmentForm';
 
 type LoaderData = {
   departments: Department[];
@@ -20,13 +22,25 @@ export const loader: LoaderFunction = async ({
 
 export default function OrganisationDepartments() {
   const { departments } = useLoaderData<LoaderData>();
-  const { departmentId } = useParams();
+  const { departmentId, organisationSlug } = useParams();
+  const { openDialog } = useDialog();
+
+  const addDepartmentHandler = () => {
+    openDialog(
+      'TVG',
+      <DepartmentForm organisationSlug={String(organisationSlug)} />,
+      'beschrijving'
+    );
+  };
 
   return (
     <>
-      <Link to="create" className="absolute top-0.5 right-2 btn btn-save">
+      <div
+        onClick={addDepartmentHandler}
+        className="absolute top-0.5 right-2 btn btn-save"
+      >
         <i className="fas fa-plus"></i>
-      </Link>
+      </div>
       <div className="h-full flex">
         {!departmentId && (
           <div className="flex-grow p-12 border-4 border-green-800">
@@ -41,7 +55,9 @@ export default function OrganisationDepartments() {
                     key={department.id}
                     className="hover:bg-blue-200 cursor-pointer"
                   >
-                    <LinkedTableData href={department.id}>
+                    <LinkedTableData
+                      href={`/${organisationSlug}/${department.slugName}`}
+                    >
                       {department.name}
                     </LinkedTableData>
                     <LinkedTableData href={department.id}>test</LinkedTableData>
