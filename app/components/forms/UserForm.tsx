@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { User } from '@prisma/client';
 import { useFetcher } from 'remix';
-import { UserActionData } from '~/routes/user';
+import { UserActionData } from '~/routes/_api/user';
 
 const UserForm = ({
   onSaved: savedHandler,

@@ -2,7 +2,7 @@ import { redirect, useActionData } from 'remix';
 import type { ActionFunction } from 'remix';
 import { badRequest } from '~/utils/helpers';
 import { getUserPasswordReset } from '~/controllers/auth.server';
-import { sendEmail } from '~/utils/sendEmail';
+import { sendEmail } from '~/utils/email';
 import { passwordResetEmail } from '~/utils/emailTemplates';
 
 type ActionData = {
