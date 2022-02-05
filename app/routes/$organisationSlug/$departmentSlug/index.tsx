@@ -1,7 +1,7 @@
 import { Department } from '@prisma/client';
 import type { LoaderFunction } from 'remix';
 import { useLoaderData } from 'remix';
-import { getDepartment } from '~/models/department';
+import { getDepartment } from '~/controllers/department';
 
 type LoaderData = {
   department: Department;

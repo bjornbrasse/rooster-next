@@ -2,7 +2,7 @@ import type { ActionFunction } from 'remix';
 import { Department } from '@prisma/client';
 import { badRequest } from '~/utils/helpers';
 import { validateText } from '~/utils/validation';
-import { createDepartment } from '~/models/department';
+import { createDepartment } from '~/controllers/department';
 
 type Fields = {
   name?: string;

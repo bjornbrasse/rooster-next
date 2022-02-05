@@ -24,6 +24,35 @@ export const createUser = async ({
   });
 };
 
+export async function register({
+  firstName,
+  lastName,
+  email,
+  password,
+}: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}) {
+  const passwordHash = await bcrypt.hash(password, 10);
+  const emailValidationToken = nanoid(24);
+
+  // TODO: replace with real entry organisation
+  const organisationSlug = email.split('@').pop()?.split('.')[0];
+
+  return db.user.create({
+    data: {
+      firstName,
+      lastName,
+      email,
+      organisation: { connect: { slugName: organisationSlug } },
+      passwordHash,
+      emailValidationToken,
+    },
+  });
+}
+
 export const getOrganisationEmployees = async ({
   organisationId,
   organisationSlug,

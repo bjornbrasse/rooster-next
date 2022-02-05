@@ -40,12 +40,12 @@ export default function OrganisationsRoute() {
                 className="border-b border-gray-300 hover:bg-blue-300 cursor-pointer"
               >
                 <td>
-                  <Link to={`../${organisation.slugName}/admin/employees`}>
+                  <Link to={`../${organisation.slugName}/employees`}>
                     {organisation.nameShort}
                   </Link>
                 </td>
                 <td>
-                  <Link to={`../${organisation.slugName}/admin/employees`}>
+                  <Link to={`../${organisation.slugName}/employees`}>
                     {organisation.name}
                   </Link>
                 </td>

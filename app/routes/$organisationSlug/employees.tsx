@@ -12,8 +12,8 @@ import { db } from '~/utils/db.server';
 import UserTable from '~/components/tables/UserTable';
 import { useDialog } from '~/contexts/dialog';
 import UserForm from '~/components/forms/UserForm';
-import { findOrganisation } from '~/models/organisation';
-import { getOrganisationEmployees } from '~/models/user';
+import { findOrganisation } from '~/controllers/organisation';
+import { getOrganisationEmployees } from '~/controllers/user';
 
 export const meta: MetaFunction = () => {
   return {
