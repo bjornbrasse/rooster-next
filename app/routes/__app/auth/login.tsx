@@ -84,10 +84,10 @@ export default function LoginRoute() {
   return (
     <div className="container">
       <div
-        className="card px-8 py-4 flex flex-col justify-center bg-white border border-purple-500"
+        className="card px-8 py-4 flex flex-col justify-center bg-white border border-primary"
         data-light=""
       >
-        <h1 className="mb-4 text-xl text-center">Login</h1>
+        <h1 className="mb-4 text-primary text-xl text-center">Login</h1>
 
         <form
           method="POST"

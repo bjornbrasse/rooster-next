@@ -93,10 +93,7 @@ export async function getUser(
     };
   }
 ) {
-  const userId = await getUserId(request);
-  if (typeof userId !== 'string') {
-    return null;
-  }
+  const userId = (await getUserId(request)) ?? '';
 
   try {
     const user = await db.user.findUnique({
@@ -114,6 +111,7 @@ export async function getUser(
     //   throw redirect(options.redirect.onSuccess(user));
     // }
     // }
+
     return user;
 
     // if (options?.redirect?.onFailure)

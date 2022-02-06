@@ -27,13 +27,20 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
                 nameShort: department.nameShort ?? '',
                 employees: {
                   create: department.users?.map(
-                    ({ firstName, lastName, email, passwordHash }) => ({
+                    ({
+                      firstName,
+                      lastName,
+                      email,
+                      passwordHash,
+                      ...user
+                    }) => ({
                       employee: {
                         create: {
                           firstName,
                           lastName,
                           email,
                           passwordHash,
+                          role: user?.role,
                           organisation: { connect: { id: organisationId } },
                         },
                       },
@@ -54,10 +61,11 @@ export async function getOrganisations(): Promise<
     Partial<Organisation> & {
       departments?: (Pick<Department, 'name' | 'slugName'> &
         Partial<Department> & {
-          users?: Pick<
+          users?: (Pick<
             User,
             'firstName' | 'lastName' | 'email' | 'passwordHash'
-          >[];
+          > &
+            Partial<User>)[];
         })[];
     })[]
 > {
@@ -74,9 +82,16 @@ export async function getOrganisations(): Promise<
           slugName: 'ziekenhuisapotheek',
           users: [
             {
+              role: 'ADMIN',
               firstName: 'Bjorn',
               lastName: 'Brassé',
               email: 'b.brasse@etz.nl',
+              passwordHash: await bcrypt.hash('test', 10),
+            },
+            {
+              firstName: 'Michelle',
+              lastName: 'de Roo',
+              email: 'm.deroo@etz.nl',
               passwordHash: await bcrypt.hash('test', 10),
             },
           ],
@@ -85,6 +100,7 @@ export async function getOrganisations(): Promise<
     },
     {
       name: 'Elkerliek Ziekenhuis',
+      nameShort: 'Elkerliek',
       slugName: 'elkerliek',
       departments: [
         { name: 'Cardiologie', slugName: '3A' },

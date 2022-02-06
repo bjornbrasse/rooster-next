@@ -1,7 +1,13 @@
-import { Links, LiveReload, Meta, Scripts, ScrollRestoration } from 'remix';
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from 'remix';
 import type { MetaFunction } from 'remix';
 import styles from './tailwind.css';
-import Layout from './components/Layout';
 import { DialogProvider } from '~/contexts/dialog';
 
 export function links() {
@@ -30,7 +36,7 @@ export default function App() {
       </head>
       <body className="h-screen">
         <DialogProvider>
-          <Layout />
+          <Outlet />
         </DialogProvider>
         <div id="dialog" />
         <ScrollRestoration />

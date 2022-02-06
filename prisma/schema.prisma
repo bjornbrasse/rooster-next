@@ -36,34 +36,39 @@ model Department {
   @@unique([organisationId, slugName])
 }
 
-model User {
-  id                   String               @id @default(cuid())
-  createdAt            DateTime             @default(now())
-  updatedAt            DateTime             @updatedAt
-  firstName            String
-  lastName             String
-  email                String               @unique
-  passwordHash         String?
-  passwordResetToken   String?
-  emailValidationToken String?
-  organisation         Organisation         @relation(fields: [organisationId], references: [id])
-  organisationId       String
-  departments          DepartmentEmployee[]
+enum Role {
+  USER
+  ADMIN
+}
 
-  canViewOrganisations Boolean @default(false)
+model User {
+  id                    String               @id @default(cuid())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  role                  Role                 @default(USER)
+  firstName             String
+  lastName              String
+  email                 String               @unique
+  passwordHash          String?
+  passwordResetToken    String?
+  emailValidationToken  String?
+  organisation          Organisation         @relation(fields: [organisationId], references: [id])
+  organisationId        String
+  departments           DepartmentEmployee[]
+  canViewOrganisations  Boolean              @default(false)
+  canCreateOrganisation Boolean              @default(false)
 }
 
 model DepartmentEmployee {
-  department   Department @relation(fields: [departmentId], references: [id])
-  departmentId String
-  employee     User       @relation(fields: [employeeId], references: [id])
-  employeeId   String
-  assignedAt   DateTime   @default(now())
-  assignedBy   String?
-
-  isDefaultDepartment Boolean @default(false)
-
-  canViewEmployees Boolean @default(false)
+  department          Department @relation(fields: [departmentId], references: [id])
+  departmentId        String
+  employee            User       @relation(fields: [employeeId], references: [id])
+  employeeId          String
+  assignedAt          DateTime   @default(now())
+  assignedBy          String?
+  isDefaultDepartment Boolean    @default(false)
+  canViewEmployees    Boolean    @default(false)
+  canCreateEmployee   Boolean    @default(false)
 
   @@id([departmentId, employeeId])
 }

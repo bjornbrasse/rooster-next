@@ -1,18 +1,24 @@
 import { Organisation } from '@prisma/client';
-import { Link, LoaderFunction, useLoaderData } from 'remix';
+import { Link, LoaderFunction, redirect, useLoaderData } from 'remix';
+import { can, userIsAdmin } from '~/controllers/access.server';
+import { requireUser } from '~/controllers/auth.server';
 import { db } from '~/utils/db.server';
 
 type LoaderData = {
   organisations: Organisation[];
 };
 
-export const loader: LoaderFunction = async (): Promise<LoaderData> => {
+export const loader: LoaderFunction = async ({
+  request,
+}): Promise<LoaderData> => {
+  await userIsAdmin(request, '/home');
+
   const organisations = await db.organisation.findMany();
 
   return { organisations };
 };
 
-export default function OrganisationsRoute() {
+export default function Organisations() {
   const { organisations } = useLoaderData<LoaderData>();
 
   return (
