@@ -3,37 +3,37 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  // provider = "sqlite"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
 model Organisation {
-  id         String       @id @default(cuid())
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  name       String
-  nameShort  String
-  slugName   String       @unique
-  Department Department[]
-  User       User[]
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  name        String
+  nameShort   String
+  slugName    String
+  departments Department[]
+  users       User[]
 
-  @@unique([id])
+  @@unique([slugName])
 }
 
 model Department {
-  id                     String               @id @default(cuid())
-  createdAt              DateTime             @default(now())
-  updatedAt              DateTime             @updatedAt
-  name                   String
-  nameShort              String
-  slugName               String               @unique
-  organisation           Organisation         @relation(fields: [organisationId], references: [id])
-  organisationId         String
-  employees              DepartmentEmployee[]
-  Planner                Planner[]
-  defaultDepartmentUsers User[]
+  id             String               @id @default(cuid())
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  name           String
+  nameShort      String
+  organisation   Organisation         @relation(fields: [organisationId], references: [id])
+  organisationId String
+  slugName       String
+  employees      DepartmentEmployee[]
+  planners       Planner[]
 
-  @@unique([id])
+  @@unique([organisationId, slugName])
 }
 
 model User {
@@ -49,18 +49,21 @@ model User {
   organisation         Organisation         @relation(fields: [organisationId], references: [id])
   organisationId       String
   departments          DepartmentEmployee[]
-  defaultDepartment    Department           @relation(fields: [defaultDepartmentId], references: [id])
-  defaultDepartmentId  String
+
+  canViewOrganisations Boolean @default(false)
 }
 
 model DepartmentEmployee {
-  department          Department @relation(fields: [departmentId], references: [id])
-  departmentId        String
-  employee            User       @relation(fields: [employeeId], references: [id])
-  employeeId          String
-  isDefaultDepartment Boolean    @default(false)
-  assignedAt          DateTime   @default(now())
-  assignedBy          String?
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String
+  employee     User       @relation(fields: [employeeId], references: [id])
+  employeeId   String
+  assignedAt   DateTime   @default(now())
+  assignedBy   String?
+
+  isDefaultDepartment Boolean @default(false)
+
+  canViewEmployees Boolean @default(false)
 
   @@id([departmentId, employeeId])
 }

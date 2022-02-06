@@ -13,7 +13,7 @@ import UserTable from '~/components/tables/UserTable';
 import { useDialog } from '~/contexts/dialog';
 import UserForm from '~/components/forms/UserForm';
 import { findOrganisation } from '~/controllers/organisation';
-import { getOrganisationEmployees } from '~/controllers/user';
+import { getOrganisationEmployees } from '~/controllers/user.server';
 
 export const meta: MetaFunction = () => {
   return {

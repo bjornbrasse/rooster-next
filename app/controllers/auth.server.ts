@@ -4,55 +4,6 @@ import { customRandom, nanoid, random, urlAlphabet } from 'nanoid';
 import { createCookieSessionStorage, redirect } from 'remix';
 import { db } from '../utils/db.server';
 
-export async function login({
-  email,
-  password,
-}: {
-  email: string;
-  password: string;
-}) {
-  const user = await db.user.findUnique({
-    where: { email },
-    include: { organisation: true, departmentsEmployeeOf: true },
-  });
-  if (!user) return null;
-
-  const isCorrectPassword = await bcrypt.compare(password, user.passwordHash);
-  if (!isCorrectPassword) return null;
-
-  return user;
-}
-
-export async function getUserPasswordReset({ email }: { email: string }) {
-  const passwordResetToken = customRandom(urlAlphabet, 48, random)();
-
-  const user = await db.user.update({
-    where: { email },
-    data: { passwordResetToken },
-    select: { firstName: true, email: true, passwordResetToken: true },
-  });
-
-  return user;
-}
-
-export async function resetPassword({
-  email,
-  newPassword,
-}: {
-  email: string;
-  newPassword: string;
-}) {
-  const passwordHash = await bcrypt.hash(newPassword, 10);
-
-  const user = await db.user.update({
-    where: { email },
-    data: { passwordHash, passwordResetToken: '' },
-  });
-  if (!user) return null;
-
-  return user;
-}
-
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set');
@@ -72,6 +23,40 @@ const storage = createCookieSessionStorage({
     httpOnly: true,
   },
 });
+
+export async function login({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) {
+  const user = await db.user.findUnique({
+    where: { email },
+    include: { organisation: true, departments: true },
+  });
+  if (!user) return null;
+
+  const isCorrectPassword = await bcrypt.compare(
+    password,
+    user.passwordHash ?? ''
+  );
+  if (!isCorrectPassword) return null;
+
+  return user;
+}
+
+export async function getUserPasswordReset({ email }: { email: string }) {
+  const passwordResetToken = customRandom(urlAlphabet, 48, random)();
+
+  const user = await db.user.update({
+    where: { email },
+    data: { passwordResetToken },
+    select: { firstName: true, email: true, passwordResetToken: true },
+  });
+
+  return user;
+}
 
 export function getUserSession(request: Request) {
   return storage.getSession(request.headers.get('Cookie'));
@@ -118,8 +103,7 @@ export async function getUser(
       where: { id: userId },
       include: {
         organisation: true,
-        defaultDepartment: true,
-        defaultTeam: true,
+        departments: true,
       },
     });
 
@@ -221,4 +205,22 @@ export async function createUserSession(user: User, redirectTo: string) {
       'Set-Cookie': await storage.commitSession(session),
     },
   });
+}
+
+export async function resetPassword({
+  email,
+  newPassword,
+}: {
+  email: string;
+  newPassword: string;
+}) {
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
+  const user = await db.user.update({
+    where: { email },
+    data: { passwordHash, passwordResetToken: '' },
+  });
+  if (!user) return null;
+
+  return user;
 }

@@ -66,7 +66,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-  return createUserSession(user);
+  return createUserSession(user, redirectTo);
 };
 
 export default function LoginRoute() {

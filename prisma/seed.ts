@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
+import { seedOrganisations } from './seed/organisations';
 import { seedUsers } from './seed/users';
+
 const db = new PrismaClient();
 
 async function seed() {
@@ -8,7 +10,10 @@ async function seed() {
   //     return db.user.create({ data: user });
   //   })
   // );
-  await seedUsers(db);
+
+  // await seedUsers(db);
+
+  await seedOrganisations({ db });
 }
 
 seed();

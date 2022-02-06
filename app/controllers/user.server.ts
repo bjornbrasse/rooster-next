@@ -1,6 +1,7 @@
 import { db } from '~/utils/db.server';
 import bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
+import { nanoid } from 'nanoid';
 
 export const createUser = async ({
   userData,

@@ -1,5 +1,5 @@
 import { db } from '~/utils/db.server';
-import { Department } from '@prisma/client';
+import { Department, User } from '@prisma/client';
 
 export const createDepartment = async ({
   department,
@@ -29,5 +29,27 @@ export const getDepartment = async ({
 }) => {
   return await db.department.findFirst({
     where: { OR: { id: departmentId, slugName: departmentSlug } },
+  });
+};
+
+export const createDepartmentUser = async ({
+  departmentId,
+  user,
+}: {
+  departmentId: string;
+  user: User;
+}) => {
+  const department = await db.department.findUnique({
+    where: { id: departmentId },
+  });
+
+  await db.department.create({
+    data: {
+      employees: {
+        create: {
+          employee: { create: { firstName, lastName, email, passwordHash } },
+        },
+      },
+    },
   });
 };

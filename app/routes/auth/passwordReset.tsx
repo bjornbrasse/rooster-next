@@ -42,7 +42,7 @@ export const action: ActionFunction = async ({ request }) => {
   console.log('hier 2', user);
   if (!user) return redirect('/login');
 
-  return createUserSession(user.id);
+  return createUserSession(user, '/');
 };
 
 export default function PasswordResetRoute() {
