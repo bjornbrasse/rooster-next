@@ -37,7 +37,7 @@ const DialogComponent: React.FC<IProps> = ({
                 className="relative w-1/2 p-3 bg-white border border-gray-300 rounded-lg "
               >
                 <button
-                  onClick={showDialogHandler.bind(this, false)}
+                  onClick={() => showDialogHandler(false)}
                   className="absolute -top-4 -right-4 w-8 h-8 bg-indigo-600 text-white font-bold rounded-full"
                 >
                   X

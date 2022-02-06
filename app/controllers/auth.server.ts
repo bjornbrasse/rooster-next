@@ -212,15 +212,11 @@ export async function logout(request: Request) {
   });
 }
 
-export async function createUserSession(
-  user: User & { organisation: Organisation }
-) {
+export async function createUserSession(user: User, redirectTo: string) {
   const session = await storage.getSession();
   session.set('userId', user.id);
 
-  console.log('url:', `/${user.organisation.slug}`);
-
-  return redirect(`/${user.organisation.slug}`, {
+  return redirect(redirectTo, {
     headers: {
       'Set-Cookie': await storage.commitSession(session),
     },

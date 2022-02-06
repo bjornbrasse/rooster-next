@@ -21,31 +21,36 @@ model Organisation {
 }
 
 model Department {
-  id             String               @id @default(cuid())
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  name           String
-  nameShort      String
-  slugName       String               @unique
-  organisation   Organisation         @relation(fields: [organisationId], references: [id])
-  organisationId String
-  employees      DepartmentEmployee[]
+  id                     String               @id @default(cuid())
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  name                   String
+  nameShort              String
+  slugName               String               @unique
+  organisation           Organisation         @relation(fields: [organisationId], references: [id])
+  organisationId         String
+  employees              DepartmentEmployee[]
+  Planner                Planner[]
+  defaultDepartmentUsers User[]
 
-  Planner Planner[]
   @@unique([id])
 }
 
 model User {
-  id             String               @id @default(cuid())
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  firstName      String
-  lastName       String
-  email          String               @unique
-  passwordHash   String?
-  organisation   Organisation         @relation(fields: [organisationId], references: [id])
-  organisationId String
-  departments    DepartmentEmployee[]
+  id                   String               @id @default(cuid())
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  firstName            String
+  lastName             String
+  email                String               @unique
+  passwordHash         String?
+  passwordResetToken   String?
+  emailValidationToken String?
+  organisation         Organisation         @relation(fields: [organisationId], references: [id])
+  organisationId       String
+  departments          DepartmentEmployee[]
+  defaultDepartment    Department           @relation(fields: [defaultDepartmentId], references: [id])
+  defaultDepartmentId  String
 }
 
 model DepartmentEmployee {

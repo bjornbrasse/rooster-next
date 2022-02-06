@@ -1,4 +1,4 @@
-import React, { EventHandler } from 'react';
+// import * as React from 'react';
 import { ActionFunction, Link } from 'remix';
 import { useActionData, useSearchParams } from 'remix';
 import RequestPasswordResetForm from '~/components/forms/RequestPasswordResetForm';
