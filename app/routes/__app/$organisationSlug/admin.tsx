@@ -32,7 +32,7 @@ export const loader: LoaderFunction = async ({
   return { organisation, user };
 };
 
-export default function OrganisationLayout() {
+export default function Organisation() {
   const { organisation } = useLoaderData<LoaderData>();
 
   const { departmentSlug, employeeId } = useParams();
@@ -48,14 +48,14 @@ export default function OrganisationLayout() {
     <div className="relative h-full flex flex-col">
       <div
         id="header"
-        className="px-4 py-0.5 flex items-center text-md bg-gray-200 border-b border-primary"
+        className="px-4 py-1 flex items-center bg-gray-300 border-b border-purple-800"
       >
         <Link to="/admin/organisations">
-          <i className="fas fa-bars text-lg mr-3" />
+          <i className="fas fa-bars text-xl mr-2" />
         </Link>
         {organisation && (
           <Link to={`/${organisation.slugName}/admin/employees`}>
-            <p>{organisation?.name}</p>
+            <h2>{organisation?.name}</h2>
           </Link>
         )}
         {department && (
@@ -65,9 +65,43 @@ export default function OrganisationLayout() {
           </>
         )}
       </div>
-
-      <div className="flex-grow">
-        <Outlet />
+      <div className="h-full flex border-b-4 border-purple-400">
+        {!departmentSlug && (
+          <div
+            id="menu"
+            className="w-1/4 lg:w-1/5 border-r-2 border-purple-800"
+          >
+            <div className="py-4 pr-4 flex flex-col">
+              <NavLink
+                to="employees"
+                className={({ isActive }) =>
+                  classNames(
+                    'w-full m-2 text-lg border-b border-gray-400',
+                    `block ${isActive ? 'text-purple-300' : ''}`
+                  )
+                }
+              >
+                <i className="fas fa-users mr-3"></i>
+                Medewerkers
+              </NavLink>
+              <NavLink
+                to="departments"
+                className={({ isActive }) =>
+                  classNames(
+                    'w-full m-2 text-lg border-b border-gray-400',
+                    `block ${isActive ? 'text-purple-300' : ''}`
+                  )
+                }
+              >
+                <i className="fas fa-square mr-4"></i>
+                Afdelingen
+              </NavLink>
+            </div>
+          </div>
+        )}
+        <div className="flex-grow">
+          <Outlet />
+        </div>
       </div>
     </div>
   );

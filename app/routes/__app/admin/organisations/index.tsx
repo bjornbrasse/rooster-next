@@ -46,12 +46,12 @@ export default function Organisations() {
                 className="border-b border-gray-300 hover:bg-blue-300 cursor-pointer"
               >
                 <td>
-                  <Link to={`../${organisation.slugName}/employees`}>
+                  <Link to={`/${organisation.slugName}/admin/employees`}>
                     {organisation.nameShort}
                   </Link>
                 </td>
                 <td>
-                  <Link to={`../${organisation.slugName}/employees`}>
+                  <Link to={`/${organisation.slugName}/admin/employees`}>
                     {organisation.name}
                   </Link>
                 </td>

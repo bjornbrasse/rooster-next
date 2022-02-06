@@ -35,12 +35,8 @@ export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
   const email = form.get('email');
   const password = form.get('password');
-  const redirectTo = form.get('redirectTo') || '/';
-  if (
-    typeof email !== 'string' ||
-    typeof password !== 'string' ||
-    typeof redirectTo !== 'string'
-  ) {
+
+  if (typeof email !== 'string' || typeof password !== 'string') {
     return badRequest<ActionData>({
       formError: `Form not submitted correctly.`,
     });
@@ -66,7 +62,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-  return createUserSession(user, redirectTo);
+  return createUserSession(user, `/${user.organisation.slugName}`);
 };
 
 export default function LoginRoute() {
@@ -84,7 +80,7 @@ export default function LoginRoute() {
   return (
     <div className="container">
       <div
-        className="card px-8 py-4 flex flex-col justify-center bg-white border border-primary"
+        className="card mb-24 px-8 py-4 flex flex-col justify-center bg-white border border-primary"
         data-light=""
       >
         <h1 className="mb-4 text-primary text-xl text-center">Login</h1>
@@ -104,6 +100,7 @@ export default function LoginRoute() {
             <label htmlFor="email-input">Email</label>
             <p>
               <input
+                autoFocus={true}
                 type="text"
                 id="email-input"
                 name="email"

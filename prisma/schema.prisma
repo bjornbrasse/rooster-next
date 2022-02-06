@@ -16,7 +16,7 @@ model Organisation {
   nameShort   String
   slugName    String
   departments Department[]
-  users       User[]
+  employees   User[]
 
   @@unique([slugName])
 }
@@ -31,7 +31,7 @@ model Department {
   organisationId String
   slugName       String
   employees      DepartmentEmployee[]
-  planners       Planner[]
+  schedules      Schedule[]
 
   @@unique([organisationId, slugName])
 }
@@ -73,13 +73,23 @@ model DepartmentEmployee {
   @@id([departmentId, employeeId])
 }
 
-model Planner {
+model Schedule {
   id           String     @id @default(cuid())
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   name         String
   department   Department @relation(fields: [departmentId], references: [id])
   departmentId String
+  tasks        Task[]
+}
+
+model Task {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  name       String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId String
 }
 
 model Booking {

@@ -259,7 +259,7 @@ export default function App() {
           {({ active }) => (
             <Link
               to={href}
-              className={`grid grid-cols-[25px_1fr] items-center ${
+              className={`grid grid-cols-[30px_1fr] items-center ${
                 active ? 'bg-violet-500 text-white' : 'text-gray-900'
               } group rounded-md w-full px-3 py-1`}
             >
@@ -289,19 +289,13 @@ export default function App() {
 
         {user ? (
           <Menu as="div" className="relative inline-block text-left">
-            <div>
-              <Menu.Button className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-                {`${user.firstName} ${user.lastName}`}
-                <i
-                  className="fas fa-chevron-down w-5 h-5 ml-2 -mr-1 text-violet-200 hover:text-violet-100"
-                  aria-hidden="true"
-                />
-                {/* <ChevronDownIcon
-                  className="w-5 h-5 ml-2 -mr-1 text-violet-200 hover:text-violet-100"
-                  aria-hidden="true"
-                /> */}
-              </Menu.Button>
-            </div>
+            <Menu.Button className="inline-flex w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+              {`${user.firstName} ${user.lastName}`}
+              <i
+                className="fas fa-chevron-down w-5 h-5 ml-2 -mr-1 text-violet-200 hover:text-violet-100"
+                aria-hidden="true"
+              />
+            </Menu.Button>
             <Transition
               as={Fragment}
               enter="transition ease-out duration-100"
@@ -311,53 +305,58 @@ export default function App() {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute right-0 w-56 mt-1 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div className="p-1 bg-cyan-50">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        className={`${
-                          active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                        } group flex rounded-md items-center w-full px-2 py-2`}
-                      >
-                        {active ? (
-                          <EditActiveIcon
-                            className="w-5 h-5 mr-2"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <EditInactiveIcon
-                            className="w-5 h-5 mr-2"
-                            aria-hidden="true"
-                          />
-                        )}
-                        Edit
-                      </button>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        className={`${
-                          active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                        } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                      >
-                        {active ? (
-                          <DuplicateActiveIcon
-                            className="w-5 h-5 mr-2"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <DuplicateInactiveIcon
-                            className="w-5 h-5 mr-2"
-                            aria-hidden="true"
-                          />
-                        )}
-                        Duplicate
-                      </button>
-                    )}
-                  </Menu.Item>
-                </div>
+              <Menu.Items className="absolute right-0 z-10 w-56 mt-1 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      className={`${
+                        active ? 'bg-violet-500 text-white' : 'text-gray-900'
+                      } group flex rounded-md items-center w-full px-2 py-2`}
+                    >
+                      {active ? (
+                        <EditActiveIcon
+                          className="w-5 h-5 mr-2"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <EditInactiveIcon
+                          className="w-5 h-5 mr-2"
+                          aria-hidden="true"
+                        />
+                      )}
+                      Edit
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      className={`${
+                        active ? 'bg-violet-500 text-white' : 'text-gray-900'
+                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                    >
+                      {active ? (
+                        <DuplicateActiveIcon
+                          className="w-5 h-5 mr-2"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <DuplicateInactiveIcon
+                          className="w-5 h-5 mr-2"
+                          aria-hidden="true"
+                        />
+                      )}
+                      Duplicate
+                    </button>
+                  )}
+                </Menu.Item>
+                {user.role === 'ADMIN' && (
+                  <MenuItem
+                    caption={'Organinsaties'}
+                    href="/admin/organisations"
+                    icon="fas fa-user-cog"
+                  />
+                )}
                 <MenuItem
                   caption={'Profiel'}
                   href={'/profile'}
@@ -368,85 +367,24 @@ export default function App() {
                   href={'/settings'}
                   icon={'fas fa-cog'}
                 />
-                {/* <div className="px-1 py-1">
+                <form
+                  action="/_api/auth/logout"
+                  method="POST"
+                  className="m-1 px-2 py-1"
+                >
                   <Menu.Item>
                     {({ active }) => (
                       <button
-                        className={`${
-                          active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                        } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                        type="submit"
+                        className={`w-full px-2 py-1 ${
+                          active ? 'bg-red-400' : 'bg-cyan-500'
+                        } text-white text-center rounded-lg hover:bg-red-400 cursor-pointer`}
                       >
-                        {active ? (
-                          <ArchiveActiveIcon
-                            className="w-5 h-5 mr-2"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <ArchiveInactiveIcon
-                            className="w-5 h-5 mr-2"
-                            aria-hidden="true"
-                          />
-                        )}
-                        Archive
-                      </button>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        className={`${
-                          active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                        } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                      >
-                        {active ? (
-                          <MoveActiveIcon
-                            className="w-5 h-5 mr-2"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <MoveInactiveIcon
-                            className="w-5 h-5 mr-2"
-                            aria-hidden="true"
-                          />
-                        )}
-                        Move
-                      </button>
-                    )}
-                  </Menu.Item>
-                </div>
-                <div className="px-1 py-1">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        className={`${
-                          active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                        } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                      >
-                        {active ? (
-                          <DeleteActiveIcon
-                            className="w-5 h-5 mr-2 text-violet-400"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <DeleteInactiveIcon
-                            className="w-5 h-5 mr-2 text-violet-400"
-                            aria-hidden="true"
-                          />
-                        )}
-                        Delete
-                      </button>
-                    )}
-                  </Menu.Item>
-                </div> */}
-                <Menu.Item>
-                  <div className="m-1 px-2 py-1 bg-cyan-500 text-white text-center rounded-lg hover:bg-cyan-600 cursor-pointer">
-                    <form action="/_api/auth/logout" method="POST">
-                      <button type="submit" className="button">
                         Logout
                       </button>
-                    </form>
-                  </div>
-                </Menu.Item>
+                    )}
+                  </Menu.Item>
+                </form>
               </Menu.Items>
             </Transition>
           </Menu>

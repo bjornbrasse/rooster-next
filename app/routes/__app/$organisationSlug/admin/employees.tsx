@@ -12,7 +12,7 @@ import { db } from '~/utils/db.server';
 import UserTable from '~/components/tables/UserTable';
 import { useDialog } from '~/contexts/dialog';
 import UserForm from '~/components/forms/UserForm';
-import { findOrganisation } from '~/controllers/organisation';
+import { findOrganisation, getOrganisation } from '~/controllers/organisation';
 import { getOrganisationEmployees } from '~/controllers/user.server';
 
 export const meta: MetaFunction = () => {
@@ -29,25 +29,25 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({
   params,
 }): Promise<LoaderData> => {
-  const employees = await getOrganisationEmployees({
-    organisationSlug: params.organisationSlug,
-  });
+  const organisation: Promise<(Organisation & { employees: User[] }) | null> =
+    await getOrganisation({
+      where: { slugName: String(params.organisationSlug) },
+      include: { employees: true },
+    });
 
-  return { employees };
+  return { employees: organisation?.employees };
 };
 
 export default function EmployeesLayout() {
   const { employees } = useLoaderData<LoaderData>();
   const { openDialog, closeDialog } = useDialog();
 
-  const location = useLocation();
-
   const { organisationSlug } = useParams();
-  const { organisation } = useMatches().find(
-    (m) => m.pathname === `/${organisationSlug}`
-  )?.data as {
-    organisation: Organisation;
-  };
+  // const { organisation } = useMatches().find(
+  //   (m) => m.pathname === `/${organisationSlug}`
+  // )?.data as {
+  //   organisation: Organisation;
+  // };
 
   const addUserHandler = () => {
     openDialog(
