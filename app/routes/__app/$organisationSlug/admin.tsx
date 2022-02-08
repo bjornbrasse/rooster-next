@@ -46,25 +46,6 @@ export default function Organisation() {
 
   return (
     <div className="relative h-full flex flex-col">
-      <div
-        id="header"
-        className="px-4 py-1 flex items-center bg-gray-300 border-b border-purple-800"
-      >
-        <Link to="/admin/organisations">
-          <i className="fas fa-bars text-xl mr-2" />
-        </Link>
-        {organisation && (
-          <Link to={`/${organisation.slugName}/admin/employees`}>
-            <h2>{organisation?.name}</h2>
-          </Link>
-        )}
-        {department && (
-          <>
-            <i className="fas fa-chevron-right mx-2" />
-            <h2>{department.name}</h2>
-          </>
-        )}
-      </div>
       <div className="h-full flex border-b-4 border-purple-400">
         {!departmentSlug && (
           <div
