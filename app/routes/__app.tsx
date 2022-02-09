@@ -353,7 +353,7 @@ export default function App() {
                 {user.role === 'ADMIN' && (
                   <MenuItem
                     caption={'Organinsaties'}
-                    href="/admin/organisations"
+                    href="/organisations"
                     icon="fas fa-user-cog"
                   />
                 )}

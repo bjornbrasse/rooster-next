@@ -56,7 +56,7 @@ export default function OrganisationDepartments() {
                     className="hover:bg-blue-200 cursor-pointer"
                   >
                     <LinkedTableData
-                      href={`/${organisationSlug}/${department.slugName}`}
+                      href={`/${organisationSlug}/${department.slugName}/`}
                     >
                       {department.name}
                     </LinkedTableData>

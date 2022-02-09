@@ -35,10 +35,10 @@ export const loader: LoaderFunction = async ({
 export default function OrganisationLayout() {
   const { organisation } = useLoaderData<LoaderData>();
 
-  const { departmentSlug, employeeId } = useParams();
+  const { departmentSlug, organisationSlug } = useParams();
 
   const data = useMatches().find(
-    (m) => m.pathname === `/${organisation?.slugName}/${departmentSlug}`
+    (m) => m.pathname === `/${organisationSlug}/${departmentSlug}`
   )?.data as { department: Department };
 
   const department = data?.department;
