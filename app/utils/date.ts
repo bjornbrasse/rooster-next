@@ -13,4 +13,4 @@ export const MONTHS: { name: string; short: string }[] = [
   { name: 'december', short: 'dec' },
 ];
 
-export const WEEKDAYS = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
+export const WEEKDAYS = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];

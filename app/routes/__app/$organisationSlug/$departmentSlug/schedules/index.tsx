@@ -8,6 +8,7 @@ import {
   useParams,
 } from 'remix';
 import { redirect } from 'remix';
+import Container from '~/components/Container';
 import ScheduleForm from '~/components/forms/ScheduleForm';
 import { useDialog } from '~/contexts/dialog';
 import { getDepartment } from '~/controllers/department';
@@ -58,7 +59,7 @@ export default function Schedules() {
   }
 
   return (
-    <div className="h-full p-12 border-4 border-emerald-400">
+    <Container flex={'col'}>
       <h1>Roosters</h1>
 
       <div className="flex justify-between">
@@ -70,6 +71,6 @@ export default function Schedules() {
       {schedules.map((schedule) => (
         <ScheduleItem schedule={schedule} key={schedule.id} />
       ))}
-    </div>
+    </Container>
   );
 }

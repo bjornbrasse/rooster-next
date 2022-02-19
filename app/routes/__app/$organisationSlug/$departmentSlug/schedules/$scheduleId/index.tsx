@@ -1,6 +1,7 @@
 import { Schedule } from '@prisma/client';
 import { LoaderFunction, redirect } from 'remix';
 import { useLoaderData } from 'remix';
+import Container from '~/components/Container';
 import { getSchedule } from '~/controllers/schedule';
 
 type LoaderData = {
@@ -19,9 +20,9 @@ export default function Schedule() {
   const { schedule } = useLoaderData<LoaderData>();
 
   return (
-    <div className="h-full p-4">
+    <Container>
       <h1>Rooster</h1>
       <p>{schedule.name}</p>
-    </div>
+    </Container>
   );
 }

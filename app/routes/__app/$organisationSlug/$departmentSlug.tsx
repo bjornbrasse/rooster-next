@@ -67,7 +67,7 @@ export default function DepartmentLayout() {
   const schedule = data?.schedule;
 
   return (
-    <Container flex={'col'}>
+    <Container padding={false}>
       <div id="header" className="flex border-b border-primary">
         <div id="tabs" className="mt-4 px-2 flex items-end">
           {tabs.map((tab) => (

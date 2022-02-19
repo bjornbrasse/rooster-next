@@ -1,5 +1,6 @@
 import { Department } from '@prisma/client';
 import { useMatches, useParams } from 'remix';
+import Container from '~/components/Container';
 
 export default function Department() {
   const { departmentSlug, organisationSlug } = useParams();
@@ -11,8 +12,8 @@ export default function Department() {
   const department = data?.department;
 
   return (
-    <div>
+    <Container padding={true}>
       <h1>{department.name}</h1>
-    </div>
+    </Container>
   );
 }

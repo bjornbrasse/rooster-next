@@ -2,8 +2,8 @@ import * as React from 'react';
 
 const Container: React.FC<{ flex?: 'row' | 'col'; padding?: boolean }> = ({
   children,
-  flex,
-  padding = false,
+  flex = 'col',
+  padding = true,
 }) => {
   return (
     <div

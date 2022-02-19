@@ -55,7 +55,7 @@ export default function EmployeesLayout() {
       <UserForm
         onSaved={(user: User) => {
           closeDialog();
-          redirect(`/${organisationSlug}/admin/employees/${user.id}`);
+          redirect(`/${organisationSlug}/employees/${user.id}`);
         }}
         organisationId={organisation.id}
         redirectTo={`/${organisation.slugName}/admin/employees/%userId%`}
