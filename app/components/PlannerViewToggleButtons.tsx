@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useLocation, useSearchParams, useSubmit } from 'remix';
+import { useSearchParams } from 'remix';
 
 const Button: React.FC<{ isActive: boolean; onClick: () => void }> = ({
   children,
@@ -18,14 +18,18 @@ const Button: React.FC<{ isActive: boolean; onClick: () => void }> = ({
 
 export type View = 'day' | 'week' | 'month';
 
-export default function PlannerViewToggleButtons({ view }: { view: View }) {
-  const [searchParams] = useSearchParams();
-  const location = useLocation();
-  const submit = useSubmit();
+export default function PlannerViewToggleButtons() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const view = searchParams.get('v') as View;
 
   function setViewHandler(view: View) {
     searchParams.set('v', view);
-    submit(null, { action: `${location.pathname}?${searchParams}` });
+    console.log('zz', searchParams.toString());
+    setSearchParams(searchParams, { replace: true });
+    // console.log('zzz', searchParams.toString());
+    // searchParams.set('d', '2023-02-01');
+    // submit(null, { action: `${location.pathname}?${searchParams}` });
   }
 
   return (

@@ -46,11 +46,11 @@ export async function seedUsers({ db }: { db: PrismaClient }) {
         email,
         passwordHash,
         organisation: {
-          connect: { slug: user.organisationSlug },
+          connect: { slugName: user.organisationSlug },
         },
-        defaultDepartment: {
-          connect: { slug: defaultDepartmentSlug },
-        },
+        // defaultDepartment: {
+        //   connect: { slug: defaultDepartmentSlug },
+        // },
         // defaultTeam: {
         //   connect: { slug: defaultTeamSlug },
         // },
