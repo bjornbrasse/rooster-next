@@ -1,13 +1,17 @@
-import { Task } from '@prisma/client';
+import { Schedule, Task } from '@prisma/client';
 import * as React from 'react';
+import { Link } from 'remix';
+import { useSchedule } from '~/contexts/schedule';
 import useDate from '~/hooks/useDate';
 import { WEEKDAYS } from '~/utils/date';
 
-const PlannerWeekView: React.FC<{ date: Date; tasks: Task[] }> = ({
-  date,
-  tasks,
-}) => {
+const PlannerWeekView: React.FC<{
+  date: Date;
+  schedule: Schedule;
+  tasks: Task[];
+}> = ({ date, schedule, tasks }) => {
   const { getWeekDays } = useDate(date);
+  const { addToSelection } = useSchedule();
 
   const weekDays = getWeekDays();
 
@@ -18,7 +22,12 @@ const PlannerWeekView: React.FC<{ date: Date; tasks: Task[] }> = ({
       <table>
         <thead className="bg-gray-200">
           <tr>
-            <th>Taken</th>
+            <th className="flex">
+              <p>Taken</p>
+              <Link to={`/schedules/${schedule.id}`} className="btn btn-save">
+                <i className="fas fa-pencil-alt"></i>
+              </Link>
+            </th>
             {weekDays.map((day, index) => {
               const isCurrentDate = day.getDate() === date.getDate();
 
@@ -45,6 +54,9 @@ const PlannerWeekView: React.FC<{ date: Date; tasks: Task[] }> = ({
 
                 return (
                   <td
+                    onClick={() =>
+                      addToSelection({ date: day, task, user: 'test' })
+                    }
                     className={`px-2 border border-blue-200 ${
                       isCurrentDate ? 'bg-green-200' : null
                     }`}

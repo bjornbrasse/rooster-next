@@ -31,5 +31,6 @@ export const getSchedules = async ({
 export const getSchedule = async ({ scheduleId }: { scheduleId?: string }) => {
   return await db.schedule.findUnique({
     where: { id: scheduleId },
+    include: { tasks: { orderBy: [{ name: 'asc' }] } },
   });
 };

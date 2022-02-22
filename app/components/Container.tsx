@@ -7,7 +7,7 @@ const Container: React.FC<{ flex?: 'row' | 'col'; padding?: boolean }> = ({
 }) => {
   return (
     <div
-      className={`h-full ${padding ? 'p-8' : null} flex ${
+      className={`h-full w-full ${padding ? 'p-8' : null} flex ${
         flex === 'col' ? 'flex-col' : null
       }`}
     >

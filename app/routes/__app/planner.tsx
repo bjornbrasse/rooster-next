@@ -1,8 +1,9 @@
-import { Schedule } from '@prisma/client';
-import dayjs from 'dayjs';
 import * as React from 'react';
+import { Schedule, Task } from '@prisma/client';
+import dayjs from 'dayjs';
 import {
   Form,
+  Link,
   LoaderFunction,
   redirect,
   useLoaderData,
@@ -21,16 +22,17 @@ var customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
 
 type LoaderData = {
+  schedule: Schedule & { tasks: Task[] };
   schedules: Schedule[];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
 
-  // const schedule = await getSchedule({
-  //   scheduleId: url.searchParams.get('schedule') ?? '',
-  // });
-  // if (!schedule) return redirect('/');
+  const schedule = await getSchedule({
+    scheduleId: url.searchParams.get('schedule') ?? '',
+  });
+  if (!schedule) return redirect('/');
 
   // const dateParam = url.searchParams.get('d');
   // if (!dateParam || !dayjs(dateParam).isValid()) {
@@ -46,7 +48,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const schedules = await getSchedules({});
 
-  return { schedules };
+  return { schedule, schedules };
 };
 
 const Schedule: React.FC<{ date: Date; view: View }> = ({ date, view }) => {
@@ -54,7 +56,6 @@ const Schedule: React.FC<{ date: Date; view: View }> = ({ date, view }) => {
 
   return (
     <div>
-      <h3>Schedule</h3>
       <p>{date.toISOString()}</p>
       <p>{getFirstDayOfTheWeek(date).toISOString()}</p>
     </div>
@@ -62,7 +63,7 @@ const Schedule: React.FC<{ date: Date; view: View }> = ({ date, view }) => {
 };
 
 export default function Planner() {
-  const { schedules } = useLoaderData<LoaderData>();
+  const { schedule, schedules } = useLoaderData<LoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const view = (searchParams.get('v') ?? 'week') as View;
@@ -87,7 +88,7 @@ export default function Planner() {
 
   return (
     <Container>
-      <h1>Planner</h1>
+      <h1>{`Rooster - ${schedule.name}`}</h1>
       <Form>
         <select name="cars">
           {schedules.map((schedule) => (
@@ -136,15 +137,8 @@ export default function Planner() {
       {view === 'week' ? (
         <PlannerWeekView
           date={date}
-          tasks={[
-            {
-              id: '123',
-              name: 'Test',
-              createdAt: new Date('2021-01-02'),
-              updatedAt: new Date('2021-01-03'),
-              scheduleId: '123',
-            },
-          ]}
+          schedule={schedule}
+          tasks={schedule.tasks}
         />
       ) : (
         <Schedule date={new Date(date)} view={'day'} />

@@ -9,6 +9,7 @@ import {
 import type { MetaFunction } from 'remix';
 import styles from './tailwind.css';
 import { DialogProvider } from '~/contexts/dialog';
+import { ScheduleProvider } from '~/contexts/schedule';
 
 export function links() {
   return [{ rel: 'stylesheet', href: styles }];
@@ -35,9 +36,11 @@ export default function App() {
         <Links />
       </head>
       <body className="h-screen">
-        <DialogProvider>
-          <Outlet />
-        </DialogProvider>
+        <ScheduleProvider>
+          <DialogProvider>
+            <Outlet />
+          </DialogProvider>
+        </ScheduleProvider>
         <div id="dialog" />
         <ScrollRestoration />
         <Scripts />

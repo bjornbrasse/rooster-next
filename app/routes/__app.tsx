@@ -1,8 +1,10 @@
 import { Menu, Transition } from '@headlessui/react';
 import { Organisation, User } from '@prisma/client';
+import dayjs from 'dayjs';
 import { Fragment } from 'react';
 import { LoaderFunction, NavLink, useLoaderData } from 'remix';
 import { Link, Outlet, useLocation } from 'remix';
+import { useSchedule } from '~/contexts/schedule';
 import { getUser } from '~/controllers/auth.server';
 
 type LoaderData = {
@@ -19,6 +21,8 @@ export const loader: LoaderFunction = async ({
 
 export default function App() {
   const data = useLoaderData<LoaderData>();
+  const { selection, setShowSelectionDrawer, showSelectionDrawer } =
+    useSchedule();
 
   const user = data?.user;
 
@@ -286,128 +290,156 @@ export default function App() {
         >
           Rooster
         </Link>
-
-        {user ? (
-          <Menu as="div" className="relative inline-block text-left">
-            <Menu.Button className="inline-flex w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-              {`${user.firstName} ${user.lastName}`}
-              <i
-                className="fas fa-chevron-down w-5 h-5 ml-2 -mr-1 text-violet-200 hover:text-violet-100"
-                aria-hidden="true"
-              />
-            </Menu.Button>
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Items className="absolute right-0 z-10 w-56 mt-1 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      className={`${
-                        active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                      } group flex rounded-md items-center w-full px-2 py-2`}
-                    >
-                      {active ? (
-                        <EditActiveIcon
-                          className="w-5 h-5 mr-2"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <EditInactiveIcon
-                          className="w-5 h-5 mr-2"
-                          aria-hidden="true"
-                        />
-                      )}
-                      Edit
-                    </button>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      className={`${
-                        active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                      } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                    >
-                      {active ? (
-                        <DuplicateActiveIcon
-                          className="w-5 h-5 mr-2"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <DuplicateInactiveIcon
-                          className="w-5 h-5 mr-2"
-                          aria-hidden="true"
-                        />
-                      )}
-                      Duplicate
-                    </button>
-                  )}
-                </Menu.Item>
-                {user.role === 'ADMIN' && (
-                  <MenuItem
-                    caption={'Organinsaties'}
-                    href="/organisations"
-                    icon="fas fa-user-cog"
-                  />
-                )}
-                <MenuItem
-                  caption={'Profiel'}
-                  href={'/profile'}
-                  icon={'fas fa-user'}
+        <div className="flex items-center">
+          <button
+            onClick={(prev) => setShowSelectionDrawer(!!prev)}
+            className="w-8 h-8 mr-2 bg-gray-300 rounded-full"
+          >
+            <i className="fas fa-calendar-plus"></i>
+          </button>
+          {user ? (
+            <Menu as="div" className="relative inline-block text-left">
+              <Menu.Button className="inline-flex w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+                {`${user.firstName} ${user.lastName}`}
+                <i
+                  className="fas fa-chevron-down w-5 h-5 ml-2 -mr-1 text-violet-200 hover:text-violet-100"
+                  aria-hidden="true"
                 />
-                <MenuItem
-                  caption={'Instellingen'}
-                  href={'/settings'}
-                  icon={'fas fa-cog'}
-                />
-                <form
-                  action="/_api/auth/logout"
-                  method="POST"
-                  className="m-1 px-2 py-1"
-                >
+              </Menu.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 z-10 w-56 mt-1 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <Menu.Item>
                     {({ active }) => (
                       <button
-                        type="submit"
-                        className={`w-full px-2 py-1 ${
-                          active ? 'bg-red-400' : 'bg-cyan-500'
-                        } text-white text-center rounded-lg hover:bg-red-400 cursor-pointer`}
+                        className={`${
+                          active ? 'bg-violet-500 text-white' : 'text-gray-900'
+                        } group flex rounded-md items-center w-full px-2 py-2`}
                       >
-                        Logout
+                        {active ? (
+                          <EditActiveIcon
+                            className="w-5 h-5 mr-2"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <EditInactiveIcon
+                            className="w-5 h-5 mr-2"
+                            aria-hidden="true"
+                          />
+                        )}
+                        Edit
                       </button>
                     )}
                   </Menu.Item>
-                </form>
-              </Menu.Items>
-            </Transition>
-          </Menu>
-        ) : (
-          <>
-            <NavLink
-              to="/auth/login"
-              style={({ isActive }) => ({
-                display: 'block',
-                margin: '1rem 0',
-                color: isActive ? 'red' : '',
-              })}
-              className={({ isActive }) =>
-                `px-2 py-1 ${isActive ? 'bg-accent' : 'text-white'} rounded-lg`
-              }
-            >
-              Login
-            </NavLink>
-          </>
-        )}
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? 'bg-violet-500 text-white' : 'text-gray-900'
+                        } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                      >
+                        {active ? (
+                          <DuplicateActiveIcon
+                            className="w-5 h-5 mr-2"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <DuplicateInactiveIcon
+                            className="w-5 h-5 mr-2"
+                            aria-hidden="true"
+                          />
+                        )}
+                        Duplicate
+                      </button>
+                    )}
+                  </Menu.Item>
+                  {user.role === 'ADMIN' && (
+                    <MenuItem
+                      caption={'Organinsaties'}
+                      href="/organisations"
+                      icon="fas fa-user-cog"
+                    />
+                  )}
+                  <MenuItem
+                    caption={'Profiel'}
+                    href={'/profile'}
+                    icon={'fas fa-user'}
+                  />
+                  <MenuItem
+                    caption={'Instellingen'}
+                    href={'/settings'}
+                    icon={'fas fa-cog'}
+                  />
+                  <form
+                    action="/_api/auth/logout"
+                    method="POST"
+                    className="m-1 px-2 py-1"
+                  >
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          type="submit"
+                          className={`w-full px-2 py-1 ${
+                            active ? 'bg-red-400' : 'bg-cyan-500'
+                          } text-white text-center rounded-lg hover:bg-red-400 cursor-pointer`}
+                        >
+                          Logout
+                        </button>
+                      )}
+                    </Menu.Item>
+                  </form>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          ) : (
+            <>
+              <NavLink
+                to="/auth/login"
+                style={({ isActive }) => ({
+                  display: 'block',
+                  margin: '1rem 0',
+                  color: isActive ? 'red' : '',
+                })}
+                className={({ isActive }) =>
+                  `px-2 py-1 ${
+                    isActive ? 'bg-accent' : 'text-white'
+                  } rounded-lg`
+                }
+              >
+                Login
+              </NavLink>
+            </>
+          )}
+        </div>
       </div>
-      <div className="flex-grow bg-gray-100">
+      <div className="flex-grow flex justify-between bg-gray-100">
         <Outlet />
+        {showSelectionDrawer && (
+          <div className="w-1/4 p-2 border-2 border-green-500">
+            <button onClick={() => setShowSelectionDrawer(false)}>
+              <i className="fas fa-times"></i>
+            </button>
+            {selection.map(({ date, task }) => (
+              <div className="border border-blue-700">
+                <p>{dayjs(date).format("D-MM-'YY")}</p>
+                <p>{task.name}</p>
+              </div>
+            ))}
+            <div className="border-2 border-slate-400">
+              {selection.reduce((acc: string[], { sel }) => {
+                if (sel.date.toString() in acc) return acc;
+                return acc.push(sel.date.toString());
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
