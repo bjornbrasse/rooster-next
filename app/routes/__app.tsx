@@ -422,7 +422,7 @@ export default function App() {
       <div className="flex-grow flex justify-between bg-gray-100">
         <Outlet />
         {showSelectionDrawer && (
-          <div className="w-1/5 md:w-1/4 lg:w-[350px] shrink-0 p-2 border-2 border-green-900">
+          <div className="w-1/3 shrink-0 p-2 border-2 border-green-900">
             <Editor />
           </div>
         )}

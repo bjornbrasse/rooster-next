@@ -1,10 +1,21 @@
 import dayjs from 'dayjs';
 import * as React from 'react';
-import { useSchedule } from '~/contexts/schedule';
+import { Booking, useSchedule } from '~/contexts/schedule';
+import { MONTHS, WEEKDAYS } from '~/utils/date';
+import EditorItem from './EditorItem';
 
 const Editor = () => {
   const { clearSelection, deleteItem, selection, setShowSelectionDrawer } =
     useSchedule();
+
+  const sel = React.useMemo(() => {
+    return selection
+      .sort((a, b) => (a.date < b.date ? -1 : 0))
+      .reduce(
+        (map, e) => map.set(e.date, [...(map.get(e.date) || []), e]),
+        new Map<Date, Booking[]>()
+      );
+  }, selection);
 
   return (
     <>
@@ -14,26 +25,25 @@ const Editor = () => {
       <button onClick={() => clearSelection()} className="btn btn-delete">
         <i className="fas fa-times"></i>
       </button>
-      {selection.map(({ id, date, task }) => (
-        <div className="border border-blue-700" key={id}>
-          <p>{dayjs(date).format("D-MM-'YY")}</p>
-          <p>{task.name}</p>
-          <button onClick={() => clearSelection()} className="btn btn-success">
-            <i className="fas fa-map-pin"></i>
-          </button>
-          <button
-            onClick={() => deleteItem({ bookingId: id })}
-            className="btn btn-delete"
-          >
-            <i className="fas fa-times"></i>
-          </button>
-        </div>
-      ))}
       <div className="border-2 border-slate-400">
-        {/* {selection.reduce((acc: string[], { sel }) => {
-                if (sel.date.toString() in acc) return acc;
-                return acc.push(sel.date.toString());
-              })} */}
+        {Array.from(sel).map(([date, bookings], index) => (
+          <>
+            <p className="bg-gray-200" key={index}>{`${
+              WEEKDAYS[dayjs(date).day()].name
+            } ${dayjs(date).date()} ${MONTHS[dayjs(date).month()].name} ${dayjs(
+              date
+            ).year()}`}</p>
+            {bookings
+              .sort((a, b) => (a.task.name < b.task.name ? -1 : 0))
+              .map((booking) => (
+                <EditorItem
+                  booking={booking}
+                  onDelete={deleteItem}
+                  key={booking.id}
+                />
+              ))}
+          </>
+        ))}
       </div>
     </>
   );

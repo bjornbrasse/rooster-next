@@ -13,4 +13,12 @@ export const MONTHS: { name: string; short: string }[] = [
   { name: 'december', short: 'dec' },
 ];
 
-export const WEEKDAYS = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
+export const WEEKDAYS: { name: string; short: string }[] = [
+  { name: 'zondag', short: 'zo' },
+  { name: 'maandag', short: 'ma' },
+  { name: 'dinsdag', short: 'di' },
+  { name: 'woensdag', short: 'wo' },
+  { name: 'donderdag', short: 'do' },
+  { name: 'vrijdag', short: 'vr' },
+  { name: 'zaterdag', short: 'za' },
+];

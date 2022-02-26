@@ -38,7 +38,7 @@ const PlannerWeekView: React.FC<{
                   }`}
                   key={index}
                 >
-                  <p className="font-normal">{WEEKDAYS[day.getDay()]}</p>
+                  <p className="font-normal">{WEEKDAYS[day.getDay()].short}</p>
                   <p>{day.getDate()}</p>
                 </th>
               );
@@ -62,7 +62,9 @@ const PlannerWeekView: React.FC<{
                     }`}
                     key={index}
                   >
-                    <p className="font-normal">{WEEKDAYS[day.getDay()]}</p>
+                    <p className="font-normal">
+                      {WEEKDAYS[day.getDay()].short}
+                    </p>
                     <p>{day.getDate()}</p>
                   </td>
                 );

@@ -3,8 +3,8 @@ import * as React from 'react';
 import useLocalStorage from '~/hooks/useLocalStorage';
 import { nanoid } from 'nanoid';
 
-type Booking = {
-  id: string;
+export type Booking = {
+  id?: string;
   date: Date;
   task: Task;
   user: string;

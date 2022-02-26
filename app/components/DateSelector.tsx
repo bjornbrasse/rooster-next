@@ -105,7 +105,7 @@ const DateSelector: React.FC<{ date: Dayjs }> = ({ children, date }) => {
       </div>
       <div className="mt-2 grid grid-cols-7 border-b border-gray-400">
         {WEEKDAYS.map((d) => (
-          <p className="text-center" key={d}>
+          <p className="text-center" key={d.short}>
             {d}
           </p>
         ))}

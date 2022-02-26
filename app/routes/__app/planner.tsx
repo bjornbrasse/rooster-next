@@ -108,7 +108,7 @@ export default function Planner() {
           >
             <i className="fas fa-chevron-left"></i>
           </button>
-          <p className="mr-2">{WEEKDAYS[date.getDay()]}</p>
+          <p className="mr-2">{WEEKDAYS[date.getDay()].short}</p>
           <input
             type="text"
             defaultValue={dayjs(date).format('DD-MM-YYYY')}
