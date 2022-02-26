@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Schedule, Task } from '@prisma/client';
+import { Booking, Schedule, Task, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import {
   Form,
@@ -17,17 +17,23 @@ import PlannerViewToggleButtons, {
 import { getSchedule, getSchedules } from '~/controllers/schedule';
 import useDate from '~/hooks/useDate';
 import { WEEKDAYS } from '~/utils/date';
+import { getBookings } from '~/controllers/booking.server';
 
 var customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
 
 type LoaderData = {
+  bookings: (Booking & { user: User })[];
   schedule: Schedule & { tasks: Task[] };
   schedules: Schedule[];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({
+  request,
+}): Promise<LoaderData | Response> => {
   const url = new URL(request.url);
+
+  const bookings = await getBookings();
 
   const schedule = await getSchedule({
     scheduleId: url.searchParams.get('schedule') ?? '',
@@ -48,7 +54,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const schedules = await getSchedules({});
 
-  return { schedule, schedules };
+  return { bookings, schedule, schedules };
 };
 
 const Schedule: React.FC<{ date: Date; view: View }> = ({ date, view }) => {
@@ -63,7 +69,7 @@ const Schedule: React.FC<{ date: Date; view: View }> = ({ date, view }) => {
 };
 
 export default function Planner() {
-  const { schedule, schedules } = useLoaderData<LoaderData>();
+  const { bookings, schedule, schedules } = useLoaderData<LoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const view = (searchParams.get('v') ?? 'week') as View;
@@ -136,6 +142,7 @@ export default function Planner() {
       </Form>
       {view === 'week' ? (
         <PlannerWeekView
+          bookings={bookings}
           date={date}
           schedule={schedule}
           tasks={schedule.tasks}

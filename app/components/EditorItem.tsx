@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as React from 'react';
+import { useFetcher } from 'remix';
 import { Booking } from '~/contexts/schedule';
-import task from '~/routes/_api/task';
 
 interface IProps {
   booking: Booking;
@@ -9,14 +9,25 @@ interface IProps {
 }
 
 const EditorItem: React.FC<IProps> = ({ booking, onDelete: deleteHandler }) => {
+  const fetcher = useFetcher();
+
   return (
-    <div className="border border-blue-700" key={booking.id}>
+    <fetcher.Form
+      method="post"
+      action="/_api/booking"
+      className="border border-blue-700"
+    >
+      <input type="hidden" name="id" value={booking.id} />
+      <input
+        type="hidden"
+        name="date"
+        value={new Date(booking.date).toISOString()}
+      />
+      <input type="hidden" name="taskId" value={booking.task.id} />
+
       {/* <p>{dayjs(booking.date).format("D-MM-'YY")}</p> */}
       <p>{booking.task.name}</p>
-      <button
-        onClick={() => console.log('nog maken')}
-        className="btn btn-success"
-      >
+      <button type="submit" className="btn btn-success">
         <i className="fas fa-map-pin"></i>
       </button>
       <button
@@ -25,7 +36,7 @@ const EditorItem: React.FC<IProps> = ({ booking, onDelete: deleteHandler }) => {
       >
         <i className="fas fa-times"></i>
       </button>
-    </div>
+    </fetcher.Form>
   );
 };
 

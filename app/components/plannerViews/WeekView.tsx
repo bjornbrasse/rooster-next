@@ -1,15 +1,24 @@
-import { Schedule, Task } from '@prisma/client';
+import { Booking, Schedule, Task, User } from '@prisma/client';
+import dayjs from 'dayjs';
 import * as React from 'react';
 import { Link } from 'remix';
 import { useSchedule } from '~/contexts/schedule';
 import useDate from '~/hooks/useDate';
 import { WEEKDAYS } from '~/utils/date';
 
-const PlannerWeekView: React.FC<{
+interface IProps {
+  bookings: (Booking & { user: User })[];
   date: Date;
   schedule: Schedule;
   tasks: Task[];
-}> = ({ date, schedule, tasks }) => {
+}
+
+const PlannerWeekView: React.FC<IProps> = ({
+  bookings,
+  date,
+  schedule,
+  tasks,
+}) => {
   const { getWeekDays } = useDate(date);
   const { addToSelection } = useSchedule();
 
@@ -63,9 +72,14 @@ const PlannerWeekView: React.FC<{
                     key={index}
                   >
                     <p className="font-normal">
-                      {WEEKDAYS[day.getDay()].short}
+                      {
+                        bookings.filter(
+                          (booking) =>
+                            dayjs(booking.date).date() === dayjs(day).date() &&
+                            booking.taskId === task.id
+                        )[0]?.user.firstName
+                      }
                     </p>
-                    <p>{day.getDate()}</p>
                   </td>
                 );
               })}

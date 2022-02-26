@@ -15,7 +15,7 @@ const Editor = () => {
         (map, e) => map.set(e.date, [...(map.get(e.date) || []), e]),
         new Map<Date, Booking[]>()
       );
-  }, selection);
+  }, [selection]);
 
   return (
     <>
@@ -27,7 +27,7 @@ const Editor = () => {
       </button>
       <div className="border-2 border-slate-400">
         {Array.from(sel).map(([date, bookings], index) => (
-          <>
+          <div key={index}>
             <p className="bg-gray-200" key={index}>{`${
               WEEKDAYS[dayjs(date).day()].name
             } ${dayjs(date).date()} ${MONTHS[dayjs(date).month()].name} ${dayjs(
@@ -42,7 +42,7 @@ const Editor = () => {
                   key={booking.id}
                 />
               ))}
-          </>
+          </div>
         ))}
       </div>
     </>
