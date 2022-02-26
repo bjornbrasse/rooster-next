@@ -50,7 +50,7 @@ export default function Organisation() {
         {!departmentSlug && (
           <div
             id="menu"
-            className="w-1/4 lg:w-1/5 border-r-2 border-purple-800"
+            className="w-1/5 md:w-1/4 border-r-2 border-purple-800"
           >
             <div className="py-4 pr-4 flex flex-col">
               <NavLink

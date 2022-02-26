@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { Fragment } from 'react';
 import { LoaderFunction, NavLink, useLoaderData } from 'remix';
 import { Link, Outlet, useLocation } from 'remix';
+import Editor from '~/components/Editor';
 import { useSchedule } from '~/contexts/schedule';
 import { getUser } from '~/controllers/auth.server';
 
@@ -21,8 +22,7 @@ export const loader: LoaderFunction = async ({
 
 export default function App() {
   const data = useLoaderData<LoaderData>();
-  const { selection, setShowSelectionDrawer, showSelectionDrawer } =
-    useSchedule();
+  const { setShowSelectionDrawer, showSelectionDrawer } = useSchedule();
 
   const user = data?.user;
 
@@ -422,22 +422,8 @@ export default function App() {
       <div className="flex-grow flex justify-between bg-gray-100">
         <Outlet />
         {showSelectionDrawer && (
-          <div className="w-1/4 p-2 border-2 border-green-500">
-            <button onClick={() => setShowSelectionDrawer(false)}>
-              <i className="fas fa-times"></i>
-            </button>
-            {selection.map(({ date, task }) => (
-              <div className="border border-blue-700">
-                <p>{dayjs(date).format("D-MM-'YY")}</p>
-                <p>{task.name}</p>
-              </div>
-            ))}
-            <div className="border-2 border-slate-400">
-              {selection.reduce((acc: string[], { sel }) => {
-                if (sel.date.toString() in acc) return acc;
-                return acc.push(sel.date.toString());
-              })}
-            </div>
+          <div className="w-1/5 md:w-1/4 lg:w-[350px] shrink-0 p-2 border-2 border-green-900">
+            <Editor />
           </div>
         )}
       </div>

@@ -1,8 +1,10 @@
 import { Task } from '@prisma/client';
 import * as React from 'react';
 import useLocalStorage from '~/hooks/useLocalStorage';
+import { nanoid } from 'nanoid';
 
 type Booking = {
+  id: string;
   date: Date;
   task: Task;
   user: string;
@@ -11,6 +13,7 @@ type Booking = {
 type TScheduleContext = {
   addToSelection: ({ date, task, user }: Booking) => void;
   clearSelection: () => void;
+  deleteItem: ({ bookingId }: { bookingId: string }) => void;
   selection: Booking[];
   setShowSelectionDrawer: React.Dispatch<React.SetStateAction<boolean>>;
   showSelectionDrawer: boolean;
@@ -19,6 +22,7 @@ type TScheduleContext = {
 const ScheduleContext = React.createContext<TScheduleContext>({
   addToSelection() {},
   clearSelection() {},
+  deleteItem() {},
   selection: [],
   setShowSelectionDrawer() {},
   showSelectionDrawer: false,
@@ -40,11 +44,18 @@ export const ScheduleProvider = ({
   );
 
   const addToSelection = ({ date, task, user }: Booking) => {
-    setSelection((prev) => [{ date, task, user }, ...prev]);
+    setSelection((prev) => [{ id: nanoid(), date, task, user }, ...prev]);
   };
 
   const clearSelection = () => {
     setSelection([]);
+  };
+
+  const deleteItem = ({ bookingId }: { bookingId: string }) => {
+    const newSelection = selection.filter(
+      (booking) => booking.id !== bookingId
+    );
+    setSelection(newSelection);
   };
 
   return (
@@ -52,6 +63,7 @@ export const ScheduleProvider = ({
       value={{
         addToSelection,
         clearSelection,
+        deleteItem,
         selection,
         setShowSelectionDrawer,
         showSelectionDrawer,

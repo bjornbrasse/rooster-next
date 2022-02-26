@@ -19,10 +19,16 @@
   }
 
   .btn {
-    @apply px-2 py-1;
+    @apply px-2 py-1 rounded-lg;
+  }
+  .btn-delete {
+    @apply bg-red-500 text-white;
   }
   .btn-save {
-    @apply bg-blue-700 text-white rounded-lg;
+    @apply bg-blue-700 text-white;
+  }
+  .btn-success {
+    @apply bg-emerald-500 text-white;
   }
 
   .arrow-right {
