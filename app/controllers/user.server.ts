@@ -9,6 +9,7 @@ export const createUser = async ({
   userData: {
     email: string;
     firstName: string;
+    initials: string;
     lastName: string;
     organisationId: string;
     // password: string;
@@ -28,11 +29,13 @@ export const createUser = async ({
 export async function register({
   firstName,
   lastName,
+  initials,
   email,
   password,
 }: {
   firstName: string;
   lastName: string;
+  initials: string;
   email: string;
   password: string;
 }) {
@@ -46,6 +49,7 @@ export async function register({
     data: {
       firstName,
       lastName,
+      initials,
       email,
       organisation: { connect: { slugName: organisationSlug } },
       passwordHash,

@@ -13,12 +13,7 @@ interface IProps {
   tasks: Task[];
 }
 
-const PlannerWeekView: React.FC<IProps> = ({
-  bookings,
-  date,
-  schedule,
-  tasks,
-}) => {
+const WeekView: React.FC<IProps> = ({ bookings, date, schedule, tasks }) => {
   const { getWeekDays } = useDate(date);
   const { addToSelection } = useSchedule();
 
@@ -27,7 +22,6 @@ const PlannerWeekView: React.FC<IProps> = ({
   return (
     <div>
       <h2>Week</h2>
-      <p>{date.toISOString()}</p>
       <table>
         <thead className="bg-gray-200">
           <tr>
@@ -76,8 +70,8 @@ const PlannerWeekView: React.FC<IProps> = ({
                     }`}
                     key={index}
                   >
-                    {bks.map((booking) => (
-                      <p className="font-normal hover:bg-red-100">
+                    {bks.map((booking, index) => (
+                      <p className="font-normal hover:bg-red-100" key={index}>
                         {booking.user.initials}
                       </p>
                     ))}
@@ -92,4 +86,4 @@ const PlannerWeekView: React.FC<IProps> = ({
   );
 };
 
-export default PlannerWeekView;
+export default WeekView;

@@ -42,7 +42,7 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
                       passwordHash,
                       ...user
                     }) => ({
-                      employee: {
+                      user: {
                         create: {
                           firstName,
                           lastName,

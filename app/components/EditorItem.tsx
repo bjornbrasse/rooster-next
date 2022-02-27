@@ -17,7 +17,11 @@ const EditorItem: React.FC<IProps> = ({ moment, onDelete: deleteHandler }) => {
       action="/_api/booking"
       className="border border-blue-700"
     >
-      <input type="hidden" name="id" value={moment.date.toISOString()} />
+      <input
+        type="hidden"
+        name="id"
+        value={new Date(moment.date).toISOString()}
+      />
       <input
         type="hidden"
         name="date"

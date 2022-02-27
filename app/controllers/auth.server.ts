@@ -142,7 +142,7 @@ export async function requireUser(
   if (!user) throw redirect(options?.redirectTo ?? '/');
 
   if (options.isAdmin) {
-    if (user.email !== 'b.brasse@etz.nl') throw new Error('Not admin');
+    if (user.role !== 'ADMIN') throw new Error('Not admin');
   }
 
   return user;

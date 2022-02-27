@@ -23,11 +23,13 @@ export const loader: LoaderFunction = async ({
 }): Promise<LoaderData> => {
   const user = await requireUser(request);
 
+  console.log('gebruikers gevonden 2', user);
+
   const organisation = await db.organisation.findUnique({
     where: { slugName: params.organisationSlug as string },
   });
 
-  if (!organisation) redirect('/');
+  // if (!organisation) redirect('/');
 
   return { organisation, user };
 };

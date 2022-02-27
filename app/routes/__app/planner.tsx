@@ -19,6 +19,8 @@ import useDate from '~/hooks/useDate';
 import { WEEKDAYS } from '~/utils/date';
 import { getBookings } from '~/controllers/booking.server';
 import { requireUser } from '~/controllers/auth.server';
+import { useSchedule } from '~/hooks/useSchedule';
+import Editor from '~/components/Editor';
 
 var customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
@@ -64,6 +66,7 @@ export const loader: LoaderFunction = async ({
 
 const Schedule: React.FC<{ date: Date; view: View }> = ({ date, view }) => {
   const { getFirstDayOfTheWeek } = useDate(date);
+  const { setShowSelectionDrawer, showSelectionDrawer } = useSchedule();
 
   return (
     <div>
@@ -76,6 +79,7 @@ const Schedule: React.FC<{ date: Date; view: View }> = ({ date, view }) => {
 export default function Planner() {
   const { bookings, schedule, schedules } = useLoaderData<LoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { showSelectionDrawer } = useSchedule();
 
   const view = (searchParams.get('v') ?? 'week') as View;
   const date = new Date(searchParams.get('d') ?? new Date());
@@ -98,63 +102,72 @@ export default function Planner() {
   };
 
   return (
-    <Container>
-      <h1>{`Rooster - ${schedule.name}`}</h1>
-      <Form>
-        <select name="cars">
-          {schedules.map((schedule) => (
-            <option value={schedule.id} key={schedule.id}>
-              {schedule.name}
-            </option>
-          ))}
-        </select>
-        {/* <PlannerViewToggleButtons view={view} /> */}
-        <PlannerViewToggleButtons />
-        <div className="mb-2 flex items-center">
-          <button
-            onClick={() =>
-              goToDateHandler(dayjs(date).subtract(7, 'days').toDate())
-            }
-            className="btn btn-save"
-          >
-            <i className="fas fa-chevron-left"></i>
-          </button>
-          <p className="mr-2">{WEEKDAYS[date.getDay()].short}</p>
+    <div className="w-full flex">
+      <Container>
+        <h1>{`Rooster - ${schedule.name}`}</h1>
+        <Form>
+          <select name="cars">
+            {schedules.map((schedule) => (
+              <option value={schedule.id} key={schedule.id}>
+                {schedule.name}
+              </option>
+            ))}
+          </select>
+          {/* <PlannerViewToggleButtons view={view} /> */}
+          <PlannerViewToggleButtons />
+          <div className="mb-2 flex items-center">
+            <button
+              onClick={() =>
+                goToDateHandler(dayjs(date).subtract(7, 'days').toDate())
+              }
+              className="btn btn-save"
+            >
+              <i className="fas fa-chevron-left"></i>
+            </button>
+            <p className="mr-2">{WEEKDAYS[date.getDay()].short}</p>
+            <input
+              type="text"
+              defaultValue={dayjs(date).format('DD-MM-YYYY')}
+              onChange={(e) => onDateChangeHandler(e.target.value)}
+            />
+            <button
+              onClick={() =>
+                goToDateHandler(dayjs(date).add(7, 'days').toDate())
+              }
+              className="btn btn-save"
+            >
+              <i className="fas fa-chevron-right"></i>
+            </button>
+          </div>
           <input
-            type="text"
-            defaultValue={dayjs(date).format('DD-MM-YYYY')}
-            onChange={(e) => onDateChangeHandler(e.target.value)}
+            // value={searchParams.get('d') || ''}
+            value={searchParams.toString() || ''}
+            onChange={(event) => {
+              let filter = event.target.value;
+              // if (filter) {
+              setSearchParams({ filter });
+              // } else {
+              //   setSearchParams({});
+              // }
+            }}
           />
-          <button
-            onClick={() => goToDateHandler(dayjs(date).add(7, 'days').toDate())}
-            className="btn btn-save"
-          >
-            <i className="fas fa-chevron-right"></i>
-          </button>
+        </Form>
+        {view === 'week' ? (
+          <PlannerWeekView
+            bookings={bookings}
+            date={date}
+            schedule={schedule}
+            tasks={schedule.tasks}
+          />
+        ) : (
+          <Schedule date={new Date(date)} view={'day'} />
+        )}
+      </Container>
+      {showSelectionDrawer && (
+        <div className="w-1/3 lg:w-1/4 shrink-0 p-2 border-2 border-green-900">
+          <Editor />
         </div>
-        <input
-          // value={searchParams.get('d') || ''}
-          value={searchParams.toString() || ''}
-          onChange={(event) => {
-            let filter = event.target.value;
-            // if (filter) {
-            setSearchParams({ filter });
-            // } else {
-            //   setSearchParams({});
-            // }
-          }}
-        />
-      </Form>
-      {view === 'week' ? (
-        <PlannerWeekView
-          bookings={bookings}
-          date={date}
-          schedule={schedule}
-          tasks={schedule.tasks}
-        />
-      ) : (
-        <Schedule date={new Date(date)} view={'day'} />
       )}
-    </Container>
+    </div>
   );
 }

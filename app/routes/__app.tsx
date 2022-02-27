@@ -1,10 +1,8 @@
 import { Menu, Transition } from '@headlessui/react';
 import { Organisation, User } from '@prisma/client';
-import dayjs from 'dayjs';
 import { Fragment } from 'react';
 import { LoaderFunction, NavLink, useLoaderData } from 'remix';
-import { Link, Outlet, useLocation } from 'remix';
-import Editor from '~/components/Editor';
+import { Link, Outlet } from 'remix';
 import { useSchedule } from '~/hooks/useSchedule';
 import { getUser } from '~/controllers/auth.server';
 
@@ -21,9 +19,9 @@ export const loader: LoaderFunction = async ({
 };
 
 export default function App() {
-  const data = useLoaderData<LoaderData>();
-  const { setShowSelectionDrawer, showSelectionDrawer } = useSchedule();
+  const { setShowSelectionDrawer } = useSchedule();
 
+  const data = useLoaderData<LoaderData>();
   const user = data?.user;
 
   function EditInactiveIcon(props: any) {
@@ -421,11 +419,6 @@ export default function App() {
       </div>
       <div className="flex-grow flex justify-between bg-gray-100">
         <Outlet />
-        {showSelectionDrawer && (
-          <div className="w-1/3 shrink-0 p-2 border-2 border-green-900">
-            <Editor />
-          </div>
-        )}
       </div>
     </div>
   );

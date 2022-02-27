@@ -44,7 +44,9 @@ const Editor = () => {
                 <EditorItem
                   moment={moment}
                   onDelete={removeFromSelection}
-                  key={`${moment.date.toISOString()}-${moment.task.id}`}
+                  key={`${new Date(moment.date).toISOString()}-${
+                    moment.task.id
+                  }`}
                 />
               ))}
           </div>
