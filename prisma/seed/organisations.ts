@@ -1,4 +1,11 @@
-import { Department, Organisation, PrismaClient, User } from '@prisma/client';
+import {
+  Department,
+  Organisation,
+  PrismaClient,
+  Schedule,
+  Task,
+  User,
+} from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
 
@@ -30,6 +37,7 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
                     ({
                       firstName,
                       lastName,
+                      initials,
                       email,
                       passwordHash,
                       ...user
@@ -38,6 +46,7 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
                         create: {
                           firstName,
                           lastName,
+                          initials,
                           email,
                           passwordHash,
                           role: user?.role,
@@ -46,6 +55,16 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
                       },
                     })
                   ),
+                },
+                schedules: {
+                  create: department.schedules?.map(({ name, tasks }) => ({
+                    name,
+                    tasks: {
+                      create: tasks.map(({ name }) => ({
+                        name,
+                      })),
+                    },
+                  })),
                 },
               };
             }
@@ -61,9 +80,12 @@ export async function getOrganisations(): Promise<
     Partial<Organisation> & {
       departments?: (Pick<Department, 'name' | 'slugName'> &
         Partial<Department> & {
+          schedules?: (Pick<Schedule, 'name'> & {
+            tasks: Pick<Task, 'name'>[];
+          })[];
           users?: (Pick<
             User,
-            'firstName' | 'lastName' | 'email' | 'passwordHash'
+            'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
           > &
             Partial<User>)[];
         })[];
@@ -80,17 +102,29 @@ export async function getOrganisations(): Promise<
         {
           name: 'Ziekenhuisapotheek',
           slugName: 'ziekenhuisapotheek',
+          schedules: [
+            {
+              name: 'Dienstrooster',
+              tasks: [
+                { name: 'Cluster 1' },
+                { name: 'Cluster 2' },
+                { name: 'Cluster 3' },
+              ],
+            },
+          ],
           users: [
             {
               role: 'ADMIN',
               firstName: 'Bjorn',
               lastName: 'Brassé',
+              initials: 'BB',
               email: 'b.brasse@etz.nl',
               passwordHash: await bcrypt.hash('test', 10),
             },
             {
               firstName: 'Michelle',
               lastName: 'de Roo',
+              initials: 'MdR',
               email: 'm.deroo@etz.nl',
               passwordHash: await bcrypt.hash('test', 10),
             },

@@ -48,6 +48,7 @@ model User {
   role                  Role                 @default(USER)
   firstName             String
   lastName              String
+  initials              String
   email                 String               @unique
   passwordHash          String?
   passwordResetToken    String?
@@ -58,6 +59,7 @@ model User {
   canViewOrganisations  Boolean              @default(false)
   canCreateOrganisation Boolean              @default(false)
   bookings              Booking[]
+  schedules             ScheduleMembers[]
 }
 
 model DepartmentEmployee {
@@ -75,13 +77,25 @@ model DepartmentEmployee {
 }
 
 model Schedule {
-  id           String     @id @default(cuid())
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id           String            @id @default(cuid())
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
   name         String
-  department   Department @relation(fields: [departmentId], references: [id])
+  department   Department        @relation(fields: [departmentId], references: [id])
   departmentId String
   tasks        Task[]
+  members      ScheduleMembers[]
+}
+
+model ScheduleMembers {
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId String
+  member     User     @relation(fields: [memberId], references: [id])
+  memberId   String
+  assignedAt DateTime @default(now())
+  assignedBy String?
+
+  @@id([scheduleId, memberId])
 }
 
 model Task {

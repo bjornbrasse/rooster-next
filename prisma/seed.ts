@@ -11,7 +11,7 @@ async function seed() {
   //   })
   // );
 
-  // await seedUsers(db);
+  // await seedUsers({ db });
 
   await seedOrganisations({ db });
 }

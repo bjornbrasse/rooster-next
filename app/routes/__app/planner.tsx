@@ -18,6 +18,7 @@ import { getSchedule, getSchedules } from '~/controllers/schedule';
 import useDate from '~/hooks/useDate';
 import { WEEKDAYS } from '~/utils/date';
 import { getBookings } from '~/controllers/booking.server';
+import { requireUser } from '~/controllers/auth.server';
 
 var customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
@@ -33,12 +34,16 @@ export const loader: LoaderFunction = async ({
 }): Promise<LoaderData | Response> => {
   const url = new URL(request.url);
 
+  await requireUser(request, {
+    redirectTo: `/auth/login?redirect=${url.pathname}?${url.search}`,
+  });
+
   const bookings = await getBookings();
 
   const schedule = await getSchedule({
     scheduleId: url.searchParams.get('schedule') ?? '',
   });
-  if (!schedule) return redirect('/');
+  if (!schedule) return redirect('/schedules');
 
   // const dateParam = url.searchParams.get('d');
   // if (!dateParam || !dayjs(dateParam).isValid()) {

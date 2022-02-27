@@ -2,7 +2,7 @@ import { Booking, Schedule, Task, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import * as React from 'react';
 import { Link } from 'remix';
-import { useSchedule } from '~/contexts/schedule';
+import { useSchedule } from '~/hooks/useSchedule';
 import useDate from '~/hooks/useDate';
 import { WEEKDAYS } from '~/utils/date';
 
@@ -59,27 +59,28 @@ const PlannerWeekView: React.FC<IProps> = ({
             <tr key={task.id}>
               <td>{task.name}</td>
               {weekDays.map((day, index) => {
+                const bks = bookings.filter(
+                  (booking) =>
+                    dayjs(booking.date).date() === dayjs(day).date() &&
+                    booking.taskId === task.id
+                );
                 const isCurrentDate = day.getDate() === date.getDate();
 
                 return (
                   <td
                     onClick={() =>
-                      addToSelection({ date: day, task, user: 'test' })
+                      addToSelection({ date: day, task, bookings: bks })
                     }
-                    className={`px-2 border border-blue-200 ${
+                    className={`px-2 border border-blue-200 hover:bg-blue-200 cursor-pointer ${
                       isCurrentDate ? 'bg-green-200' : null
                     }`}
                     key={index}
                   >
-                    <p className="font-normal">
-                      {
-                        bookings.filter(
-                          (booking) =>
-                            dayjs(booking.date).date() === dayjs(day).date() &&
-                            booking.taskId === task.id
-                        )[0]?.user.firstName
-                      }
-                    </p>
+                    {bks.map((booking) => (
+                      <p className="font-normal hover:bg-red-100">
+                        {booking.user.initials}
+                      </p>
+                    ))}
                   </td>
                 );
               })}

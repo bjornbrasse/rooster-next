@@ -5,7 +5,7 @@ import { Fragment } from 'react';
 import { LoaderFunction, NavLink, useLoaderData } from 'remix';
 import { Link, Outlet, useLocation } from 'remix';
 import Editor from '~/components/Editor';
-import { useSchedule } from '~/contexts/schedule';
+import { useSchedule } from '~/hooks/useSchedule';
 import { getUser } from '~/controllers/auth.server';
 
 type LoaderData = {
