@@ -1,12 +1,14 @@
-import { Department } from '@prisma/client';
-import type { LoaderFunction } from 'remix';
-import { redirect } from 'remix';
-import { Outlet, useParams } from 'remix';
-import Menu from '~/components/Menu';
-import { getDepartment } from '~/controllers/department';
+import { Department, Organisation } from "@prisma/client";
+import { LoaderFunction, useLoaderData } from "remix";
+import { redirect } from "remix";
+import { Outlet, useParams } from "remix";
+import Menu from "~/components/Menu";
+import Navigator from "~/components/Navigator";
+import Tabs from "~/components/Tabs";
+import { getDepartment } from "~/controllers/department";
 
 type LoaderData = {
-  department: Department;
+  department: Department & { organisation: Organisation };
 };
 
 export const loader: LoaderFunction = async ({
@@ -16,33 +18,30 @@ export const loader: LoaderFunction = async ({
     departmentId: String(params.departmentId),
   });
 
-  if (!department) return redirect('/');
+  if (!department) return redirect("/organisations");
 
   return { department };
 };
 
 export default function DepartmentLayout() {
+  const { department } = useLoaderData<LoaderData>();
   const { departmentId } = useParams();
 
   return (
-    <div className="w-full flex">
-      {/* <div id="menu" className="w-1/4 lg:w-1/5 bg-red-400">
-        Tabs
-      </div> */}
-      <Menu>
-        <Menu.Item
-          href={`/departments/${departmentId}/employees`}
-          icon="fas fa-users"
-        >
+    <div className="w-full flex flex-col">
+      <Navigator
+        organisation={department.organisation}
+        // organisationTo={`/organisations/${department.organisation.id}/departments`}
+        department={department}
+      />
+      <Tabs>
+        <Tabs.Tab to={`/departments/${departmentId}/employees`}>
           Medewerkers
-        </Menu.Item>
-        <Menu.Item
-          href={`/departments/${departmentId}/plannings`}
-          icon="fas fa-calendar"
-        >
+        </Tabs.Tab>
+        <Tabs.Tab to={`/departments/${departmentId}/plannings`}>
           Roosters
-        </Menu.Item>
-      </Menu>
+        </Tabs.Tab>
+      </Tabs>
       <Outlet />
     </div>
   );

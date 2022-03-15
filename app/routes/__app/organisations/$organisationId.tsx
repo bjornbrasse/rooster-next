@@ -1,12 +1,48 @@
-import { Link, Outlet, redirect } from 'remix';
+import { Organisation } from "@prisma/client";
+import {
+  Link,
+  LoaderFunction,
+  Outlet,
+  redirect,
+  useLoaderData,
+  useParams,
+} from "remix";
+import Tabs from "~/components/Tabs";
+import { getOrganisation } from "~/controllers/organisation";
+import Navigator from "~/components/Navigator";
+
+type LoaderData = {
+  organisation: Organisation;
+};
+
+export const loader: LoaderFunction = async ({
+  params,
+}): Promise<LoaderData | Response> => {
+  const organisation = await getOrganisation({
+    where: { id: params.organisationId },
+  });
+
+  if (!organisation) return redirect("/organisations");
+
+  return { organisation };
+};
 
 export default function OrganisationAdmin() {
+  const { organisation } = useLoaderData<LoaderData>();
+  const { organisationId } = useParams();
+
   return (
-    <div className="h-full flex flex-col">
-      {/* <div id="menu" className="p-4 flex items-center bg-gray-300">
-        <h1>Medewerkers</h1>
-      </div> */}
-      <div id="content" className="flex-grow p-2 border-4 border-green-400">
+    <div className="w-full h-full flex flex-col">
+      <Navigator organisation={organisation} />
+      <Tabs>
+        <Tabs.Tab to={`/organisations/${organisationId}/departments`}>
+          Afdelingen
+        </Tabs.Tab>
+        <Tabs.Tab to={`/organisations/${organisationId}/employees`}>
+          Medewerkers
+        </Tabs.Tab>
+      </Tabs>
+      <div id="content" className="flex-grow">
         <Outlet />
       </div>
     </div>

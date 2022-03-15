@@ -67,7 +67,11 @@ export const getOrganisationEmployees = async ({
 }): Promise<User[]> => {
   return await db.user.findMany({
     where: {
-      OR: { organisationId, organisation: { slugName: organisationSlug } },
+      OR: { id: organisationId, organisation: { slugName: organisationSlug } },
     },
   });
 };
+
+export const getUsers = async ({organisationId}: {organisationId: string}) => {
+  return await db.user.findMany({where: {organisationId}})
+}

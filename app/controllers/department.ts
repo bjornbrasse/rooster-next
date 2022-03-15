@@ -28,28 +28,38 @@ export const getDepartment = async ({
   departmentSlug?: string;
 }) => {
   return await db.department.findFirst({
-    where: { OR: { id: departmentId, slugName: departmentSlug } },
+    where: { OR: { id: departmentId, slugName: departmentSlug } }, include: {organisation: true}
   });
 };
 
-export const createDepartmentUser = async ({
-  departmentId,
-  user,
+export const getDepartments = async ({
+  organisationId,
 }: {
-  departmentId: string;
-  user: User;
+  organisationId: string;
 }) => {
-  const department = await db.department.findUnique({
-    where: { id: departmentId },
-  });
-
-  await db.department.create({
-    data: {
-      employees: {
-        create: {
-          employee: { create: { firstName, lastName, email, passwordHash } },
-        },
-      },
-    },
+  return await db.department.findMany({
+    where: { organisation: {id: organisationId} },
   });
 };
+
+// export const createDepartmentUser = async ({
+//   departmentId,
+//   user,
+// }: {
+//   departmentId: string;
+//   user: User;
+// }) => {
+//   const department = await db.department.findUnique({
+//     where: { id: departmentId },
+//   });
+
+//   await db.department.create({
+//     data: {
+//       employees: {
+//         create: {
+//           employee: { create: { firstName, lastName, email, passwordHash } },
+//         },
+//       },
+//     },
+//   });
+// };
