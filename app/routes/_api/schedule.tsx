@@ -1,8 +1,8 @@
-import type { ActionFunction } from 'remix';
-import { Schedule } from '@prisma/client';
-import { badRequest } from '~/utils/helpers';
-import { validateText } from '~/utils/validation';
-import { createSchedule } from '~/controllers/schedule';
+import type { ActionFunction } from "remix";
+import { Schedule } from "@prisma/client";
+import { badRequest } from "~/utils/helpers";
+import { validateText } from "~/utils/validation";
+import { createSchedule } from "~/controllers/schedule.server";
 
 type Fields = {
   name?: string;
@@ -24,10 +24,10 @@ export type ActionData = {
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
 
-  const name = form.get('name');
-  const departmentId = form.get('departmentId');
+  const name = form.get("name");
+  const departmentId = form.get("departmentId");
 
-  if (typeof name !== 'string' || typeof departmentId !== 'string') {
+  if (typeof name !== "string" || typeof departmentId !== "string") {
     return badRequest<ActionData>({
       error: { form: `Form not submitted correctly.` },
     });
@@ -36,7 +36,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   const fieldErrors: FieldErrors = {
     name: validateText(name, {
-      min: { length: 2, errorMessage: 'MOORE than 2' },
+      min: { length: 2, errorMessage: "MOORE than 2" },
     }),
   };
   if (Object.values(fieldErrors).some(Boolean))
@@ -52,7 +52,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (!schedule)
     return badRequest<ActionData>({
-      error: { form: 'Something went wrong.' },
+      error: { form: "Something went wrong." },
       fields,
     });
 

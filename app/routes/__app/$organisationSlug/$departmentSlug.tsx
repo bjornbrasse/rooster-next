@@ -1,5 +1,5 @@
-import { Department, Schedule } from '@prisma/client';
-import * as React from 'react';
+import { Department, Schedule } from "@prisma/client";
+import * as React from "react";
 import {
   Link,
   LoaderFunction,
@@ -8,10 +8,10 @@ import {
   redirect,
   useMatches,
   useParams,
-} from 'remix';
-import Container from '~/components/Container';
-import { getDepartment } from '~/controllers/department';
-import { getSchedules } from '~/controllers/schedule';
+} from "remix";
+import Container from "~/components/Container";
+import { getDepartment } from "~/controllers/department";
+import { getSchedules } from "~/controllers/schedule.server";
 
 type LoaderData = {
   department: Department;
@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     departmentSlug: String(params.departmentSlug),
   });
 
-  if (!department) return redirect('/');
+  if (!department) return redirect("/");
 
   const schedules = await getSchedules({ departmentId: department?.id });
 
@@ -40,7 +40,7 @@ const Tab: React.FC<{ className?: string; to: string }> = ({
       to={to}
       className={({ isActive }) =>
         `p-2 mx-1 flex ${
-          isActive ? 'bg-primary text-accent' : 'bg-gray-300'
+          isActive ? "bg-primary text-accent" : "bg-gray-300"
         } rounded-t-lg ${className}`
       }
     >
@@ -53,9 +53,9 @@ export default function DepartmentLayout() {
   const { departmentSlug, organisationSlug, scheduleId } = useParams();
 
   const tabs: { caption: string; to: string }[] = [
-    { caption: 'Algemeen', to: `/${organisationSlug}/${departmentSlug}/` },
-    { caption: 'Medewerkers', to: 'employees/' },
-    { caption: 'Roosters', to: 'schedules/' },
+    { caption: "Algemeen", to: `/${organisationSlug}/${departmentSlug}/` },
+    { caption: "Medewerkers", to: "employees/" },
+    { caption: "Roosters", to: "schedules/" },
   ];
 
   const data = useMatches().find(

@@ -11,7 +11,7 @@ const Tab: React.FC<{ className?: string; to: string }> = ({
       to={to}
       className={({ isActive }) =>
         `px-2 py-1 flex ${
-          isActive ? "bg-primary text-accent" : "bg-gray-300"
+          isActive ? "bg-primary text-accent" : "bg-gray-300 hover:bg-sky-300"
         } rounded-t-lg ${className}`
       }
     >
@@ -20,15 +20,18 @@ const Tab: React.FC<{ className?: string; to: string }> = ({
   );
 };
 
-const Tabs: React.FC & {
+const Tabs: React.FC<{ actions?: React.ReactNode }> & {
   Tab: React.FC<{ className?: string; to: string }>;
-} = ({ children }) => {
+} = ({ actions, children }) => {
   return (
     <div
       id="Tabs"
-      className="px-2 pt-3 flex space-x-1 items-end border-b-2 border-slate-500"
+      className="px-2 flex justify-between items-center border-b-2 border-slate-500"
     >
-      {children}
+      <div id="Tabs" className="pt-3 flex space-x-1 items-end">
+        {children}
+      </div>
+      {actions && actions}
     </div>
   );
 };

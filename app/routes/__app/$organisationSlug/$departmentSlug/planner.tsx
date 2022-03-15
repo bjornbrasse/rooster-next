@@ -1,20 +1,20 @@
-import { Schedule } from '@prisma/client';
+import { Schedule } from "@prisma/client";
 import {
   LoaderFunction,
   redirect,
   useLoaderData,
   useSearchParams,
-} from 'remix';
-import { getSchedule } from '~/controllers/schedule';
+} from "remix";
+import { getSchedule } from "~/controllers/schedule.server";
 
-import dayjs, { Dayjs } from 'dayjs';
-import weekYear from 'dayjs/plugin/weekYear'; // dependent on weekOfYear plugin
-import weekOfYear from 'dayjs/plugin/weekOfYear';
-import weekday from 'dayjs/plugin/weekday';
+import dayjs, { Dayjs } from "dayjs";
+import weekYear from "dayjs/plugin/weekYear"; // dependent on weekOfYear plugin
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import weekday from "dayjs/plugin/weekday";
 import PlannerViewToggleButtons, {
   View,
-} from '~/components/PlannerViewToggleButtons';
-import DateSelector from '~/components/DateSelector';
+} from "~/components/PlannerViewToggleButtons";
+import DateSelector from "~/components/DateSelector";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(weekYear);
@@ -32,20 +32,20 @@ export const loader: LoaderFunction = async ({
 }): Promise<LoaderData | Response> => {
   const url = new URL(request.url);
 
-  const date = dayjs(url.searchParams.get('d'));
+  const date = dayjs(url.searchParams.get("d"));
   // if (!date) {
   //   url.searchParams.set('d', dayjs().format('YYYY-MM-DD'));
   //   return redirect(`${url.pathname}${url.search}`);
   // }
 
-  const view = url.searchParams.get('v') as View;
-  if (!view || !['day', 'week', 'month'].includes(view)) {
-    url.searchParams.set('v', 'week');
+  const view = url.searchParams.get("v") as View;
+  if (!view || !["day", "week", "month"].includes(view)) {
+    url.searchParams.set("v", "week");
     return redirect(`${url.pathname}${url.search}`);
   }
 
   const schedule = await getSchedule({
-    scheduleId: String(url.searchParams.get('schedule')),
+    scheduleId: String(url.searchParams.get("schedule")),
   });
   if (!schedule) return redirect(`/${params.organisationSlug}`);
 

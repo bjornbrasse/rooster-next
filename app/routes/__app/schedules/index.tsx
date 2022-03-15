@@ -1,7 +1,7 @@
-import { Schedule } from '@prisma/client';
-import dayjs from 'dayjs';
-import { Link, LoaderFunction, useLoaderData } from 'remix';
-import { getSchedules } from '~/controllers/schedule';
+import { Schedule } from "@prisma/client";
+import dayjs from "dayjs";
+import { Link, LoaderFunction, useLoaderData } from "remix";
+import { getSchedules } from "~/controllers/schedule.server";
 
 type LoaderData = {
   schedules: Schedule[];
@@ -24,7 +24,7 @@ export default function Schedules() {
           <li key={schedule.id}>
             <Link
               to={`/planner?schedule=${schedule.id}&d=${dayjs().format(
-                'YYYY-MM-DD'
+                "YYYY-MM-DD"
               )}&v=week`}
               className="text-blue-600 underline"
             >

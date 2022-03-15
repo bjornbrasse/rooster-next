@@ -5,13 +5,13 @@ import {
   ScheduleMember,
   Task,
   User,
-} from '@prisma/client';
-import { Link, LoaderFunction, redirect, useLoaderData } from 'remix';
-import Container from '~/components/Container';
-import MemberForm from '~/components/forms/MemberForm';
-import TaskForm from '~/components/forms/TaskForm';
-import { useDialog } from '~/contexts/dialog';
-import { getSchedule } from '~/controllers/schedule';
+} from "@prisma/client";
+import { Link, LoaderFunction, redirect, useLoaderData } from "remix";
+import Container from "~/components/Container";
+import MemberForm from "~/components/forms/MemberForm";
+import TaskForm from "~/components/forms/TaskForm";
+import { useDialog } from "~/contexts/dialog";
+import { getSchedule } from "~/controllers/schedule.server";
 
 type LoaderData = {
   schedule: Schedule & {
@@ -26,7 +26,7 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({ params }) => {
   const schedule = await getSchedule({ scheduleId: String(params.scheduleId) });
 
-  if (!schedule) return redirect('/schedules');
+  if (!schedule) return redirect("/schedules");
 
   return { schedule };
 };
@@ -51,12 +51,12 @@ export default function Schedule() {
         <button
           onClick={() =>
             openDialog(
-              'Gebruiker als lid toevoegen',
+              "Gebruiker als lid toevoegen",
               <MemberForm
                 onSaved={function (task: Task): void {
-                  throw new Error('Function not implemented.');
+                  throw new Error("Function not implemented.");
                 }}
-                redirectTo={''}
+                redirectTo={""}
                 scheduleId={schedule.id}
                 departmentEmployees={schedule.department.employees.map((e) => ({
                   ...e.user,
@@ -82,12 +82,12 @@ export default function Schedule() {
         <button
           onClick={() =>
             openDialog(
-              'Nieuwe taak',
+              "Nieuwe taak",
               <TaskForm
                 onSaved={function (task: Task): void {
-                  throw new Error('Function not implemented.');
+                  throw new Error("Function not implemented.");
                 }}
-                redirectTo={''}
+                redirectTo={""}
                 scheduleId={schedule.id}
               />
             )
