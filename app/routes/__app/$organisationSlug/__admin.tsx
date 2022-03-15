@@ -47,7 +47,7 @@ export default function Organisation() {
   );
 
   return (
-    <div className="relative h-full flex flex-col">
+    <div className="relative h-full flex-grow flex flex-col">
       <div className="h-full flex border-b-4 border-purple-400">
         {!departmentSlug && (
           <div

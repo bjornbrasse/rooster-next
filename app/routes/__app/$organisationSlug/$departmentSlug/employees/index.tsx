@@ -1,9 +1,7 @@
-export default function Planners() {
+export default function DepartmentEmployees() {
   return (
-    <div className="p-8">
-      <div className="w-1/4 border border-gray-400 rounded-lg">
-        <h1>Medewerkers</h1>
-      </div>
+    <div className="h-full border-4 border-gray-400">
+      <h1>Medewerkers!!</h1>
     </div>
   );
 }

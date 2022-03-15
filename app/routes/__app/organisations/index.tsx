@@ -1,8 +1,8 @@
-import { Organisation } from '@prisma/client';
-import { Link, LoaderFunction, redirect, useLoaderData } from 'remix';
-import { can, userIsAdmin } from '~/controllers/access.server';
-import { requireUser } from '~/controllers/auth.server';
-import { db } from '~/utils/db.server';
+import { Organisation } from "@prisma/client";
+import React from "react";
+import { Link, LoaderFunction, useLoaderData, useNavigate } from "remix";
+import { userIsAdmin } from "~/controllers/access.server";
+import { db } from "~/utils/db.server";
 
 type LoaderData = {
   organisations: Organisation[];
@@ -11,7 +11,7 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({
   request,
 }): Promise<LoaderData> => {
-  await userIsAdmin(request, '/home');
+  await userIsAdmin(request, "/home");
 
   const organisations = await db.organisation.findMany();
 
@@ -41,26 +41,17 @@ export default function Organisations() {
           </thead>
           <tbody>
             {organisations.map((organisation) => (
-              <tr
-                key={organisation.id}
+              <TRL
+                to={organisation.id}
                 className="border-b border-gray-300 hover:bg-blue-300 cursor-pointer"
+                key={organisation.id}
               >
+                <td>{organisation.nameShort}</td>
+                <td>{organisation.name}</td>
                 <td>
-                  <Link to={`/${organisation.slugName}/employees`}>
-                    {organisation.nameShort}
-                  </Link>
+                  <i className="fas fa-pencil-alt"></i>
                 </td>
-                <td>
-                  <Link to={`/${organisation.slugName}/employees`}>
-                    {organisation.name}
-                  </Link>
-                </td>
-                <td>
-                  <Link to={organisation.id}>
-                    <i className="fas fa-pencil-alt"></i>
-                  </Link>
-                </td>
-              </tr>
+              </TRL>
             ))}
           </tbody>
         </table>
