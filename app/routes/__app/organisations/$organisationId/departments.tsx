@@ -25,7 +25,7 @@ export default function Departments() {
       <div className="flex flex-col">
         {departments.map((department) => (
           <Link
-            to={`/departments/${department.id}`}
+            to={`/departments/${department.id}/`}
             className="w-full border border-grey-300 hover:bg-sky-100 cursor-pointer"
             key={department.id}
           >

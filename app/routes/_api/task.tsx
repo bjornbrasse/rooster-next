@@ -1,58 +1,53 @@
-import { Task } from '@prisma/client';
-import type { ActionFunction } from 'remix';
-import { createTask } from '~/controllers/task.server';
-import { badRequest } from '~/utils/helpers';
-import { validateText } from '~/utils/validation';
+import { Task } from "@prisma/client";
+import type { ActionFunction } from "remix";
+import { z } from "zod";
+import { requireUserId } from "~/controllers/auth.server";
+import { createTask } from "~/controllers/task.server";
+import { badRequest } from "~/utils/helpers";
 
-type Fields = {
-  name?: string;
-  scheduleId: string;
-};
+export type ActionData = { task: Task };
 
-type FieldErrors = {
-  name?: string[] | undefined;
-  scheduleId?: string[] | undefined;
-};
+export const action: ActionFunction = async ({
+  request,
+  params,
+}): Promise<ActionData | Response> => {
+  const userId = await requireUserId(request, "/login");
 
-export type ActionData = {
-  error?: {
-    form?: string;
-    fields?: FieldErrors;
-  };
-  fields?: Fields;
-  task?: Task | null;
-};
+  const Validator = z.object({
+    taskId: z.string().optional(),
+    departmentId: z.string(),
+    name: z.string(),
+  });
 
-export const action: ActionFunction = async ({ request, params }) => {
-  const form = await request.formData();
+  let task: Task | null = null;
 
-  const name = form.get('name');
-  const scheduleId = form.get('scheduleId');
+  try {
+    const data = Validator.parse(Object.fromEntries(await request.formData()));
 
-  if (typeof name !== 'string' || typeof scheduleId !== 'string') {
-    return badRequest<ActionData>({
-      error: { form: `Form not submitted correctly.` },
-    });
+    task = await createTask(data);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.log("er treedt een Zod-fout op", error.flatten());
+
+      return badRequest(error.format());
+    }
+    console.log("er treedt een fout op", error);
   }
-  const fields = { name, scheduleId };
 
-  const fieldErrors: FieldErrors = {
-    // firstName: validateText(firstName, {
-    //   min: { length: 2, errorMessage: 'MOORE than 2' },
-    // }),
-  };
-  if (Object.values(fieldErrors).some(Boolean))
-    return badRequest<ActionData>({
-      error: { fields: fieldErrors },
-      fields,
-    });
-
-  const task = await createTask({ ...fields });
+  // const fieldErrors: FieldErrors = {
+  // firstName: validateText(firstName, {
+  //   min: { length: 2, errorMessage: 'MOORE than 2' },
+  // }),
+  // };
+  // if (Object.values(fieldErrors).some(Boolean))
+  //   return badRequest<ActionData>({
+  //     error: { fields: fieldErrors },
+  //     fields,
+  //   });
 
   if (!task)
-    return badRequest<ActionData>({
-      error: { form: 'Something went wrong.' },
-      fields,
+    return badRequest({
+      error: { form: "Something went wrong." },
     });
 
   return { task };

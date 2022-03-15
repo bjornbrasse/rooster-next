@@ -1,7 +1,8 @@
-import { Department } from '@prisma/client';
-import { LoaderFunction, redirect } from 'remix';
-import { useMatches, useParams } from 'remix';
-import { getDepartment } from '~/controllers/department';
+import { Department } from "@prisma/client";
+import { LoaderFunction, redirect } from "remix";
+import { useMatches, useParams } from "remix";
+import Container from "~/components/Container";
+import { getDepartment } from "~/controllers/department";
 
 type LoaderData = {
   department: Department;
@@ -14,7 +15,7 @@ export const loader: LoaderFunction = async ({
     departmentId: String(params.departmentId),
   });
 
-  if (!department) return redirect('/');
+  if (!department) return redirect("/");
 
   return { department };
 };
@@ -28,9 +29,8 @@ export default function Department() {
   // };
 
   return (
-    <div>
-      <h3>Afdeling </h3>
-      <h2></h2>
-    </div>
+    <Container>
+      <h3>INstellingen </h3>
+    </Container>
   );
 }

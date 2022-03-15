@@ -20,16 +20,17 @@ model Organisation {
 }
 
 model Department {
-  id             String           @id @default(cuid())
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id             String               @id @default(cuid())
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
   name           String
   nameShort      String
-  organisation   Organisation     @relation(fields: [organisationId], references: [id])
+  organisation   Organisation         @relation(fields: [organisationId], references: [id])
   organisationId String
   slugName       String
-  employees      DepartmentUser[]
+  employees      DepartmentEmployee[]
   schedules      Schedule[]
+  tasks          Task[]
 
   @@unique([organisationId, slugName])
 }
@@ -40,27 +41,27 @@ enum Role {
 }
 
 model User {
-  id                    String           @id @default(cuid())
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @updatedAt
-  role                  Role             @default(USER)
+  id                    String               @id @default(cuid())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  role                  Role                 @default(USER)
   firstName             String
   lastName              String
   initials              String
-  email                 String           @unique
+  email                 String               @unique
   passwordHash          String?
   passwordResetToken    String?
   emailValidationToken  String?
-  organisation          Organisation     @relation(fields: [organisationId], references: [id])
+  organisation          Organisation         @relation(fields: [organisationId], references: [id])
   organisationId        String
-  departments           DepartmentUser[]
-  canViewOrganisations  Boolean          @default(false)
-  canCreateOrganisation Boolean          @default(false)
+  departments           DepartmentEmployee[]
+  canViewOrganisations  Boolean              @default(false)
+  canCreateOrganisation Boolean              @default(false)
   bookings              Booking[]
   schedules             ScheduleMember[]
 }
 
-model DepartmentUser {
+model DepartmentEmployee {
   department          Department @relation(fields: [departmentId], references: [id])
   departmentId        String
   user                User       @relation(fields: [userId], references: [id])
@@ -81,7 +82,6 @@ model Schedule {
   name         String
   department   Department       @relation(fields: [departmentId], references: [id])
   departmentId String
-  tasks        Task[]
   members      ScheduleMember[]
 }
 
@@ -97,13 +97,13 @@ model ScheduleMember {
 }
 
 model Task {
-  id         String    @id @default(cuid())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  name       String
-  schedule   Schedule  @relation(fields: [scheduleId], references: [id])
-  scheduleId String
-  bookings   Booking[]
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  name         String
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String
+  bookings     Booking[]
 }
 
 model Booking {

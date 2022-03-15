@@ -1,5 +1,5 @@
 import { db } from '~/utils/db.server';
-import { Department, User } from '@prisma/client';
+import { Department } from '@prisma/client';
 
 export const createDepartment = async ({
   department,

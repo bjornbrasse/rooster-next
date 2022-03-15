@@ -1,17 +1,19 @@
-import * as React from 'react';
-import { User } from '@prisma/client';
-import { useFetcher } from 'remix';
-import { UserActionData } from '~/routes/_api/user';
+import * as React from "react";
+import { User } from "@prisma/client";
+import { useFetcher } from "remix";
+import { UserActionData } from "~/routes/_api/user";
 
 const UserForm = ({
+  departmentId,
   onSaved: savedHandler,
   organisationId,
-  redirectTo = '/',
+  redirectTo = "/",
   user,
 }: {
   onSaved: (user: User) => void;
+  departmentId?: string;
   organisationId: string;
-  redirectTo: string;
+  redirectTo?: string;
   user?: User;
 }) => {
   const fetcher = useFetcher<UserActionData>();
@@ -26,6 +28,7 @@ const UserForm = ({
   return (
     <fetcher.Form method="post" action="/user">
       <input type="hidden" name="userId" value={user?.id} />
+      <input type="hidden" name="departmentId" value={departmentId} />
       <input type="hidden" name="organisationId" value={organisationId} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <fieldset className="flex flex-col">

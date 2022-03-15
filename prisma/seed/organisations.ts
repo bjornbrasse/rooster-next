@@ -56,14 +56,14 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
                     })
                   ),
                 },
+                tasks: {
+                  create: department.tasks?.map(({name}) => ({
+                    name
+                  }))
+                },
                 schedules: {
-                  create: department.schedules?.map(({ name, tasks }) => ({
+                  create: department.schedules?.map(({ name }) => ({
                     name,
-                    tasks: {
-                      create: tasks.map(({ name }) => ({
-                        name,
-                      })),
-                    },
                   })),
                 },
               };
@@ -78,18 +78,16 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
 export async function getOrganisations(): Promise<
   (Pick<Organisation, 'name' | 'slugName'> &
     Partial<Organisation> & {
-      departments?: (Pick<Department, 'name' | 'slugName'> &
-        Partial<Department> & {
-          schedules?: (Pick<Schedule, 'name'> & {
-            tasks: Pick<Task, 'name'>[];
-          })[];
+      departments?: (Pick<Department, 'name' | 'slugName'> & Partial<Department> & {
+        tasks?: Pick<Task, 'name'>[],
+        schedules?: (Pick<Schedule, 'name'>)[];
           users?: (Pick<
             User,
             'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
           > &
             Partial<User>)[];
-        })[];
-    })[]
+      })[]
+       })[]
 > {
   return [
     {
@@ -97,19 +95,22 @@ export async function getOrganisations(): Promise<
       nameShort: 'ETZ',
       slugName: 'etz',
       departments: [
-        { name: 'Interne Geneeskunde', nameShort: 'H1', slugName: 'h1' },
-        { name: 'Longgeneeskunde', slugName: 'longgk' },
+        { name: 'Interne Geneeskunde', nameShort: 'H1', slugName: 'h1',  tasks: [
+          { name: 'Cluster 1' },
+          { name: 'Cluster 2' },
+          { name: 'Cluster 3' },
+        ],  },
+        { name: 'Longgeneeskunde', slugName: 'longgk',  tasks: [
+          { name: 'Cluster 1' },
+          { name: 'Cluster 2' },
+          { name: 'Cluster 3' },
+        ], },
         {
           name: 'Ziekenhuisapotheek',
           slugName: 'ziekenhuisapotheek',
           schedules: [
             {
-              name: 'Dienstrooster',
-              tasks: [
-                { name: 'Cluster 1' },
-                { name: 'Cluster 2' },
-                { name: 'Cluster 3' },
-              ],
+              name: 'Dienstrooster'
             },
           ],
           users: [
