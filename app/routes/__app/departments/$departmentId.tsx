@@ -6,14 +6,13 @@ import DialogButton from "~/components/DialogButton";
 import ScheduleForm from "~/components/forms/ScheduleForm";
 import TaskForm from "~/components/forms/TaskForm";
 import UserForm from "~/components/forms/UserForm";
-import Menu from "~/components/Menu";
 import Navigator from "~/components/Navigator";
 import Tabs from "~/components/Tabs";
 import { useDialog } from "~/contexts/dialog";
 import { getDepartment } from "~/controllers/department";
 
 type LoaderData = {
-  department: Department & { organisation: Organisation };
+  department: Awaited<ReturnType<typeof getDepartment>>;
 };
 
 export const loader: LoaderFunction = async ({
@@ -23,13 +22,11 @@ export const loader: LoaderFunction = async ({
     departmentId: String(params.departmentId),
   });
 
-  if (!department) return redirect("/organisations");
-
   return { department };
 };
 
 export default function DepartmentLayout() {
-  const { department } = useLoaderData<LoaderData>();
+  const { department } = useLoaderData() as LoaderData;
   const location = useLocation();
   const { departmentId } = useParams();
   const { closeDialog } = useDialog();
@@ -52,9 +49,11 @@ export default function DepartmentLayout() {
                 description={""}
                 form={
                   <UserForm
-                    organisationId={department.organisation.id}
+                    departmentId={departmentId}
+                    organisationId={department!.organisation.id}
                     onSaved={function (user: User): void {
-                      throw new Error("Function not implemented.");
+                      console.log("gebruiker aangemaakt", user);
+                      closeDialog();
                     }}
                   />
                 }
