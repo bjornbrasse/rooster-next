@@ -1,8 +1,8 @@
-import { User } from '@prisma/client';
-import type { ActionFunction } from 'remix';
-import { createUser } from '~/controllers/user.server';
-import { badRequest } from '~/utils/helpers';
-import { validateText } from '~/utils/validation';
+import { User } from "@prisma/client";
+import type { ActionFunction } from "remix";
+import { createUser } from "~/controllers/user.server";
+import { badRequest } from "~/utils/helpers";
+import { validateText } from "~/utils/validation";
 
 // type ActionData = {
 //   formError?: string;
@@ -42,29 +42,31 @@ export type UserActionData = {
 export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
 
-  const firstName = form.get('firstName');
-  const lastName = form.get('lastName');
-  const email = form.get('email');
-  const organisationId = form.get('organisationId');
+  const firstName = form.get("firstName");
+  const lastName = form.get("lastName");
+  const email = form.get("email");
+  const departmentId = form.get("departmentId");
+  const organisationId = form.get("organisationId");
 
   if (
-    typeof firstName !== 'string' ||
-    typeof lastName !== 'string' ||
-    typeof email !== 'string' ||
-    typeof organisationId !== 'string'
+    typeof firstName !== "string" ||
+    typeof lastName !== "string" ||
+    typeof email !== "string" ||
+    typeof departmentId !== "string" ||
+    typeof organisationId !== "string"
   ) {
     return badRequest<UserActionData>({
       error: { form: `Form not submitted correctly.` },
     });
   }
-  const fields = { firstName, lastName, email };
+  const fields = { firstName, lastName, email, initials: "Test" };
 
   const fieldErrors: FieldErrors = {
     firstName: validateText(firstName, {
-      min: { length: 2, errorMessage: 'MOORE than 2' },
+      min: { length: 2, errorMessage: "MOORE than 2" },
     }),
     lastName: validateText(lastName, {
-      max: { length: 4, errorMessage: 'MAX 4' },
+      max: { length: 4, errorMessage: "MAX 4" },
     }),
   };
   if (Object.values(fieldErrors).some(Boolean))
@@ -74,7 +76,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     });
 
   const user = await createUser({
-    userData: { ...fields, organisationId },
+    userData: { ...fields, organisationId, departmentId },
   });
   // const user = await db.user.create({
   //   data: {
@@ -88,7 +90,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   if (!user)
     return badRequest<UserActionData>({
-      error: { form: 'Something went wrong.' },
+      error: { form: "Something went wrong." },
       fields,
     });
 

@@ -7,6 +7,7 @@ export const createUser = async ({
   userData,
 }: {
   userData: {
+    departmentId?: string;
     email: string;
     firstName: string;
     initials: string;
@@ -15,14 +16,14 @@ export const createUser = async ({
     // password: string;
   };
 }): Promise<User> => {
-  // const { password, ...userDataWithoutPassword } = userData;
+  const { departmentId, organisationId, ...userDataRest } = userData;
 
   return await db.user.create({
     // data: {
     //   ...userDataWithoutPassword,
     //   passwordHash: await bcrypt.hash(userData.password, 10),
     // },
-    data: { ...userData },
+    data: { ...userDataRest, organisationId, departments: {create: {departmentId: departmentId ?? ""}} },
   });
 };
 

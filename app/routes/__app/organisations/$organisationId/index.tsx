@@ -1,8 +1,9 @@
-import { ActionFunction, LoaderFunction, useLoaderData } from 'remix';
-import { redirect } from 'remix';
-import { db } from '~/utils/db.server';
-import { badRequest } from '~/utils/helpers';
-import { validateText } from '~/utils/validation';
+import { ActionFunction, LoaderFunction, useLoaderData } from "remix";
+import { redirect } from "remix";
+import { db } from "~/utils/db.server";
+import { badRequest } from "~/utils/helpers";
+import { validateText } from "~/utils/validation";
+import { Organisation } from "@prisma/client";
 
 type LoaderData = {
   organisation: Organisation | null;
@@ -31,14 +32,14 @@ type ActionData = {
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
 
-  const name = form.get('name');
-  const nameShort = form.get('nameShort');
-  const slugName = form.get('slugName');
+  const name = form.get("name");
+  const nameShort = form.get("nameShort");
+  const slugName = form.get("slugName");
 
   if (
-    typeof name !== 'string' ||
-    typeof nameShort !== 'string' ||
-    typeof slugName !== 'string'
+    typeof name !== "string" ||
+    typeof nameShort !== "string" ||
+    typeof slugName !== "string"
   ) {
     return badRequest({ FormError: `Form not submitted correctly.` });
   }
@@ -46,7 +47,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   const fieldErrors = {
     title: validateText(name, {
-      min: { length: 4, errorMessage: 'MOORE than 4' },
+      min: { length: 4, errorMessage: "MOORE than 4" },
     }),
   };
   if (Object.values(fieldErrors).some(Boolean))
@@ -57,7 +58,7 @@ export const action: ActionFunction = async ({ request }) => {
   });
 
   if (!organisation)
-    return badRequest<ActionData>({ formError: 'Something went wrong.' });
+    return badRequest<ActionData>({ formError: "Something went wrong." });
 
   return redirect(`/organisations`);
 };

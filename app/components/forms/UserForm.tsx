@@ -26,7 +26,7 @@ const UserForm = ({
   }, [fetcher]);
 
   return (
-    <fetcher.Form method="post" action="/user">
+    <fetcher.Form method="post" action="/_api/user">
       <input type="hidden" name="userId" value={user?.id} />
       <input type="hidden" name="departmentId" value={departmentId} />
       <input type="hidden" name="organisationId" value={organisationId} />

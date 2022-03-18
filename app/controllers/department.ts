@@ -1,5 +1,6 @@
 import { db } from '~/utils/db.server';
-import { Department } from '@prisma/client';
+import { Department, DepartmentEmployee, Organisation, User } from '@prisma/client';
+import { json, redirect } from 'remix';
 
 export const createDepartment = async ({
   department,
@@ -26,10 +27,15 @@ export const getDepartment = async ({
 }: {
   departmentId?: string;
   departmentSlug?: string;
-}) => {
-  return await db.department.findFirst({
+}): Promise<Department & {organisation: Organisation}> => {
+  const department = await db.department.findFirst({
     where: { OR: { id: departmentId, slugName: departmentSlug } }, include: {organisation: true}
   });
+
+  // if(!department) throw new Error('Error')
+  if (!department) throw redirect("/organisations");
+
+  return department
 };
 
 export const getDepartments = async ({
@@ -63,3 +69,18 @@ export const getDepartments = async ({
 //     },
 //   });
 // };
+
+export const getDepartmentEmployees = async ({
+  departmentId,
+}: {
+  departmentId: string;
+}): Promise<(Pick<Department, 'id' | 'name'> & {employees: User[]}) | null> => {
+  const department = await db.department.findFirst({
+    where: {
+      id: departmentId
+    },
+    select: {employees: {select: {user: true}}, id: true, name: true}
+  });
+
+  return department ? {...department, employees: department.employees.map(e => e.user)} : null
+};

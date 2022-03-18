@@ -2,6 +2,7 @@ import { getOrganisationEmployees, getUsers } from "~/controllers/user.server";
 import {
   Link,
   LoaderFunction,
+  Outlet,
   useFetcher,
   useLoaderData,
   useParams,
@@ -86,8 +87,8 @@ export default function DepartmentEmployees() {
   return (
     <div className="h-full flex flex=-col">
       <div className="flex-grow border-4 border-green-300">
-        <div className="p-4 grow flex space-x-4 border-2 border-red-600">
-          <div className="w-1/2 px-2 flex flex-col border-2 border-slate-300 rounded-lg overflow-hidden">
+        <div className="h-full p-4 flex space-x-4 border-2 border-red-600">
+          <div className="w-1/3 px-2 flex flex-col border-2 border-slate-300 rounded-lg overflow-hidden">
             <div
               ref={drop}
               className={`border-b-2 border-sky-700 ${
@@ -106,7 +107,9 @@ export default function DepartmentEmployees() {
               )
             )}
           </div>
-          <div className="w-1/2 shrink-0 border-2 border-sky-200">test</div>
+          <div className="flex-grow shrink-0 border-2 border-sky-200">
+            <Outlet />
+          </div>
         </div>
       </div>
       <div className="w-1/4 border-4 border-red-300">
