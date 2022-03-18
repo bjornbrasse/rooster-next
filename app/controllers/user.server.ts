@@ -1,6 +1,6 @@
 import { db } from '~/utils/db.server';
 import bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
+import { Department, Organisation, User } from '@prisma/client';
 import { nanoid } from 'nanoid';
 
 export const createUser = async ({
@@ -60,15 +60,14 @@ export async function register({
 
 export const getOrganisationEmployees = async ({
   organisationId,
-  organisationSlug,
 }: {
-  organisationId?: string;
-  organisationSlug?: string;
-}): Promise<User[]> => {
+  organisationId: string;
+}): Promise<(Pick<User, 'id' | 'firstName' | 'lastName'> & {organisation: Organisation})[]> => {
   return await db.user.findMany({
     where: {
-      OR: { id: organisationId, organisation: { slugName: organisationSlug } },
+      organisationId
     },
+    select: {organisation: true, id: true, firstName: true, lastName: true}
   });
 };
 

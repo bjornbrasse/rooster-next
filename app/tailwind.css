@@ -835,6 +835,11 @@ h2 {
   margin-bottom: 3rem;
 }
 
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -881,6 +886,10 @@ h2 {
 
 .mb-24 {
   margin-bottom: 6rem;
+}
+
+.ml-auto {
+  margin-left: auto;
 }
 
 .block {
@@ -945,6 +954,10 @@ h2 {
 
 .h-1\/2 {
   height: 50%;
+}
+
+.h-24 {
+  height: 6rem;
 }
 
 .max-h-60 {
@@ -1287,6 +1300,21 @@ h2 {
   border-color: rgb(229 231 235 / var(--tw-border-opacity));
 }
 
+.border-green-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(134 239 172 / var(--tw-border-opacity));
+}
+
+.border-red-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(252 165 165 / var(--tw-border-opacity));
+}
+
+.border-gray-500 {
+  --tw-border-opacity: 1;
+  border-color: rgb(107 114 128 / var(--tw-border-opacity));
+}
+
 .bg-gray-700 {
   --tw-bg-opacity: 1;
   background-color: rgb(55 65 81 / var(--tw-bg-opacity));
@@ -1387,16 +1415,27 @@ h2 {
   background-color: rgb(192 132 252 / var(--tw-bg-opacity));
 }
 
+.bg-sky-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(224 242 254 / var(--tw-bg-opacity));
+}
+
+.bg-yellow-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(253 224 71 / var(--tw-bg-opacity));
+}
+
+.bg-sky-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(125 211 252 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-60 {
   --tw-bg-opacity: 0.6;
 }
 
 .bg-opacity-20 {
   --tw-bg-opacity: 0.2;
-}
-
-.p-8 {
-  padding: 2rem;
 }
 
 .p-4 {
@@ -1511,6 +1550,10 @@ h2 {
 
 .text-right {
   text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
 }
 
 .text-lg {
@@ -1731,6 +1774,11 @@ h2 {
   background-color: rgb(224 242 254 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-sky-800:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(7 89 133 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-opacity-30:hover {
   --tw-bg-opacity: 0.3;
 }
@@ -1743,6 +1791,11 @@ h2 {
 .hover\:text-blue-600:hover {
   --tw-text-opacity: 1;
   color: rgb(37 99 235 / var(--tw-text-opacity));
+}
+
+.hover\:text-white:hover {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
 .focus\:outline-none:focus {
