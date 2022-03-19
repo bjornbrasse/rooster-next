@@ -796,6 +796,14 @@ h2 {
   right: 0.25rem;
 }
 
+.right-4 {
+  right: 1rem;
+}
+
+.right-3 {
+  right: 0.75rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -970,6 +978,10 @@ h2 {
   height: 50%;
 }
 
+.h-6 {
+  height: 1.5rem;
+}
+
 .max-h-60 {
   max-height: 15rem;
 }
@@ -1012,6 +1024,10 @@ h2 {
 
 .w-1\/5 {
   width: 20%;
+}
+
+.w-6 {
+  width: 1.5rem;
 }
 
 .shrink-0 {
@@ -1115,6 +1131,10 @@ h2 {
 
 .flex-col {
   flex-direction: column;
+}
+
+.items-start {
+  align-items: flex-start;
 }
 
 .items-end {
@@ -1519,6 +1539,16 @@ h2 {
   background-color: rgb(56 189 248 / var(--tw-bg-opacity));
 }
 
+.bg-slate-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(226 232 240 / var(--tw-bg-opacity));
+}
+
+.bg-slate-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(203 213 225 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-60 {
   --tw-bg-opacity: 0.6;
 }
@@ -1606,6 +1636,11 @@ h2 {
   padding-right: 3rem;
 }
 
+.py-0 {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
 .pl-4 {
   padding-left: 1rem;
 }
@@ -1632,6 +1667,18 @@ h2 {
 
 .pr-4 {
   padding-right: 1rem;
+}
+
+.pl-2 {
+  padding-left: 0.5rem;
+}
+
+.pr-48 {
+  padding-right: 12rem;
+}
+
+.pr-8 {
+  padding-right: 2rem;
 }
 
 .text-left {
@@ -1760,6 +1807,21 @@ h2 {
   color: rgb(107 114 128 / var(--tw-text-opacity));
 }
 
+.text-slate-300 {
+  --tw-text-opacity: 1;
+  color: rgb(203 213 225 / var(--tw-text-opacity));
+}
+
+.text-slate-400 {
+  --tw-text-opacity: 1;
+  color: rgb(148 163 184 / var(--tw-text-opacity));
+}
+
+.text-sky-400 {
+  --tw-text-opacity: 1;
+  color: rgb(56 189 248 / var(--tw-text-opacity));
+}
+
 .underline {
   -webkit-text-decoration-line: underline;
           text-decoration-line: underline;
@@ -1768,6 +1830,21 @@ h2 {
 .decoration-solid {
   -webkit-text-decoration-style: solid;
           text-decoration-style: solid;
+}
+
+.placeholder-sky-400::-moz-placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(56 189 248 / var(--tw-placeholder-opacity));
+}
+
+.placeholder-sky-400:-ms-input-placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(56 189 248 / var(--tw-placeholder-opacity));
+}
+
+.placeholder-sky-400::placeholder {
+  --tw-placeholder-opacity: 1;
+  color: rgb(56 189 248 / var(--tw-placeholder-opacity));
 }
 
 .opacity-0 {

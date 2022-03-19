@@ -13,20 +13,23 @@ import { useDrag, useDrop } from 'react-dnd';
 import { DnDItemTypes } from '~/utils/dnd';
 import { getDepartmentEmployees } from '~/controllers/department';
 import { ColumnLookupView } from '~/components/column-lookp-view';
+import { BBLoader } from 'types';
 
 type LoaderData = {
   departmentEmployees: Awaited<ReturnType<typeof getDepartmentEmployees>>;
   organisationEmployees: Awaited<ReturnType<typeof getOrganisationEmployees>>;
 };
 
-export const loader: LoaderFunction = async ({
-  params,
-}): Promise<LoaderData> => {
+export const loader: BBLoader<{
+  departmentId: string;
+  organisationId: string;
+}> = async ({ params }): Promise<LoaderData> => {
   const departmentEmployees = await getDepartmentEmployees({
-    departmentId: params.departmentId as string,
+    departmentId: params.departmentId,
   });
+
   const organisationEmployees = await getOrganisationEmployees({
-    organisationId: params.organisationId as string,
+    organisationId: params.organisationId,
   });
 
   return { departmentEmployees, organisationEmployees };
@@ -91,49 +94,9 @@ export default function DepartmentEmployees() {
         id: user.id,
         name: `${user.firstName} ${user.lastName}`,
       }))}
-      listTitle="Taken"
+      listTitle="Medewerkers"
     >
       <Outlet />
     </ColumnLookupView>
-    // <div className="h-full flex flex=-col">
-    //   <div className="flex-grow border-4 border-green-300">
-    //     <div className="h-full p-4 flex space-x-4 border-2 border-red-600">
-    //       <div className="w-1/3 px-2 flex flex-col border-2 border-slate-300 rounded-lg overflow-hidden">
-    //         <div
-    //           ref={drop}
-    //           className={`border-b-2 border-sky-700 ${
-    //             isOver ? "bg-sky-300" : null
-    //           }`}
-    //         >
-    //           drop
-    //         </div>
-    //         {departmentEmployees?.employees.map(
-    //           ({ id, firstName, lastName }) => (
-    //             <Link
-    //               to={id}
-    //               className="select-none"
-    //               key={id}
-    //             >{`${firstName} ${lastName}`}</Link>
-    //           )
-    //         )}
-    //       </div>
-    //       <div className="flex-grow shrink-0 border-2 border-sky-200">
-    //         <Outlet />
-    //       </div>
-    //     </div>
-    //   </div>
-    //   <div className="w-1/4 border-4 border-red-300">
-    //     <input
-    //       type="text"
-    //       name="search"
-    //       id="search"
-    //       placeholder="Zoeken..."
-    //       onChange={(e) => setSearchValue(e.target.value)}
-    //       className="mt-2 p-1 mx-auto text-md rounded-lg"
-    //     />
-
-    //     {searchedEmployees.map((employee) => listItem({ employee }))}
-    //   </div>
-    // </div>
   );
 }
