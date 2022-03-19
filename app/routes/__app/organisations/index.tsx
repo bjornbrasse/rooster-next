@@ -48,7 +48,7 @@ export default function Organisations() {
           <tbody>
             {organisations.map((organisation) => (
               <TRL
-                to={organisation.id}
+                to={`${organisation.id}/departments`}
                 className="border-b border-gray-300 hover:bg-blue-300 cursor-pointer"
                 key={organisation.id}
               >

@@ -1,8 +1,8 @@
 import { User } from "@prisma/client";
+import { getUsers } from "~/controllers/user.server";
 import * as React from "react";
-import { LoaderFunction, useLoaderData } from "remix";
-import Container from "~/components/Container";
-import { getOrganisationEmployees, getUsers } from "~/controllers/user.server";
+import { LoaderFunction, Outlet, useLoaderData } from "remix";
+import { ColumnLookupView } from "~/components/column-lookp-view";
 
 type LoaderData = {
   employees: User[];
@@ -18,14 +18,18 @@ export const loader: LoaderFunction = async ({
   return { employees };
 };
 
-export default function Employees() {
-  const { employees } = useLoaderData<LoaderData>();
+export default function OrganisationEmployees() {
+  const { employees } = useLoaderData() as LoaderData;
 
   return (
-    <Container>
-      {employees.map((employee) => (
-        <div>{employee.firstName}</div>
-      ))}
-    </Container>
+    <ColumnLookupView
+      listItems={employees.map(({ id, firstName, lastName }) => ({
+        id,
+        name: `${firstName} ${lastName}`,
+      }))}
+      listTitle="Medewerkers"
+    >
+      <Outlet />
+    </ColumnLookupView>
   );
 }

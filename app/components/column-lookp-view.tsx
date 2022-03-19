@@ -7,7 +7,7 @@ type IProps = {
   listTitle: string;
 };
 
-const ColumnLookupView: React.FC<IProps> = ({
+export const ColumnLookupView: React.FC<IProps> = ({
   children,
   listItems,
   listTitle,
@@ -43,5 +43,3 @@ const ColumnLookupView: React.FC<IProps> = ({
     </div>
   );
 };
-
-export default ColumnLookupView;
