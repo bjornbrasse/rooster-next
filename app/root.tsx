@@ -5,20 +5,20 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "remix";
-import type { MetaFunction } from "remix";
-import styles from "./tailwind.css";
-import { DialogProvider } from "~/contexts/dialog";
-import { ScheduleProvider } from "~/contexts/schedule";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { DndProvider } from "react-dnd";
+} from 'remix';
+import type { MetaFunction } from 'remix';
+import styles from './tailwind.css';
+import { DialogProvider } from '~/contexts/dialog';
+import { ScheduleProvider } from '~/contexts/schedule';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }];
+  return [{ rel: 'stylesheet', href: styles }];
 }
 
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: 'Rooster' };
 };
 
 export default function App() {
@@ -48,7 +48,7 @@ export default function App() {
         <div id="dialog" />
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        {process.env.NODE_ENV === 'development' && <LiveReload />}
       </body>
     </html>
   );

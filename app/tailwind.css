@@ -844,6 +844,16 @@ h2 {
   margin-bottom: 3rem;
 }
 
+.mx-4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.mx-12 {
+  margin-left: 3rem;
+  margin-right: 3rem;
+}
+
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -1067,6 +1077,42 @@ h2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.grid-cols-\[200px_minmax\(900px\2c _1fr\)_100px\] {
+  grid-template-columns: 200px minmax(900px, 1fr) 100px;
+}
+
+.grid-cols-\[200px_minmax\(900px\2c _1fr\)\] {
+  grid-template-columns: 200px minmax(900px, 1fr);
+}
+
+.grid-cols-\[200px__minmax\(900px\2c _1fr\)\] {
+  grid-template-columns: 200px  minmax(900px, 1fr);
+}
+
+.grid-cols-\[200px__minmax\(200px\2c _1fr\)\] {
+  grid-template-columns: 200px  minmax(200px, 1fr);
+}
+
+.grid-cols-\[200px__minmax\(2140px\2c _1fr\)\] {
+  grid-template-columns: 200px  minmax(2140px, 1fr);
+}
+
+.grid-cols-\[200px__minmax\(140px\2c _1fr\)\] {
+  grid-template-columns: 200px  minmax(140px, 1fr);
+}
+
+.grid-cols-\[200px__minmax\(120px\2c _1fr\)\] {
+  grid-template-columns: 200px  minmax(120px, 1fr);
+}
+
+.grid-cols-\[1210px__minmax\(120px\2c _1fr\)\] {
+  grid-template-columns: 1210px  minmax(120px, 1fr);
+}
+
+.grid-cols-\[120px__minmax\(120px\2c _1fr\)\] {
+  grid-template-columns: 120px  minmax(120px, 1fr);
+}
+
 .flex-col {
   flex-direction: column;
 }
@@ -1107,6 +1153,18 @@ h2 {
   --tw-space-x-reverse: 0;
   margin-right: calc(1rem * var(--tw-space-x-reverse));
   margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+}
+
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
 .divide-y > :not([hidden]) ~ :not([hidden]) {
@@ -1456,6 +1514,11 @@ h2 {
   background-color: rgb(224 242 254 / var(--tw-bg-opacity));
 }
 
+.bg-sky-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(56 189 248 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-60 {
   --tw-bg-opacity: 0.6;
 }
@@ -1536,6 +1599,11 @@ h2 {
 .py-5 {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
+}
+
+.px-12 {
+  padding-left: 3rem;
+  padding-right: 3rem;
 }
 
 .pl-4 {
@@ -1810,6 +1878,11 @@ h2 {
   background-color: rgb(7 89 133 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-sky-50:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(240 249 255 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-opacity-30:hover {
   --tw-bg-opacity: 0.3;
 }
@@ -1873,6 +1946,10 @@ h2 {
 @media (min-width: 768px) {
   .md\:w-1\/4 {
     width: 25%;
+  }
+
+  .md\:w-1\/5 {
+    width: 20%;
   }
 }
 

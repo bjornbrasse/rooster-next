@@ -1,15 +1,20 @@
-import { Department, Organisation, Task, User } from "@prisma/client";
-import { LoaderFunction, useLoaderData, useLocation } from "remix";
-import { redirect } from "remix";
-import { Outlet, useParams } from "remix";
-import DialogButton from "~/components/DialogButton";
-import ScheduleForm from "~/components/forms/ScheduleForm";
-import TaskForm from "~/components/forms/TaskForm";
-import UserForm from "~/components/forms/UserForm";
-import Navigator from "~/components/Navigator";
-import Tabs from "~/components/Tabs";
-import { useDialog } from "~/contexts/dialog";
-import { getDepartment } from "~/controllers/department";
+import { Department, Organisation, Task, User } from '@prisma/client';
+import type { LoaderFunction, MetaFunction } from 'remix';
+import { useLoaderData, useLocation } from 'remix';
+import { redirect } from 'remix';
+import { Outlet, useParams } from 'remix';
+import DialogButton from '~/components/DialogButton';
+import ScheduleForm from '~/components/forms/ScheduleForm';
+import TaskForm from '~/components/forms/TaskForm';
+import UserForm from '~/components/forms/UserForm';
+import Navigator from '~/components/Navigator';
+import Tabs from '~/components/Tabs';
+import { useDialog } from '~/contexts/dialog';
+import { getDepartment } from '~/controllers/department';
+
+export const meta: MetaFunction = ({ data }) => {
+  return { title: data.department.name };
+};
 
 type LoaderData = {
   department: Awaited<ReturnType<typeof getDepartment>>;
@@ -28,7 +33,7 @@ export const loader: LoaderFunction = async ({
 export default function DepartmentLayout() {
   const { department } = useLoaderData() as LoaderData;
   const location = useLocation();
-  const { departmentId } = useParams();
+  const { departmentId, taskId } = useParams();
   const { closeDialog } = useDialog();
 
   return (
@@ -36,7 +41,7 @@ export default function DepartmentLayout() {
       <Navigator
         organisation={department.organisation}
         organisationTo={`/organisations/${department.organisation.id}${
-          location.pathname.includes("tasks") ? "?redirectTo=tasks" : null
+          location.pathname.includes('tasks') ? '?redirectTo=tasks' : null
         }`}
         department={department}
         // ook departmentTo maken
@@ -44,15 +49,15 @@ export default function DepartmentLayout() {
       <Tabs
         actions={
           <>
-            {location.pathname.endsWith("employees") ? (
+            {location.pathname.endsWith('employees') ? (
               <DialogButton
-                description={""}
+                description={''}
                 form={
                   <UserForm
                     departmentId={departmentId}
                     organisationId={department!.organisation.id}
                     onSaved={function (user: User): void {
-                      console.log("gebruiker aangemaakt", user);
+                      console.log('gebruiker aangemaakt', user);
                       closeDialog();
                     }}
                   />
@@ -60,23 +65,23 @@ export default function DepartmentLayout() {
                 icon="fas fa-plus"
                 title="Nieuwe Medewerker"
               />
-            ) : location.pathname.endsWith("schedules") ? (
+            ) : location.pathname.endsWith('schedules') ? (
               <DialogButton
-                description={""}
+                description={''}
                 form={
                   <ScheduleForm
                     departmentId={departmentId as string}
                     onSaved={function (): void {
-                      throw new Error("Function not implemented.");
+                      throw new Error('Function not implemented.');
                     }}
                   />
                 }
                 icon="fas fa-plus"
                 title="Rooster toevoegen"
               />
-            ) : location.pathname.endsWith("/tasks") ? (
+            ) : location.pathname.endsWith('/tasks') || taskId ? (
               <DialogButton
-                description={""}
+                description={''}
                 form={
                   <TaskForm
                     departmentId={departmentId as string}
