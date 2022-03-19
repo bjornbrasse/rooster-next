@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async ({
   return { tasks };
 };
 
-export default function DepartmentTasks() {
+export default function DepartmentTasksLayout() {
   const { tasks } = useLoaderData<LoaderData>();
 
   return (

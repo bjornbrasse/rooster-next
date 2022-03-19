@@ -103,6 +103,7 @@ model Task {
   name         String
   department   Department @relation(fields: [departmentId], references: [id])
   departmentId String
+  description  String?
   bookings     Booking[]
 }
 
