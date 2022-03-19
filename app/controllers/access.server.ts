@@ -1,14 +1,14 @@
 import { redirect } from 'remix';
 import { getUser, requireUser } from './auth.server';
 
-export async function userIsAdmin(
-  request: Request,
-  redirectTo: string = '/'
-): Promise<Boolean> {
-  const user = await requireUser(request, { redirectTo });
+// export async function userIsAdmin(
+//   request: Request,
+//   redirectTo: string = '/'
+// ): Promise<Boolean> {
+//   const user = await requireUser(request, { redirectTo });
 
-  return user.role !== 'ADMIN';
-}
+//   return user.role !== 'ADMIN';
+// }
 
 export async function can(
   access: 'viewOrganisations',

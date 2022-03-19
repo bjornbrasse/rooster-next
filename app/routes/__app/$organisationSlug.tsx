@@ -21,7 +21,7 @@ export const loader: LoaderFunction = async ({
   params,
   request,
 }): Promise<LoaderData> => {
-  const user = await requireUser(request);
+  const user = await requireUser({ request });
 
   const organisation = await db.organisation.findUnique({
     where: { slugName: params.organisationSlug as string },

@@ -124,32 +124,22 @@ export async function getUser(
   }
 }
 
-interface RequireOptions {
-  redirectTo?: string;
-}
-
-interface RequireUserOptions {
-  redirectTo?: string;
-  isAdmin?: boolean;
-}
-
-export async function requireUser(
-  request: Request,
-  options: RequireUserOptions = { redirectTo: '/', isAdmin: false }
-): Promise<User> {
+export async function requireUser({
+  request,
+  options = { redirectTo: '/blabla' },
+}: {
+  request: Request;
+  options?: { isAdmin?: boolean; redirectTo?: string };
+}): Promise<User> {
   const user = await getUser(request);
 
-  if (!user) throw redirect(options?.redirectTo ?? '/');
+  if (!user) throw redirect(options.redirectTo!);
 
   if (options.isAdmin) {
-    if (user.role !== 'ADMIN') throw new Error('Not admin');
+    if (user.role !== 'ADMIN') throw redirect(options.redirectTo!);
   }
 
   return user;
-}
-
-interface RequireOrganisationOptions extends RequireOptions {
-  userOptions?: { isEmloyee?: User | null };
 }
 
 // export async function requireOrganisation(

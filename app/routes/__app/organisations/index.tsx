@@ -2,10 +2,9 @@ import { Organisation } from '@prisma/client';
 import { NavigationType } from 'react-router';
 import { Link, LoaderFunction, useLoaderData, useNavigate } from 'remix';
 import TRL from '~/components/TRL';
-import { userIsAdmin } from '~/controllers/access.server';
 import { db } from '~/utils/db.server';
 import Navigator from '~/components/Navigator';
-import type { BBLoader } from '~/types';
+import { requireUser } from '~/controllers/auth.server';
 
 type LoaderData = {
   organisations: Organisation[];
@@ -14,7 +13,7 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({
   request,
 }): Promise<LoaderData> => {
-  await userIsAdmin(request, '/home');
+  const user = requireUser({ request, options: { isAdmin: true } });
 
   const organisations = await db.organisation.findMany();
 

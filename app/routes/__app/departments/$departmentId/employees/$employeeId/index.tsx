@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 const Header: React.FC<{ caption: string }> = ({ caption, children }) => {
   return (
@@ -11,7 +11,7 @@ const Header: React.FC<{ caption: string }> = ({ caption, children }) => {
 export default function Employee() {
   return (
     <div className="p-2">
-      <Header caption={""}>Aanwezigheid</Header>
+      <Header caption={''}>Aanwezigheid</Header>
     </div>
   );
 }
