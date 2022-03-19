@@ -1,5 +1,10 @@
 import { db } from '~/utils/db.server';
-import { Department, DepartmentEmployee, Organisation, User } from '@prisma/client';
+import {
+  Department,
+  DepartmentEmployee,
+  Organisation,
+  User,
+} from '@prisma/client';
 import { json, redirect } from 'remix';
 
 export const createDepartment = async ({
@@ -27,15 +32,16 @@ export const getDepartment = async ({
 }: {
   departmentId?: string;
   departmentSlug?: string;
-}): Promise<Department & {organisation: Organisation}> => {
+}): Promise<Department & { organisation: Organisation }> => {
   const department = await db.department.findFirst({
-    where: { OR: { id: departmentId, slugName: departmentSlug } }, include: {organisation: true}
+    where: { OR: { id: departmentId, slugName: departmentSlug } },
+    include: { organisation: true },
   });
 
   // if(!department) throw new Error('Error')
-  if (!department) throw redirect("/organisations");
+  if (!department) throw redirect('/organisations');
 
-  return department
+  return department;
 };
 
 export const getDepartments = async ({
@@ -44,7 +50,7 @@ export const getDepartments = async ({
   organisationId: string;
 }) => {
   return await db.department.findMany({
-    where: { organisation: {id: organisationId} },
+    where: { organisation: { id: organisationId } },
   });
 };
 
@@ -74,13 +80,9 @@ export const getDepartmentEmployees = async ({
   departmentId,
 }: {
   departmentId: string;
-}): Promise<(Pick<Department, 'id' | 'name'> & {employees: User[]}) | null> => {
-  const department = await db.department.findFirst({
-    where: {
-      id: departmentId
-    },
-    select: {employees: {select: {user: true}}, id: true, name: true}
+}): Promise<{ user: User }[]> => {
+  return await db.departmentEmployee.findMany({
+    where: { departmentId },
+    select: { user: true },
   });
-
-  return department ? {...department, employees: department.employees.map(e => e.user)} : null
 };

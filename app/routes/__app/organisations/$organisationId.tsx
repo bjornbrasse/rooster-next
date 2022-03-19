@@ -1,4 +1,4 @@
-import { Organisation } from "@prisma/client";
+import { Organisation } from '@prisma/client';
 import {
   Link,
   LoaderFunction,
@@ -6,23 +6,29 @@ import {
   redirect,
   useLoaderData,
   useParams,
-} from "remix";
-import Tabs from "~/components/Tabs";
-import { getOrganisation } from "~/controllers/organisation";
-import Navigator from "~/components/Navigator";
+} from 'remix';
+import Tabs from '~/components/Tabs';
+import { getOrganisation } from '~/controllers/organisation';
+import Navigator from '~/components/Navigator';
+import { BBLoader } from '~/types';
+import { BBHandle } from 'types';
+
+export const handle: BBHandle = {
+  id: 'organisationRoute',
+};
 
 type LoaderData = {
   organisation: Organisation;
 };
 
-export const loader: LoaderFunction = async ({
+export const loader: BBLoader<{ organisationId: string }> = async ({
   params,
 }): Promise<LoaderData | Response> => {
   const organisation = await getOrganisation({
     where: { id: params.organisationId },
   });
 
-  if (!organisation) return redirect("/organisations");
+  if (!organisation) return redirect('/organisations');
 
   return { organisation };
 };
