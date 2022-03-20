@@ -1,8 +1,8 @@
-import { User } from "@prisma/client";
-import { getUsers } from "~/controllers/user.server";
-import * as React from "react";
-import { LoaderFunction, Outlet, useLoaderData } from "remix";
-import { ColumnLookupView } from "~/components/column-lookp-view";
+import * as React from 'react';
+import { User } from '@prisma/client';
+import { getUsers } from '~/controllers/user.server';
+import { LoaderFunction, Outlet, useLoaderData } from 'remix';
+import { ColumnLookupView } from '~/components/column-lookp-view';
 
 type LoaderData = {
   employees: User[];

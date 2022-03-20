@@ -1,8 +1,8 @@
-import { User } from "@prisma/client";
-import * as React from "react";
-import { LoaderFunction, useLoaderData } from "remix";
-import Container from "~/components/Container";
-import { getOrganisationEmployees, getUsers } from "~/controllers/user.server";
+import { User } from '@prisma/client';
+import * as React from 'react';
+import { LoaderFunction, useLoaderData } from 'remix';
+import Container from '~/components/Container';
+import { getOrganisationEmployees, getUsers } from '~/controllers/user.server';
 
 export default function OrganisationEmployees() {
   // const { employees } = useLoaderData<LoaderData>();

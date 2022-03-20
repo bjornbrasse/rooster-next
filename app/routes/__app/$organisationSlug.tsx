@@ -11,23 +11,24 @@ import {
 import { db } from '~/utils/db.server';
 import { classNames } from '~/utils/helpers';
 import { requireUser } from '~/controllers/auth.server';
+import { BBLoader } from 'types';
 
 type LoaderData = {
-  organisation: Organisation | null;
+  organisation: Organisation;
   user: User | null;
 };
 
-export const loader: LoaderFunction = async ({
-  params,
+export const loader: BBLoader<{ organisationSlug: string }> = async ({
+  params: { organisationSlug: slugName },
   request,
-}): Promise<LoaderData> => {
-  const user = await requireUser({ request });
+}): Promise<LoaderData | Response> => {
+  const user = await requireUser(request);
 
   const organisation = await db.organisation.findUnique({
-    where: { slugName: params.organisationSlug as string },
+    where: { slugName },
   });
 
-  if (!organisation) redirect('/');
+  if (!organisation) return redirect('/');
 
   return { organisation, user };
 };
@@ -38,7 +39,7 @@ export default function OrganisationLayout() {
   const { departmentSlug, organisationSlug } = useParams();
 
   const data = useMatches().find(
-    (m) => m.pathname === `/${organisationSlug}/${departmentSlug}`
+    (m) => m.pathname === `/${organisationSlug}/${departmentSlug}`,
   )?.data as { department: Department };
 
   const department = data?.department;

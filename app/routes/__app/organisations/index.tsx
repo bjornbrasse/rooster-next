@@ -13,7 +13,7 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({
   request,
 }): Promise<LoaderData> => {
-  const user = requireUser({ request, options: { isAdmin: true } });
+  const user = requireUser(request, { isAdmin: true });
 
   const organisations = await db.organisation.findMany();
 

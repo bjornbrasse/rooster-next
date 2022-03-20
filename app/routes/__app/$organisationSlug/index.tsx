@@ -1,7 +1,7 @@
-import { User } from '@prisma/client';
-import { LoaderFunction, useLoaderData } from 'remix';
-import { Link } from 'remix';
-import { getUser, requireUser } from '~/controllers/auth.server';
+import { User } from "@prisma/client";
+import { LoaderFunction, useLoaderData } from "remix";
+import { Link } from "remix";
+import { requireUser } from "~/controllers/auth.server";
 
 type LoaderData = {
   user: User;
