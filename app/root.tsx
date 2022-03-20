@@ -14,7 +14,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 
 export function links() {
-  return [{ rel: 'stylesheet', href: styles }];
+  return [{ rel: 'stylesheet', href: styles, as: 'css' }];
 }
 
 export const meta: MetaFunction = () => {
