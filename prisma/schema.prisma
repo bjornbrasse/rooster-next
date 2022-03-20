@@ -77,9 +77,12 @@ model DepartmentEmployee {
   assignedAt          DateTime             @default(now())
   assignedBy          String?
   isDefaultDepartment Boolean              @default(false)
-  departmentPresences DepartmentPresence[]
+  presences           DepartmentPresence[]
   canViewEmployees    Boolean              @default(false)
   canCreateEmployee   Boolean              @default(false)
+  canDeleteEmployee   Boolean              @default(false)
+  canViewTasks        Boolean              @default(false)
+  canCreateTask       Boolean              @default(false)
   taskAuthorisations  CRUD[]
 
   @@unique([departmentId, userId])
@@ -123,15 +126,16 @@ model ScheduleMember {
 }
 
 model Task {
-  id            String     @id @default(cuid())
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  name          String
-  department    Department @relation(fields: [departmentId], references: [id])
-  departmentId  String
-  description   String?
-  bookings      Booking[]
-  daysOfTheWeek String     @default("0111110")
+  id             String     @id @default(cuid())
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  name           String
+  department     Department @relation(fields: [departmentId], references: [id])
+  departmentId   String
+  description    String?
+  bookings       Booking[]
+  durationPerDay Decimal    @default(1)
+  daysOfTheWeek  String     @default("0111110")
 }
 
 model Booking {

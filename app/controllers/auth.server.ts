@@ -33,7 +33,7 @@ export async function login({
 }) {
   const user = await db.user.findUnique({
     where: { email },
-    include: { organisation: true, departments: true },
+    include: { organisation: true, departmentEmployees: true },
   });
   if (!user) return null;
 
@@ -69,15 +69,22 @@ export async function getUserId(request: Request) {
   return userId;
 }
 
-export async function requireUserId(
-  request: Request,
-  redirectTo: string = new URL(request.url).pathname
-) {
+export async function requireUserId({
+  request,
+  options = { redirectTo: '/' },
+}: {
+  request: Request;
+  options?: {
+    redirectTo?: string;
+  };
+}) {
   const session = await getUserSession(request);
   const userId = session.get('userId');
+
   if (!userId || typeof userId !== 'string') {
-    const searchParams = new URLSearchParams([['redirectTo', redirectTo]]);
-    throw redirect(`/auth/login?${searchParams}`);
+    // const searchParams = new URLSearchParams([['redirectTo', redirectTo]]);
+    // throw redirect(`/auth/login?${searchParams}`);
+    throw redirect(options.redirectTo!);
   }
   return userId;
 }
@@ -100,7 +107,7 @@ export async function getUser(
       where: { id: userId },
       include: {
         organisation: true,
-        departments: true,
+        departmentEmployees: true,
       },
     });
 

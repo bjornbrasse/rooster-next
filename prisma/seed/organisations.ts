@@ -12,6 +12,9 @@ import { nanoid } from 'nanoid';
 export async function seedOrganisations({ db }: { db: PrismaClient }) {
   const organisations = await getOrganisations();
 
+  let departmentId: string;
+  let userId: string;
+
   for (const organisation of organisations) {
     const { name, slugName } = organisation;
     const organisationId = nanoid();
@@ -53,6 +56,7 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
                           organisation: { connect: { id: organisationId } },
                         },
                       },
+                      ...user.authorisations,
                     })
                   ),
                 },
@@ -85,8 +89,14 @@ export async function getOrganisations(): Promise<
           users?: (Pick<
             User,
             'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
-          > &
-            Partial<User>)[];
+          > & {
+            authorisations?: {
+              canCreateEmployee: boolean;
+              canCreateTask: boolean;
+              canViewEmployees: boolean;
+              canViewTasks: boolean;
+            };
+          } & Partial<User>)[];
         })[];
     })[]
 > {
@@ -131,6 +141,12 @@ export async function getOrganisations(): Promise<
               initials: 'BB',
               email: 'b.brasse@etz.nl',
               passwordHash: await bcrypt.hash('test', 10),
+              authorisations: {
+                canCreateEmployee: true,
+                canCreateTask: true,
+                canViewEmployees: true,
+                canViewTasks: true,
+              },
             },
             {
               firstName: 'Michelle',

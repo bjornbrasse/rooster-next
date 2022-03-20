@@ -46,25 +46,48 @@ export const getDepartment = async ({
   return department;
 };
 
-export const getDepartmentEmployee = async ({
-  departmentEmployeeId: id,
-}: {
-  departmentEmployeeId: string;
-}): Promise<
+type ReturnType = Promise<
   DepartmentEmployee & {
     user: User;
     presences: (DepartmentPresence & { days: DepartmentPresenceDays[] })[];
   }
-> => {
-  const departmentEmployee = await db.departmentEmployee.findFirst({
-    where: { id },
+>;
+
+export async function getDepartmentEmployee({
+  departmentId,
+  userId,
+}: {
+  departmentId: string;
+  userId: string;
+}): ReturnType;
+export async function getDepartmentEmployee({
+  departmentEmployeeId,
+}: {
+  departmentEmployeeId?: string;
+}): ReturnType;
+export async function getDepartmentEmployee(callSignatures: {
+  departmentId?: string;
+  userId?: string;
+  departmentEmployeeId?: string;
+}): ReturnType {
+  let departmentEmployee:
+    | (DepartmentEmployee & {
+        user: User;
+        presences: (DepartmentPresence & { days: DepartmentPresenceDays[] })[];
+      })
+    | null = null;
+
+  const { departmentId, userId, departmentEmployeeId: id } = callSignatures;
+
+  departmentEmployee = await db.departmentEmployee.findFirst({
+    where: { OR: [{ id }, { AND: [{ departmentId, userId }] }] },
     include: { user: true, presences: { include: { days: true } } },
   });
 
   if (!departmentEmployee) throw redirect('/organisations');
 
   return departmentEmployee;
-};
+}
 
 export const getDepartments = async ({
   organisationId,

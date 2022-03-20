@@ -12,7 +12,7 @@ import Navigator from '~/components/Navigator';
 import Tabs from '~/components/Tabs';
 import { useDialog } from '~/contexts/dialog';
 import { requireUser } from '~/controllers/auth.server';
-import { getDepartment } from '~/controllers/department';
+import { getDepartment, getDepartmentEmployee } from '~/controllers/department';
 
 export const meta: MetaFunction = ({ data }) => {
   return { title: data.department.name };
@@ -20,7 +20,7 @@ export const meta: MetaFunction = ({ data }) => {
 
 type LoaderData = {
   department: Awaited<ReturnType<typeof getDepartment>>;
-  user: User & { departments: Department[]; organisation: Organisation };
+  departmentEmployee: Awaited<ReturnType<typeof getDepartmentEmployee>>;
 };
 
 export const loader: BBLoader<{ departmentId: string }> = async ({
@@ -29,17 +29,20 @@ export const loader: BBLoader<{ departmentId: string }> = async ({
 }): Promise<LoaderData | Response> => {
   const user = await requireUser({ request });
 
-  const department = await getDepartment({
+  const department = await getDepartment({ departmentId });
+
+  const departmentEmployee = await getDepartmentEmployee({
     departmentId,
+    userId: user.id,
   });
 
-  return { department, user };
+  return { department, departmentEmployee };
 };
 
 export default function DepartmentLayout() {
-  const { department } = useLoaderData() as LoaderData;
+  const { department, departmentEmployee } = useLoaderData() as LoaderData;
   const location = useLocation();
-  const { departmentId, taskId } = useParams();
+  const { departmentId, employeeId, taskId } = useParams();
   const { closeDialog } = useDialog();
 
   return (
@@ -55,7 +58,9 @@ export default function DepartmentLayout() {
       <Tabs
         actions={
           <>
-            {location.pathname.endsWith('employees') ? (
+            {(departmentEmployee.canCreateEmployee &&
+              location.pathname.endsWith('employees')) ||
+            employeeId ? (
               <DialogButton
                 description={''}
                 form={
@@ -85,7 +90,9 @@ export default function DepartmentLayout() {
                 icon="fas fa-plus"
                 title="Rooster toevoegen"
               />
-            ) : location.pathname.endsWith('/tasks') || taskId ? (
+            ) : (departmentEmployee.canCreateTask &&
+                location.pathname.endsWith('/tasks')) ||
+              taskId ? (
               <DialogButton
                 description={''}
                 form={
@@ -104,13 +111,18 @@ export default function DepartmentLayout() {
         }
       >
         <Tabs.Tab to={`/departments/${departmentId}/`}>Afdeling</Tabs.Tab>
-        <Tabs.Tab to={`/departments/${departmentId}/employees`}>
-          Medewerkers
-        </Tabs.Tab>
+        {departmentEmployee.canViewEmployees && (
+          <Tabs.Tab to={`/departments/${departmentId}/employees`}>
+            Medewerkers
+          </Tabs.Tab>
+        )}
+        {/* {departmentEmployee.canViewTasks && ( */}
         <Tabs.Tab to={`/departments/${departmentId}/tasks`}>Taken</Tabs.Tab>
+        {/* )} */}
         <Tabs.Tab to={`/departments/${departmentId}/schedules`}>
           Roosters
         </Tabs.Tab>
+        <span>{departmentEmployee.canViewTasks}</span>
       </Tabs>
       <Outlet />
     </div>

@@ -56,8 +56,8 @@ export const ColumnLookupView: React.FC<IProps> = ({
             <NavLink
               to={id}
               className={({ isActive }) =>
-                clsx('px-2 text-lg select-none', {
-                  'bg-sky-400': isActive,
+                clsx('px-2 text-lg select-none rounded-lg', {
+                  'py-1 bg-sky-400': isActive,
                   'hover:bg-sky-100 cursor-pointer': !isActive,
                 })
               }
@@ -68,7 +68,7 @@ export const ColumnLookupView: React.FC<IProps> = ({
           ))}
         </div>
       </div>
-      <div className="px-4 grow shrink-0">
+      <div className="px-2 grow shrink-0">
         <Outlet />
       </div>
     </div>
