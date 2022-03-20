@@ -62,17 +62,35 @@ model User {
 }
 
 model DepartmentEmployee {
-  department          Department @relation(fields: [departmentId], references: [id])
+  id                  String               @id @default(cuid())
+  department          Department           @relation(fields: [departmentId], references: [id])
   departmentId        String
-  user                User       @relation(fields: [userId], references: [id])
+  user                User                 @relation(fields: [userId], references: [id])
   userId              String
-  assignedAt          DateTime   @default(now())
+  assignedAt          DateTime             @default(now())
   assignedBy          String?
-  isDefaultDepartment Boolean    @default(false)
-  canViewEmployees    Boolean    @default(false)
-  canCreateEmployee   Boolean    @default(false)
+  isDefaultDepartment Boolean              @default(false)
+  presences           DepartmentPresence[]
+  canViewEmployees    Boolean              @default(false)
+  canCreateEmployee   Boolean              @default(false)
 
-  @@id([departmentId, userId])
+  @@unique([departmentId, userId])
+}
+
+model DepartmentPresence {
+  id                   String                   @id @default(cuid())
+  departmentEmployee   DepartmentEmployee       @relation(fields: [departmentEmployeeId], references: [id])
+  departmentEmployeeId String
+  from                 DateTime
+  days                 DepartmentPresenceDays[]
+}
+
+model DepartmentPresenceDays {
+  id                   String             @id @default(cuid())
+  departmentPresence   DepartmentPresence @relation(fields: [departmentPresenceId], references: [id])
+  departmentPresenceId String
+  day                  Int
+  hours                Decimal
 }
 
 model Schedule {
@@ -105,7 +123,7 @@ model Task {
   departmentId  String
   description   String?
   bookings      Booking[]
-  daysOfTheWeek String     @default("0000000")
+  daysOfTheWeek String     @default("0111110")
 }
 
 model Booking {

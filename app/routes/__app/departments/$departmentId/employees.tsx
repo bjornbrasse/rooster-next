@@ -90,8 +90,8 @@ export default function DepartmentEmployees() {
 
   return (
     <ColumnLookupView
-      listItems={departmentEmployees.map(({ user }) => ({
-        id: user.id,
+      listItems={departmentEmployees.map(({ id, user }) => ({
+        id,
         name: `${user.firstName} ${user.lastName}`,
       }))}
       listTitle="Medewerkers"

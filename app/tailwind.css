@@ -868,6 +868,14 @@ h2 {
   margin-bottom: 0.5rem;
 }
 
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
 .ml-2 {
   margin-left: 0.5rem;
 }
@@ -890,10 +898,6 @@ h2 {
 
 .mb-24 {
   margin-bottom: 6rem;
-}
-
-.ml-1 {
-  margin-left: 0.25rem;
 }
 
 .block {
@@ -1012,16 +1016,8 @@ h2 {
   width: 20%;
 }
 
-.w-24 {
-  width: 6rem;
-}
-
-.w-32 {
-  width: 8rem;
-}
-
-.w-48 {
-  width: 12rem;
+.w-12 {
+  width: 3rem;
 }
 
 .shrink-0 {
@@ -1087,12 +1083,16 @@ h2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.grid-cols-\[120px__minmax\(120px\2c _1fr\)\] {
-  grid-template-columns: 120px  minmax(120px, 1fr);
+.grid-cols-\[minmax\(200px\2c 300px\)_56px_56px_56px_56px_56px_56px_56px\] {
+  grid-template-columns: minmax(200px,300px) 56px 56px 56px 56px 56px 56px 56px;
 }
 
-.grid-rows-2 {
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+.grid-cols-\[minmax\(200px\2c 300px\)_1fr\] {
+  grid-template-columns: minmax(200px,300px) 1fr;
+}
+
+.grid-cols-\[120px__minmax\(120px\2c _1fr\)\] {
+  grid-template-columns: 120px  minmax(120px, 1fr);
 }
 
 .flex-col {
@@ -1105,6 +1105,10 @@ h2 {
 
 .items-center {
   align-items: center;
+}
+
+.justify-start {
+  justify-content: flex-start;
 }
 
 .justify-center {
@@ -1141,6 +1145,12 @@ h2 {
   --tw-space-y-reverse: 0;
   margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 
 .divide-y > :not([hidden]) ~ :not([hidden]) {
@@ -1373,6 +1383,11 @@ h2 {
 .border-gray-200 {
   --tw-border-opacity: 1;
   border-color: rgb(229 231 235 / var(--tw-border-opacity));
+}
+
+.border-gray-500 {
+  --tw-border-opacity: 1;
+  border-color: rgb(107 114 128 / var(--tw-border-opacity));
 }
 
 .bg-gray-700 {
@@ -1651,6 +1666,10 @@ h2 {
   line-height: 1.75rem;
 }
 
+.text-\[16px\] {
+  font-size: 16px;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -1673,6 +1692,10 @@ h2 {
 
 .tracking-widest {
   letter-spacing: 0.1em;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
 }
 
 .text-blue-300 {
@@ -1748,6 +1771,11 @@ h2 {
 .text-gray-500 {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
+.text-gray-600 {
+  --tw-text-opacity: 1;
+  color: rgb(75 85 99 / var(--tw-text-opacity));
 }
 
 .underline {

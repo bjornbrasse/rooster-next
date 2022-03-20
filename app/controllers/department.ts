@@ -2,6 +2,8 @@ import { db } from '~/utils/db.server';
 import {
   Department,
   DepartmentEmployee,
+  DepartmentPresence,
+  DepartmentPresenceDays,
   Organisation,
   User,
 } from '@prisma/client';
@@ -44,6 +46,26 @@ export const getDepartment = async ({
   return department;
 };
 
+export const getDepartmentEmployee = async ({
+  departmentEmployeeId: id,
+}: {
+  departmentEmployeeId: string;
+}): Promise<
+  DepartmentEmployee & {
+    user: User;
+    presences: (DepartmentPresence & { days: DepartmentPresenceDays[] })[];
+  }
+> => {
+  const departmentEmployee = await db.departmentEmployee.findFirst({
+    where: { id },
+    include: { user: true, presences: { include: { days: true } } },
+  });
+
+  if (!departmentEmployee) throw redirect('/organisations');
+
+  return departmentEmployee;
+};
+
 export const getDepartments = async ({
   organisationId,
 }: {
@@ -80,9 +102,9 @@ export const getDepartmentEmployees = async ({
   departmentId,
 }: {
   departmentId: string;
-}): Promise<{ user: User }[]> => {
+}): Promise<{ id: string; user: User }[]> => {
   return await db.departmentEmployee.findMany({
     where: { departmentId },
-    select: { user: true },
+    select: { id: true, user: true },
   });
 };

@@ -21,12 +21,13 @@ export const action: ActionFunction = async ({ request }) => {
     taskId: z.string(),
     name: z.string(),
     description: z.string(),
+    daysOfTheWeek: z.string(),
   });
 
   let task: Task | null = null;
 
   try {
-    const { taskId, name, description } = Validator.parse(
+    const { taskId, name, daysOfTheWeek, description } = Validator.parse(
       Object.fromEntries(await request.formData())
     );
 
@@ -34,7 +35,7 @@ export const action: ActionFunction = async ({ request }) => {
 
     const task = await db.task.update({
       where: { id: taskId },
-      data: { name, description },
+      data: { name, daysOfTheWeek, description },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -84,26 +85,42 @@ export default function DepartmentTask() {
   //     return () => clearTimeout(delayDebounceFn);
   //   }, [e.currentTarget]);
 
-  const [daysOfTheWeek, setDaysOfTheWeek] = React.useState('1101000');
+  const [daysOfTheWeek, setDaysOfTheWeek] = React.useState(task.daysOfTheWeek);
 
   const setDaysOfTheWeekHandler = (e: React.BaseSyntheticEvent) => {
-    console.log(daysOfTheWeek);
-    console.log('1', daysOfTheWeek.substr(0, e.target.value));
-    console.log(
-      `value ${daysOfTheWeek[e.target.value]} > ${
-        daysOfTheWeek[e.target.value] === '0' ? '1' : '0'
-      }`
-    );
-    console.log('2', daysOfTheWeek.slice((e.target.value - 13) % 6));
+    const dotw = `${daysOfTheWeek.slice(0, e.target.value)}${
+      daysOfTheWeek[e.target.value] === '0' ? '1' : '0'
+    }${e.target.value < 6 ? daysOfTheWeek.slice(e.target.value - 6) : ''}`;
 
-    const dotw =
-      daysOfTheWeek.substr(0, e.target.value) +
-        daysOfTheWeek[e.target.value] ===
-      '0'
-        ? '1'
-        : '0' + daysOfTheWeek.substr(e.target.value);
+    setDaysOfTheWeek(dotw);
+    // console.log(
+    //   `${daysOfTheWeek}
+    //   ${daysOfTheWeek.slice(0, e.target.value)} - ${
+    //     daysOfTheWeek[e.target.value]
+    //   } > ${daysOfTheWeek[e.target.value] === '0' ? '1' : '0'} - ${
+    //     e.target.value < 6 ? daysOfTheWeek.slice(e.target.value - 6) : ''
+    //   }`
+    // );
+    // console.log('1', daysOfTheWeek.substr(0, e.target.value));
+    // console.log(
+    //   `value ${daysOfTheWeek[e.target.value]} > ${
+    //     daysOfTheWeek[e.target.value] === '0' ? '1' : '0'
+    //   }`
+    // );
+    // console.log(
+    //   '2',
+    //   e.target.value,
+    //   e.target.value - 6,
+    //   daysOfTheWeek.slice(e.target.value - 6)
+    // );
 
-    // console.log(dotw);
+    // const dotw =
+    //   daysOfTheWeek.slice(0, e.target.value) + daysOfTheWeek[e.target.value] ===
+    //   '0'
+    //     ? '1'
+    //     : '0' + daysOfTheWeek.substr(e.target.value);
+
+    console.log(daysOfTheWeek, 'dotw', dotw);
   };
 
   return (
@@ -116,6 +133,7 @@ export default function DepartmentTask() {
         key={task.id}
       >
         <input type="hidden" name="taskId" value={task.id} />
+        <input type="hidden" name="daysOfTheWeek" value={daysOfTheWeek} />
 
         <label htmlFor="name">Naam</label>
         <input type="text" name="name" id="name" defaultValue={task.name} />
@@ -127,7 +145,7 @@ export default function DepartmentTask() {
           defaultValue={task.description ?? ''}
         />
         <label htmlFor="description">Weekdagen</label>
-        <div className="w-56 grid grid-cols-7 items-center">
+        <div className="w-56 grid grid-cols-7 items-center" key={task.id}>
           <label htmlFor="monday">M</label>
           <label htmlFor="tuesday">D</label>
           <label htmlFor="wednesday">W</label>
@@ -140,7 +158,7 @@ export default function DepartmentTask() {
             name="monday"
             id="monday"
             value={1}
-            checked={daysOfTheWeek[1] === '1'}
+            checked={task.daysOfTheWeek[1] === '1'}
             onChange={setDaysOfTheWeekHandler}
           />
           <input
@@ -148,7 +166,7 @@ export default function DepartmentTask() {
             name="tuesday"
             id="tuesday"
             value={2}
-            checked={daysOfTheWeek[2] === '1'}
+            checked={task.daysOfTheWeek[2] === '1'}
             onChange={setDaysOfTheWeekHandler}
           />
           <input
@@ -156,7 +174,7 @@ export default function DepartmentTask() {
             name="wednesday"
             id="wednesday"
             value={3}
-            checked={daysOfTheWeek[3] === '1'}
+            checked={task.daysOfTheWeek[3] === '1'}
             onChange={setDaysOfTheWeekHandler}
           />
           <input
@@ -164,7 +182,7 @@ export default function DepartmentTask() {
             name="thursday"
             id="thursday"
             value={4}
-            checked={daysOfTheWeek[4] === '1'}
+            checked={task.daysOfTheWeek[4] === '1'}
             onChange={setDaysOfTheWeekHandler}
           />
           <input
@@ -172,7 +190,7 @@ export default function DepartmentTask() {
             name="friday"
             id="friday"
             value={5}
-            checked={daysOfTheWeek[5] === '1'}
+            checked={task.daysOfTheWeek[5] === '1'}
             onChange={setDaysOfTheWeekHandler}
           />
           <input
@@ -180,7 +198,7 @@ export default function DepartmentTask() {
             name="saturday"
             id="saturday"
             value={6}
-            checked={daysOfTheWeek[6] === '1'}
+            checked={task.daysOfTheWeek[6] === '1'}
             onChange={setDaysOfTheWeekHandler}
           />
           <input
@@ -188,7 +206,7 @@ export default function DepartmentTask() {
             name="sunday"
             id="sunday"
             value={0}
-            checked={daysOfTheWeek[0] === '1'}
+            checked={task.daysOfTheWeek[0] === '1'}
             onChange={setDaysOfTheWeekHandler}
           />
         </div>

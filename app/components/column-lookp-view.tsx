@@ -16,7 +16,7 @@ export const ColumnLookupView: React.FC<IProps> = ({
 
   return (
     <div className="h-full p-4 flex space-x-2">
-      <div className="w-1/4 md:w-1/5 pr-2 border-r-2 border-slate-500 overflow-hidden">
+      <div className="w-1/4 shrink-0 md:w-1/5 pr-2 border-r-2 border-slate-500 overflow-hidden">
         <div
           className={clsx(
             'mb-2 text-lg text-neutral-600 tracking-widest border-b-2 border-sky-500',
