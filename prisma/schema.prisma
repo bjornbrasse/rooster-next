@@ -97,14 +97,15 @@ model ScheduleMember {
 }
 
 model Task {
-  id           String     @id @default(cuid())
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  name         String
-  department   Department @relation(fields: [departmentId], references: [id])
-  departmentId String
-  description  String?
-  bookings     Booking[]
+  id            String     @id @default(cuid())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  name          String
+  department    Department @relation(fields: [departmentId], references: [id])
+  departmentId  String
+  description   String?
+  bookings      Booking[]
+  daysOfTheWeek String     @default("0000000")
 }
 
 model Booking {

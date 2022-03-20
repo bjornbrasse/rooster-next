@@ -84,6 +84,28 @@ export default function DepartmentTask() {
   //     return () => clearTimeout(delayDebounceFn);
   //   }, [e.currentTarget]);
 
+  const [daysOfTheWeek, setDaysOfTheWeek] = React.useState('1101000');
+
+  const setDaysOfTheWeekHandler = (e: React.BaseSyntheticEvent) => {
+    console.log(daysOfTheWeek);
+    console.log('1', daysOfTheWeek.substr(0, e.target.value));
+    console.log(
+      `value ${daysOfTheWeek[e.target.value]} > ${
+        daysOfTheWeek[e.target.value] === '0' ? '1' : '0'
+      }`
+    );
+    console.log('2', daysOfTheWeek.slice((e.target.value - 13) % 6));
+
+    const dotw =
+      daysOfTheWeek.substr(0, e.target.value) +
+        daysOfTheWeek[e.target.value] ===
+      '0'
+        ? '1'
+        : '0' + daysOfTheWeek.substr(e.target.value);
+
+    // console.log(dotw);
+  };
+
   return (
     <Container className="grow border-4 border-red-500">
       <span>{task.name}</span>
@@ -104,6 +126,72 @@ export default function DepartmentTask() {
           id="description"
           defaultValue={task.description ?? ''}
         />
+        <label htmlFor="description">Weekdagen</label>
+        <div className="w-56 grid grid-cols-7 items-center">
+          <label htmlFor="monday">M</label>
+          <label htmlFor="tuesday">D</label>
+          <label htmlFor="wednesday">W</label>
+          <label htmlFor="thursday">D</label>
+          <label htmlFor="friday">V</label>
+          <label htmlFor="saturday">Za</label>
+          <label htmlFor="sunday">Zo</label>
+          <input
+            type="checkbox"
+            name="monday"
+            id="monday"
+            value={1}
+            checked={daysOfTheWeek[1] === '1'}
+            onChange={setDaysOfTheWeekHandler}
+          />
+          <input
+            type="checkbox"
+            name="tuesday"
+            id="tuesday"
+            value={2}
+            checked={daysOfTheWeek[2] === '1'}
+            onChange={setDaysOfTheWeekHandler}
+          />
+          <input
+            type="checkbox"
+            name="wednesday"
+            id="wednesday"
+            value={3}
+            checked={daysOfTheWeek[3] === '1'}
+            onChange={setDaysOfTheWeekHandler}
+          />
+          <input
+            type="checkbox"
+            name="thursday"
+            id="thursday"
+            value={4}
+            checked={daysOfTheWeek[4] === '1'}
+            onChange={setDaysOfTheWeekHandler}
+          />
+          <input
+            type="checkbox"
+            name="friday"
+            id="friday"
+            value={5}
+            checked={daysOfTheWeek[5] === '1'}
+            onChange={setDaysOfTheWeekHandler}
+          />
+          <input
+            type="checkbox"
+            name="saturday"
+            id="saturday"
+            value={6}
+            checked={daysOfTheWeek[6] === '1'}
+            onChange={setDaysOfTheWeekHandler}
+          />
+          <input
+            type="checkbox"
+            name="sunday"
+            id="sunday"
+            value={0}
+            checked={daysOfTheWeek[0] === '1'}
+            onChange={setDaysOfTheWeekHandler}
+          />
+        </div>
         {transition.state === 'submitting' ? <p>Saving...</p> : <p>Idle</p>}
       </Form>
     </Container>

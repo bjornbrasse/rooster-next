@@ -1012,6 +1012,18 @@ h2 {
   width: 20%;
 }
 
+.w-24 {
+  width: 6rem;
+}
+
+.w-32 {
+  width: 8rem;
+}
+
+.w-48 {
+  width: 12rem;
+}
+
 .shrink-0 {
   flex-shrink: 0;
 }
@@ -1077,6 +1089,10 @@ h2 {
 
 .grid-cols-\[120px__minmax\(120px\2c _1fr\)\] {
   grid-template-columns: 120px  minmax(120px, 1fr);
+}
+
+.grid-rows-2 {
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 .flex-col {
