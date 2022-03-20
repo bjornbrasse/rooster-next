@@ -54,11 +54,18 @@ model User {
   emailValidationToken  String?
   organisation          Organisation         @relation(fields: [organisationId], references: [id])
   organisationId        String
-  departments           DepartmentEmployee[]
+  departmentEmployees   DepartmentEmployee[]
   canViewOrganisations  Boolean              @default(false)
   canCreateOrganisation Boolean              @default(false)
   bookings              Booking[]
   schedules             ScheduleMember[]
+}
+
+enum CRUD {
+  CREATE
+  READ
+  UPDATE
+  DELETE
 }
 
 model DepartmentEmployee {
@@ -70,9 +77,10 @@ model DepartmentEmployee {
   assignedAt          DateTime             @default(now())
   assignedBy          String?
   isDefaultDepartment Boolean              @default(false)
-  presences           DepartmentPresence[]
+  departmentPresences DepartmentPresence[]
   canViewEmployees    Boolean              @default(false)
   canCreateEmployee   Boolean              @default(false)
+  taskAuthorisations  CRUD[]
 
   @@unique([departmentId, userId])
 }

@@ -3,6 +3,7 @@ import type { LoaderFunction, MetaFunction } from 'remix';
 import { useLoaderData, useLocation } from 'remix';
 import { redirect } from 'remix';
 import { Outlet, useParams } from 'remix';
+import { BBLoader } from 'types';
 import DialogButton from '~/components/DialogButton';
 import ScheduleForm from '~/components/forms/ScheduleForm';
 import TaskForm from '~/components/forms/TaskForm';
@@ -10,6 +11,7 @@ import UserForm from '~/components/forms/UserForm';
 import Navigator from '~/components/Navigator';
 import Tabs from '~/components/Tabs';
 import { useDialog } from '~/contexts/dialog';
+import { requireUser } from '~/controllers/auth.server';
 import { getDepartment } from '~/controllers/department';
 
 export const meta: MetaFunction = ({ data }) => {
@@ -18,16 +20,20 @@ export const meta: MetaFunction = ({ data }) => {
 
 type LoaderData = {
   department: Awaited<ReturnType<typeof getDepartment>>;
+  user: User & { departments: Department[]; organisation: Organisation };
 };
 
-export const loader: LoaderFunction = async ({
-  params,
+export const loader: BBLoader<{ departmentId: string }> = async ({
+  params: { departmentId },
+  request,
 }): Promise<LoaderData | Response> => {
+  const user = await requireUser({ request });
+
   const department = await getDepartment({
-    departmentId: String(params.departmentId),
+    departmentId,
   });
 
-  return { department };
+  return { department, user };
 };
 
 export default function DepartmentLayout() {

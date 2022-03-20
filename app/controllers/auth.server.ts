@@ -130,7 +130,7 @@ export async function requireUser({
 }: {
   request: Request;
   options?: { isAdmin?: boolean; redirectTo?: string };
-}): Promise<User> {
+}) {
   const user = await getUser(request);
 
   if (!user) throw redirect(options.redirectTo!);
