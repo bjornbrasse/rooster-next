@@ -1,9 +1,9 @@
-import { Task } from "@prisma/client";
-import type { ActionFunction } from "remix";
-import { z } from "zod";
-import { requireUserId } from "~/controllers/auth.server";
-import { createTask } from "~/controllers/task.server";
-import { badRequest } from "~/utils/helpers";
+import { Task } from '@prisma/client';
+import type { ActionFunction } from 'remix';
+import { z } from 'zod';
+import { requireUserId } from '~/controllers/auth.server';
+import { createTask } from '~/controllers/task.server';
+import { badRequest } from '~/utils/helpers';
 
 export type ActionData = { task: Task };
 
@@ -11,7 +11,7 @@ export const action: ActionFunction = async ({
   request,
   params,
 }): Promise<ActionData | Response> => {
-  const userId = await requireUserId(request, "/login");
+  const userId = await requireUserId(request);
 
   const Validator = z.object({
     taskId: z.string().optional(),
@@ -27,11 +27,11 @@ export const action: ActionFunction = async ({
     task = await createTask(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.log("er treedt een Zod-fout op", error.flatten());
+      console.log('er treedt een Zod-fout op', error.flatten());
 
       return badRequest(error.format());
     }
-    console.log("er treedt een fout op", error);
+    console.log('er treedt een fout op', error);
   }
 
   // const fieldErrors: FieldErrors = {
@@ -47,7 +47,7 @@ export const action: ActionFunction = async ({
 
   if (!task)
     return badRequest({
-      error: { form: "Something went wrong." },
+      error: { form: 'Something went wrong.' },
     });
 
   return { task };
