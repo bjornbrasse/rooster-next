@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { LoaderFunction } from 'remix';
+import Container from '~/components/Container';
+import { Section } from '~/components/section';
 import { requireUser } from '~/controllers/auth.server';
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -9,5 +11,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function AdminRoute() {
-  return <div>AdminRoute</div>;
+  return (
+    <Container>
+      <Section caption="Speciale Dagen"></Section>
+    </Container>
+  );
 }
