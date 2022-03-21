@@ -45,10 +45,10 @@ export default function OrganisationLayout() {
   const department = data?.department;
 
   return (
-    <div className="relative h-full flex flex-col">
+    <div className="relative flex h-full flex-col">
       <div
         id="header"
-        className="px-4 py-1 flex items-center text-md bg-gray-200 border-b border-primary"
+        className="text-md flex items-center border-b border-primary bg-gray-200 px-4 py-1"
       >
         <Link to="/organisations">
           <i className="fas fa-bars mr-3" />

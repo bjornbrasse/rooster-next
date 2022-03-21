@@ -5,6 +5,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useCatch,
+  useLocation,
 } from 'remix';
 import type { MetaFunction } from 'remix';
 import styles from './tailwind.css';
@@ -12,6 +14,7 @@ import { DialogProvider } from '~/contexts/dialog';
 import { ScheduleProvider } from '~/contexts/schedule';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
+import { ErrorPage } from './components/errors';
 
 export function links() {
   return [{ rel: 'stylesheet', href: styles, as: 'css' }];
@@ -52,4 +55,35 @@ export default function App() {
       </body>
     </html>
   );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  const location = useLocation();
+  console.error('CatchBoundary', caught);
+
+  if (caught.status === 404) {
+    return (
+      <html lang="en" className="dark">
+        <head>
+          <title>Oh no...</title>
+          <Links />
+        </head>
+        <body className="bg-white transition duration-500 dark:bg-gray-900">
+          <ErrorPage
+            heroProps={{
+              title: "404 - Oh no, you found a page that's missing stuff.",
+              subtitle: `"${location.pathname}" is not a page on kentcdodds.com. So sorry.`,
+              // image: (
+              //   <MissingSomething className="rounded-lg" aspectRatio="3:4" />
+              // ),
+              // action: <ArrowLink href="/">Go home</ArrowLink>,
+            }}
+          />
+          <Scripts />
+        </body>
+      </html>
+    );
+  }
+  throw new Error(`Unhandled error: ${caught.status}`);
 }
