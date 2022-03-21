@@ -148,3 +148,12 @@ model Booking {
   user      User     @relation(fields: [userId], references: [id])
   userId    String
 }
+
+model SpecialDate {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  date      DateTime
+  name      String
+}

@@ -162,14 +162,8 @@ export async function getUser(request: Request) {
 
 export async function requireUserId(
   request: Request,
-  {
-    options = { redirectTo: '/' },
-  }: {
-    options?: {
-      redirectTo?: string;
-    };
-  },
-) {
+  options: { redirectTo?: string } = { redirectTo: '/' },
+): Promise<string> {
   const userId = await getUserId(request);
 
   if (!userId) throw redirect(options.redirectTo!);
