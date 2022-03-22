@@ -7,6 +7,7 @@ import {
   LoaderFunction,
   redirect,
   useLoaderData,
+  useParams,
   useSubmit,
   useTransition,
 } from 'remix';
@@ -16,6 +17,7 @@ import { z } from 'zod';
 import { db } from '~/utils/db.server';
 import { badRequest } from '~/utils/helpers';
 import { Section } from '~/components/section';
+import useLocalStorage from '~/hooks/useLocalStorage';
 
 export const action: ActionFunction = async ({ request }) => {
   const Validator = z.object({
@@ -29,7 +31,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   try {
     const { taskId, name, daysOfTheWeek, description } = Validator.parse(
-      Object.fromEntries(await request.formData())
+      Object.fromEntries(await request.formData()),
     );
 
     // task = await createTask(data);
@@ -71,6 +73,11 @@ export default function DepartmentTask() {
   const { task } = useLoaderData<LoaderData>();
   const submit = useSubmit();
   const transition = useTransition();
+  const { departmentId } = useParams();
+  const [_, setPrevDepartmentTaskId] = useLocalStorage<string | null>(
+    'prev-department-task-id',
+    null,
+  );
 
   function changeHandler(e: React.BaseSyntheticEvent) {
     submit(e.currentTarget, { replace: false });
@@ -124,6 +131,10 @@ export default function DepartmentTask() {
     console.log(daysOfTheWeek, 'dotw', dotw);
   };
 
+  React.useEffect(() => {
+    setPrevDepartmentTaskId(task.id);
+  }, [task]);
+
   return (
     <Container className="grow border-4 border-red-500">
       <span>{task.name}</span>
@@ -161,12 +172,12 @@ export default function DepartmentTask() {
               name="durationPerDay"
               id="durationPerDay"
               defaultValue={task.durationPerDay.toString()}
-              className="w-10 mr-2 p-1 text-center"
+              className="mr-2 w-10 p-1 text-center"
             />
             <span>uur</span>
           </div>
           <label htmlFor="description">Weekdagen</label>
-          <div className="w-56 grid grid-cols-7 items-center" key={task.id}>
+          <div className="grid w-56 grid-cols-7 items-center" key={task.id}>
             <label htmlFor="monday">M</label>
             <label htmlFor="tuesday">D</label>
             <label htmlFor="wednesday">W</label>

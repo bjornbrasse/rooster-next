@@ -16,7 +16,7 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
   let userId: string;
 
   for (const organisation of organisations) {
-    const { name, slugName } = organisation;
+    const { name, slug } = organisation;
     const organisationId = nanoid();
 
     await db.organisation.create({
@@ -24,17 +24,17 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
         id: organisationId,
         name,
         nameShort: organisation.nameShort ?? '',
-        slugName,
+        slug,
         departments: {
           create: organisation.departments?.map(
-            ({ name, slugName, ...department }) => {
+            ({ name, slug, nameShort, ...department }) => {
               const departmentId = nanoid();
 
               return {
                 id: departmentId,
                 name,
-                slugName,
-                nameShort: department.nameShort ?? '',
+                slug,
+                nameShort: nameShort ?? '',
                 employees: {
                   create: department.users?.map(
                     ({
@@ -57,7 +57,7 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
                         },
                       },
                       ...user.authorisations,
-                    })
+                    }),
                   ),
                 },
                 tasks: {
@@ -66,12 +66,13 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
                   })),
                 },
                 schedules: {
-                  create: department.schedules?.map(({ name }) => ({
+                  create: department.schedules?.map(({ name, slug }) => ({
                     name,
+                    slug,
                   })),
                 },
               };
-            }
+            },
           ),
         },
       },
@@ -80,12 +81,12 @@ export async function seedOrganisations({ db }: { db: PrismaClient }) {
 }
 
 export async function getOrganisations(): Promise<
-  (Pick<Organisation, 'name' | 'slugName'> &
+  (Pick<Organisation, 'name' | 'slug'> &
     Partial<Organisation> & {
-      departments?: (Pick<Department, 'name' | 'slugName'> &
+      departments?: (Pick<Department, 'name' | 'slug'> &
         Partial<Department> & {
           tasks?: Pick<Task, 'name'>[];
-          schedules?: Pick<Schedule, 'name'>[];
+          schedules?: Pick<Schedule, 'name' | 'slug'>[];
           users?: (Pick<
             User,
             'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
@@ -104,12 +105,12 @@ export async function getOrganisations(): Promise<
     {
       name: 'Elisabeth-TweeSteden Ziekenhuis',
       nameShort: 'ETZ',
-      slugName: 'etz',
+      slug: 'etz',
       departments: [
         {
           name: 'Interne Geneeskunde',
           nameShort: 'H1',
-          slugName: 'h1',
+          slug: 'h1',
           tasks: [
             { name: 'Cluster 1' },
             { name: 'Cluster 2' },
@@ -118,7 +119,7 @@ export async function getOrganisations(): Promise<
         },
         {
           name: 'Longgeneeskunde',
-          slugName: 'longgk',
+          slug: 'longgk',
           tasks: [
             { name: 'Cluster 1' },
             { name: 'Cluster 2' },
@@ -127,10 +128,11 @@ export async function getOrganisations(): Promise<
         },
         {
           name: 'Ziekenhuisapotheek',
-          slugName: 'ziekenhuisapotheek',
+          slug: 'ziekenhuisapotheek',
           schedules: [
             {
               name: 'Dienstrooster',
+              slug: 'dienstrooster',
             },
           ],
           users: [
@@ -162,12 +164,12 @@ export async function getOrganisations(): Promise<
     {
       name: 'Elkerliek Ziekenhuis',
       nameShort: 'Elkerliek',
-      slugName: 'elkerliek',
+      slug: 'elkerliek',
       departments: [
-        { name: 'Cardiologie', slugName: '3A' },
+        { name: 'Cardiologie', slug: '3A' },
         {
           name: 'Ziekenhuisapotheek',
-          slugName: 'ziekenhuisapotheek',
+          slug: 'ziekenhuisapotheek',
         },
       ],
     },

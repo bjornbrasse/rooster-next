@@ -31,7 +31,7 @@ export const loader: LoaderFunction = async ({
 }): Promise<LoaderData> => {
   const organisation: Promise<(Organisation & { employees: User[] }) | null> =
     await getOrganisation({
-      where: { slugName: String(params.organisationSlug) },
+      where: { slug: String(params.organisationSlug) },
       include: { employees: true },
     });
 
@@ -58,17 +58,17 @@ export default function EmployeesLayout() {
           redirect(`/${organisationSlug}/employees/${user.id}`);
         }}
         organisationId={organisation.id}
-        redirectTo={`/${organisation.slugName}/admin/employees/%userId%`}
-      />
+        redirectTo={`/${organisation.slug}/admin/employees/%userId%`}
+      />,
     );
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       <div className="relative h-1/2 px-3 py-5">
         <div
           onClick={addUserHandler}
-          className="absolute top-1 right-1 btn btn-save bg-red-600"
+          className="btn btn-save absolute top-1 right-1 bg-red-600"
         >
           <i className="fas fa-plus"></i>
         </div>

@@ -14,7 +14,7 @@ export const loader: LoaderFunction = async ({
   params,
 }): Promise<LoaderData> => {
   const departments = await db.department.findMany({
-    where: { organisation: { slugName: params.organisationSlug as string } },
+    where: { organisation: { slug: params.organisationSlug as string } },
   });
 
   return { departments };
@@ -29,7 +29,7 @@ export default function OrganisationDepartments() {
     openDialog(
       'TVG',
       <DepartmentForm organisationSlug={String(organisationSlug)} />,
-      'beschrijving'
+      'beschrijving',
     );
   };
 
@@ -37,13 +37,13 @@ export default function OrganisationDepartments() {
     <>
       <div
         onClick={addDepartmentHandler}
-        className="absolute top-0.5 right-2 btn btn-save"
+        className="btn btn-save absolute top-0.5 right-2"
       >
         <i className="fas fa-plus"></i>
       </div>
-      <div className="h-full flex">
+      <div className="flex h-full">
         {!departmentId && (
-          <div className="flex-grow p-12 border-4 border-green-800">
+          <div className="flex-grow border-4 border-green-800 p-12">
             <table>
               <thead>
                 <th>Afdeling</th>
@@ -53,10 +53,10 @@ export default function OrganisationDepartments() {
                 {departments.map((department) => (
                   <tr
                     key={department.id}
-                    className="hover:bg-blue-200 cursor-pointer"
+                    className="cursor-pointer hover:bg-blue-200"
                   >
                     <LinkedTableData
-                      href={`/${organisationSlug}/${department.slugName}/`}
+                      href={`/${organisationSlug}/${department.slug}/`}
                     >
                       {department.name}
                     </LinkedTableData>

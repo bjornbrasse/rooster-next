@@ -26,23 +26,21 @@ export default function App() {
   const user = data?.user;
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       <div
         id="header"
-        className="h-12 px-4 flex justify-between items-center bg-primary"
+        className="flex h-12 items-center justify-between bg-primary px-4"
       >
         <Link
-          to={
-            user ? `/${user.organisation.slugName}/${user.firstName}` : '/home'
-          }
-          className="text-3xl font-bold text-accent cursor-pointer"
+          to={user ? `/${user.organisation.slug}/${user.firstName}` : '/home'}
+          className="cursor-pointer text-3xl font-bold text-accent"
         >
           Rooster
         </Link>
         <div className="flex items-center">
           <button
             onClick={(prev) => setShowSelectionDrawer(!!prev)}
-            className="w-8 h-8 mr-2 bg-gray-300 rounded-full"
+            className="mr-2 h-8 w-8 rounded-full bg-gray-300"
           >
             <i className="fas fa-calendar-plus"></i>
           </button>
@@ -69,7 +67,7 @@ export default function App() {
           )}
         </div>
       </div>
-      <div className="flex-grow flex justify-between bg-gray-100">
+      <div className="flex flex-grow justify-between bg-gray-100">
         <Outlet />
       </div>
     </div>

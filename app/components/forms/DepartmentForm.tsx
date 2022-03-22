@@ -44,12 +44,12 @@ export default function DepartmentForm({
           id="nameShort"
           defaultValue={department?.nameShort}
         />
-        <label htmlFor="slugName">Slug</label>
+        <label htmlFor="slug">Slug</label>
         <input
           type="text"
-          name="slugName"
-          id="slugName"
-          defaultValue={department?.slugName}
+          name="slug"
+          id="slug"
+          defaultValue={department?.slug}
         />
       </fieldset>
       <button type="submit" className="btn btn-save">

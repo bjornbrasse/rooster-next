@@ -19,12 +19,12 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const name = form.get('name');
   const nameShort = form.get('nameShort');
-  const slugName = form.get('slugName');
+  const slug = form.get('slug');
 
   if (
     typeof name !== 'string' ||
     typeof nameShort !== 'string' ||
-    typeof slugName !== 'string'
+    typeof slug !== 'string'
   ) {
     return badRequest({ FormError: `Form not submitted correctly.` });
   }
@@ -39,7 +39,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     return badRequest({ fieldErrors, fields });
 
   const organisation = await db.organisation.findUnique({
-    where: { slugName: params.organisationSlug as string },
+    where: { slug: params.organisationSlug as string },
   });
 
   if (!organisation) {
@@ -47,7 +47,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   const department = await db.department.create({
-    data: { name, nameShort, slugName, organisationId: organisation.id },
+    data: { name, nameShort, slug, organisationId: organisation.id },
   });
 
   if (!department)
@@ -65,8 +65,8 @@ export default function OrganisationCreate() {
         <input type="text" name="name" id="name" />
         <label htmlFor="nameShort">Verkorte naam</label>
         <input type="text" name="nameShort" id="nameShort" />
-        <label htmlFor="slugName">Adres naam</label>
-        <input type="text" name="slugName" id="slugName" />
+        <label htmlFor="slug">Adres naam</label>
+        <input type="text" name="slug" id="slug" />
         <button type="submit" className="btn btn-save">
           Opslaan
         </button>

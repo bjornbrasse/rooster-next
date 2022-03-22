@@ -1,9 +1,9 @@
-import { ActionFunction, LoaderFunction, useLoaderData } from "remix";
-import { redirect } from "remix";
-import { db } from "~/utils/db.server";
-import { badRequest } from "~/utils/helpers";
-import { validateText } from "~/utils/validation";
-import { Organisation } from "@prisma/client";
+import { ActionFunction, LoaderFunction, useLoaderData } from 'remix';
+import { redirect } from 'remix';
+import { db } from '~/utils/db.server';
+import { badRequest } from '~/utils/helpers';
+import { validateText } from '~/utils/validation';
+import { Organisation } from '@prisma/client';
 
 type LoaderData = {
   organisation: Organisation | null;
@@ -32,14 +32,14 @@ type ActionData = {
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
 
-  const name = form.get("name");
-  const nameShort = form.get("nameShort");
-  const slugName = form.get("slugName");
+  const name = form.get('name');
+  const nameShort = form.get('nameShort');
+  const slug = form.get('slug');
 
   if (
-    typeof name !== "string" ||
-    typeof nameShort !== "string" ||
-    typeof slugName !== "string"
+    typeof name !== 'string' ||
+    typeof nameShort !== 'string' ||
+    typeof slug !== 'string'
   ) {
     return badRequest({ FormError: `Form not submitted correctly.` });
   }
@@ -47,18 +47,18 @@ export const action: ActionFunction = async ({ request }) => {
 
   const fieldErrors = {
     title: validateText(name, {
-      min: { length: 4, errorMessage: "MOORE than 4" },
+      min: { length: 4, errorMessage: 'MOORE than 4' },
     }),
   };
   if (Object.values(fieldErrors).some(Boolean))
     return badRequest({ fieldErrors, fields });
 
   const organisation = await db.organisation.create({
-    data: { name, nameShort, slugName },
+    data: { name, nameShort, slug },
   });
 
   if (!organisation)
-    return badRequest<ActionData>({ formError: "Something went wrong." });
+    return badRequest<ActionData>({ formError: 'Something went wrong.' });
 
   return redirect(`/organisations`);
 };
@@ -84,12 +84,12 @@ export default function Organisation() {
           id="nameShort"
           defaultValue={organisation.nameShort}
         />
-        <label htmlFor="slugName">Adres naam</label>
+        <label htmlFor="slug">Adres naam</label>
         <input
           type="text"
-          name="slugName"
-          id="slugName"
-          defaultValue={organisation.slugName}
+          name="slug"
+          id="slug"
+          defaultValue={organisation.slug}
           disabled={true}
         />
         <button type="submit" className="btn btn-save">

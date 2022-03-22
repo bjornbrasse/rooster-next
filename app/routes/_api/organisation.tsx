@@ -7,13 +7,13 @@ import { createOrganisation } from '~/controllers/organisation';
 type Fields = {
   name?: string;
   nameShort?: string;
-  slugName?: string;
+  slug?: string;
 };
 
 type FieldErrors = {
   name?: string[] | undefined;
   nameShort?: string[] | undefined;
-  slugName?: string[] | undefined;
+  slug?: string[] | undefined;
 };
 
 export type ActionData = {
@@ -30,18 +30,18 @@ export const action: ActionFunction = async ({ request }) => {
 
   const name = form.get('name');
   const nameShort = form.get('nameShort');
-  const slugName = form.get('slugName');
+  const slug = form.get('slug');
 
   if (
     typeof name !== 'string' ||
     typeof nameShort !== 'string' ||
-    typeof slugName !== 'string'
+    typeof slug !== 'string'
   ) {
     return badRequest<ActionData>({
       error: { form: `Form not submitted correctly.` },
     });
   }
-  const fields = { name, nameShort, slugName };
+  const fields = { name, nameShort, slug };
 
   const fieldErrors: FieldErrors = {
     name: validateText(name, {

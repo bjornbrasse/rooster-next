@@ -19,13 +19,13 @@ type LoaderData = {
 };
 
 export const loader: BBLoader<{ organisationSlug: string }> = async ({
-  params: { organisationSlug: slugName },
+  params: { organisationSlug: slug },
   request,
 }): Promise<LoaderData | Response> => {
   const user = await requireUser(request);
 
   const organisation = await db.organisation.findUnique({
-    where: { slugName },
+    where: { slug },
   });
 
   if (!organisation) return redirect('/');
@@ -55,14 +55,14 @@ export default function OrganisationLayout() {
         </Link>
         {organisation && (
           <>
-            {/* <Link to={`/${organisation.slugName}/employees`}> */}
+            {/* <Link to={`/${organisation.slug}/employees`}> */}
             <Link to={`/organisations`}>
               <p>{organisation.name}</p>
             </Link>
             {department && (
               <>
                 <i className="fas fa-chevron-right mx-2 text-sm" />
-                <Link to={`/${organisation.slugName}/departments`}>
+                <Link to={`/${organisation.slug}/departments`}>
                   <p>{department.name}</p>
                 </Link>
               </>

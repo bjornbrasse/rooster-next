@@ -69,7 +69,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     return badRequest({ fieldErrors, fields });
 
   const organisation = await db.organisation.findUnique({
-    where: { slugName: params.organisationSlug as string },
+    where: { slug: params.organisationSlug as string },
   });
 
   if (!organisation) {
@@ -89,7 +89,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (!user)
     return badRequest<ActionData>({ formError: 'Something went wrong.' });
 
-  return redirect(`/${organisation.slugName}/admin/employees`);
+  return redirect(`/${organisation.slug}/admin/employees`);
 };
 
 export default function EmployeeEdit() {
@@ -98,7 +98,7 @@ export default function EmployeeEdit() {
   const fieldErrors = data?.fieldErrors;
 
   return (
-    <div className="h-full p-4 border-t-2 border-gray-400">
+    <div className="h-full border-t-2 border-gray-400 p-4">
       <form method="POST" className="xl:w-2/3">
         <fieldset className="grid grid-cols-2 gap-y-4">
           <label htmlFor="firstName">Voornaam</label>

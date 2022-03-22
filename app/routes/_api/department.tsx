@@ -7,13 +7,13 @@ import { createDepartment } from '~/controllers/department';
 type Fields = {
   name?: string;
   nameShort?: string;
-  slugName?: string;
+  slug?: string;
 };
 
 type FieldErrors = {
   name?: string[] | undefined;
   nameShort?: string[] | undefined;
-  slugName?: string[] | undefined;
+  slug?: string[] | undefined;
 };
 
 export type ActionData = {
@@ -30,20 +30,20 @@ export const action: ActionFunction = async ({ request }) => {
 
   const name = form.get('name');
   const nameShort = form.get('nameShort');
-  const slugName = form.get('slugName');
+  const slug = form.get('slug');
   const organisationSlug = form.get('organisationSlug');
 
   if (
     typeof name !== 'string' ||
     typeof nameShort !== 'string' ||
-    typeof slugName !== 'string' ||
+    typeof slug !== 'string' ||
     typeof organisationSlug !== 'string'
   ) {
     return badRequest<ActionData>({
       error: { form: `Form not submitted correctly.` },
     });
   }
-  const fields = { name, nameShort, slugName };
+  const fields = { name, nameShort, slug };
 
   const fieldErrors: FieldErrors = {
     name: validateText(name, {
@@ -60,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
 
   const user = await createDepartment({
-    department: { name, nameShort, slugName },
+    department: { name, nameShort, slug },
     organisationSlug,
   });
   // const user = await db.user.create({

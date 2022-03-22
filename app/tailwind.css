@@ -1148,6 +1148,10 @@ h2 {
   grid-template-columns: 120px  minmax(120px, 1fr);
 }
 
+.grid-cols-\[56px_56px_56px_56px_56px_56px_56px\] {
+  grid-template-columns: 56px 56px 56px 56px 56px 56px 56px;
+}
+
 .flex-col {
   flex-direction: column;
 }
@@ -2083,6 +2087,11 @@ h2 {
 .hover\:text-blue-600:hover {
   --tw-text-opacity: 1;
   color: rgb(37 99 235 / var(--tw-text-opacity));
+}
+
+.hover\:text-red-500:hover {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity));
 }
 
 .hover\:text-white:hover {

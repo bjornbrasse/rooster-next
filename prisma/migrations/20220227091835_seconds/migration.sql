@@ -8,7 +8,7 @@ CREATE TABLE "Organisation" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "nameShort" TEXT NOT NULL,
-    "slugName" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
 
     CONSTRAINT "Organisation_pkey" PRIMARY KEY ("id")
 );
@@ -21,7 +21,7 @@ CREATE TABLE "Department" (
     "name" TEXT NOT NULL,
     "nameShort" TEXT NOT NULL,
     "organisationId" TEXT NOT NULL,
-    "slugName" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
 
     CONSTRAINT "Department_pkey" PRIMARY KEY ("id")
 );
@@ -94,10 +94,10 @@ CREATE TABLE "Booking" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Organisation_slugName_key" ON "Organisation"("slugName");
+CREATE UNIQUE INDEX "Organisation_slug_key" ON "Organisation"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Department_organisationId_slugName_key" ON "Department"("organisationId", "slugName");
+CREATE UNIQUE INDEX "Department_organisationId_slug_key" ON "Department"("organisationId", "slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");

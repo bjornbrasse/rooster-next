@@ -62,7 +62,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-  return createUserSession(user, `/${user.organisation.slugName}`);
+  return createUserSession(user, `/${user.organisation.slug}`);
 };
 
 export default function LoginRoute() {
@@ -80,10 +80,10 @@ export default function LoginRoute() {
   return (
     <div className="container">
       <div
-        className="card mb-24 px-8 py-4 flex flex-col justify-center bg-white border border-primary"
+        className="card mb-24 flex flex-col justify-center border border-primary bg-white px-8 py-4"
         data-light=""
       >
-        <h1 className="mb-4 text-primary text-xl text-center">Login</h1>
+        <h1 className="mb-4 text-center text-xl text-primary">Login</h1>
 
         <form
           method="POST"
@@ -158,7 +158,7 @@ export default function LoginRoute() {
           </div>
           <p>
             Forgot password?{' '}
-            <Link to="/auth/requestPasswordReset" className="p-2 bg-gray-200">
+            <Link to="/auth/requestPasswordReset" className="bg-gray-200 p-2">
               Reset Password
             </Link>
           </p>

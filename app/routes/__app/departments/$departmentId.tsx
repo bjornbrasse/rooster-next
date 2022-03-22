@@ -13,6 +13,7 @@ import Tabs from '~/components/Tabs';
 import { useDialog } from '~/contexts/dialog';
 import { requireUser } from '~/controllers/auth.server';
 import { getDepartment, getDepartmentEmployee } from '~/controllers/department';
+import useLocalStorage from '~/hooks/useLocalStorage';
 
 export const meta: MetaFunction = ({ data }) => {
   return { title: data.department.name };
@@ -27,7 +28,7 @@ export const loader: BBLoader<{ departmentId: string }> = async ({
   params: { departmentId },
   request,
 }): Promise<LoaderData | Response> => {
-  const user = await requireUser({ request });
+  const user = await requireUser(request);
 
   const department = await getDepartment({ departmentId });
 
@@ -44,9 +45,13 @@ export default function DepartmentLayout() {
   const location = useLocation();
   const { departmentId, employeeId, taskId } = useParams();
   const { closeDialog } = useDialog();
+  const [prevDepartmentTaskId] = useLocalStorage(
+    'prev-department-task-id',
+    null,
+  );
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="flex w-full flex-col">
       <Navigator
         organisation={department.organisation}
         organisationTo={`/organisations/${department.organisation.id}${
@@ -117,7 +122,13 @@ export default function DepartmentLayout() {
           </Tabs.Tab>
         )}
         {/* {departmentEmployee.canViewTasks && ( */}
-        <Tabs.Tab to={`/departments/${departmentId}/tasks`}>Taken</Tabs.Tab>
+        <Tabs.Tab
+          to={`/departments/${departmentId}/tasks${
+            prevDepartmentTaskId ? `/${prevDepartmentTaskId}` : ''
+          }`}
+        >
+          Taken
+        </Tabs.Tab>
         {/* )} */}
         <Tabs.Tab to={`/departments/${departmentId}/schedules`}>
           Roosters

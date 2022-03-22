@@ -48,7 +48,7 @@ export async function seedUsers({ db }: { db: PrismaClient }) {
         email,
         passwordHash,
         organisation: {
-          connect: { slugName: user.organisationSlug },
+          connect: { slug: user.organisationSlug },
         },
         // defaultDepartment: {
         //   connect: { slug: defaultDepartmentSlug },
@@ -62,7 +62,10 @@ export async function seedUsers({ db }: { db: PrismaClient }) {
 }
 
 export async function getUsers(): Promise<
-  (Pick<User, 'firstName' | 'lastName' | 'initials' |'email' | 'passwordHash'> & {
+  (Pick<
+    User,
+    'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
+  > & {
     organisationSlug: string;
     defaultDepartmentSlug: string;
     defaultTeamSlug: string;
@@ -72,7 +75,7 @@ export async function getUsers(): Promise<
     {
       firstName: 'Bjorn',
       lastName: 'Brassé',
-      initials: "BB",
+      initials: 'BB',
       email: 'b.brasse@etz.nl',
       passwordHash: await bcrypt.hash('test', 10),
       organisationSlug: '/etz',
@@ -82,7 +85,7 @@ export async function getUsers(): Promise<
     {
       firstName: 'Barbara',
       lastName: 'Maat',
-      initials: "BM",
+      initials: 'BM',
       email: 'b.maat@etz.nl',
       passwordHash: await bcrypt.hash('test', 10),
       organisationSlug: '/etz',
@@ -93,7 +96,7 @@ export async function getUsers(): Promise<
     {
       firstName: 'Mark',
       lastName: 'Jansen',
-      initials: "MJ",
+      initials: 'MJ',
       email: 'm.jansen@etz.nl',
       passwordHash: await bcrypt.hash('test', 10),
       organisationSlug: '/etz',
@@ -104,7 +107,7 @@ export async function getUsers(): Promise<
     {
       firstName: 'Rien',
       lastName: 'van Noort',
-      initials: "RvN",
+      initials: 'RvN',
       email: 'rvnoort@elkerliek.nl',
       passwordHash: await bcrypt.hash('test', 10),
       organisationSlug: '/elkerliek',
@@ -114,7 +117,7 @@ export async function getUsers(): Promise<
     {
       firstName: 'Theo',
       lastName: 'van der Steen',
-      initials: "TvdS",
+      initials: 'TvdS',
       email: 'tvdsteen@elkerliek.nl',
       passwordHash: await bcrypt.hash('appels', 10),
       organisationSlug: '/elkerliek',

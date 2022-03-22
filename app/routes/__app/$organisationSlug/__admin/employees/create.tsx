@@ -56,7 +56,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     return badRequest({ fieldErrors, fields });
 
   const organisation = await db.organisation.findUnique({
-    where: { slugName: params.organisationSlug as string },
+    where: { slug: params.organisationSlug as string },
   });
 
   if (!organisation) {
@@ -76,7 +76,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (!user)
     return badRequest<ActionData>({ formError: 'Something went wrong.' });
 
-  return redirect(`/${organisation.slugName}/admin/employees`);
+  return redirect(`/${organisation.slug}/admin/employees`);
 };
 
 type LoaderData = {

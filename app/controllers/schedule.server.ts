@@ -1,5 +1,6 @@
 import { db } from '~/utils/db.server';
 import { Schedule } from '@prisma/client';
+import { redirect } from 'remix';
 
 export const createSchedule = async ({
   schedule,
@@ -7,6 +8,7 @@ export const createSchedule = async ({
 }: {
   schedule: {
     name: string;
+    slug: string;
   };
   departmentId: string;
 }): Promise<Schedule | null> => {
@@ -25,16 +27,23 @@ export const getSchedules = async ({
 }) => {
   return await db.schedule.findMany({
     where: { departmentId },
+    include: { department: { include: { organisation: true } } },
   });
 };
 
 export const getSchedule = async ({ scheduleId }: { scheduleId?: string }) => {
-  return await db.schedule.findUnique({
+  const schedule = await db.schedule.findUnique({
     where: { id: scheduleId },
     include: {
-      department: { include: { employees: { include: { user: true } } } },
-      members: { include: { user: true } },
-      tasks: { orderBy: [{ name: 'asc' }] },
+      department: {
+        include: { employees: { include: { user: true } }, tasks: true },
+      },
+      scheduleMembers: { include: { user: true } },
+      scheduleTasks: { include: { task: true } },
     },
   });
+
+  if (!schedule) throw redirect('/');
+
+  return schedule;
 };

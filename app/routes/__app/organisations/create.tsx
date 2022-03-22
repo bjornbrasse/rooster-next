@@ -18,12 +18,12 @@ export const action: ActionFunction = async ({ request }) => {
 
   const name = form.get('name');
   const nameShort = form.get('nameShort');
-  const slugName = form.get('slugName');
+  const slug = form.get('slug');
 
   if (
     typeof name !== 'string' ||
     typeof nameShort !== 'string' ||
-    typeof slugName !== 'string'
+    typeof slug !== 'string'
   ) {
     return badRequest({ FormError: `Form not submitted correctly.` });
   }
@@ -38,13 +38,13 @@ export const action: ActionFunction = async ({ request }) => {
     return badRequest({ fieldErrors, fields });
 
   const organisation = await db.organisation.create({
-    data: { name, nameShort, slugName },
+    data: { name, nameShort, slug },
   });
 
   if (!organisation)
     return badRequest<ActionData>({ formError: 'Something went wrong.' });
 
-  return redirect(`/${organisation.slugName}/admin/employees`);
+  return redirect(`/${organisation.slug}/admin/employees`);
 };
 
 export default function OrganisationCreate() {
@@ -56,8 +56,8 @@ export default function OrganisationCreate() {
         <input type="text" name="name" id="name" autoFocus />
         <label htmlFor="nameShort">Verkorte naam</label>
         <input type="text" name="nameShort" id="nameShort" />
-        <label htmlFor="slugName">Adres naam</label>
-        <input type="text" name="slugName" id="slugName" />
+        <label htmlFor="slug">Adres naam</label>
+        <input type="text" name="slug" id="slug" />
         <button type="submit" className="btn btn-save">
           Opslaan
         </button>

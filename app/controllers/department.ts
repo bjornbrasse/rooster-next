@@ -16,14 +16,14 @@ export const createDepartment = async ({
   department: {
     name: string;
     nameShort: string;
-    slugName: string;
+    slug: string;
   };
   organisationSlug: string;
 }): Promise<Department> => {
   return await db.department.create({
     data: {
       ...department,
-      organisation: { connect: { slugName: organisationSlug } },
+      organisation: { connect: { slug: organisationSlug } },
     },
   });
 };
@@ -36,7 +36,7 @@ export const getDepartment = async ({
   departmentSlug?: string;
 }): Promise<Department & { organisation: Organisation }> => {
   const department = await db.department.findFirst({
-    where: { OR: { id: departmentId, slugName: departmentSlug } },
+    where: { OR: { id: departmentId, slug: departmentSlug } },
     include: { organisation: true },
   });
 

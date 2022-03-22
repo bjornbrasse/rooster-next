@@ -33,15 +33,14 @@ export const getOrganisation = async ({
 
 export const findOrganisation = async ({
   id,
-  slugName,
+  slug,
 }: {
   id?: string;
-  slugName?: string;
+  slug?: string;
 }): Promise<Organisation | null> => {
   if (id) return await db.organisation.findUnique({ where: { id } });
 
-  if (slugName)
-    return await db.organisation.findUnique({ where: { slugName } });
+  if (slug) return await db.organisation.findUnique({ where: { slug } });
 
   return null;
 };

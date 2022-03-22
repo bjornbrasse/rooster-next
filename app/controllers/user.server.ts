@@ -23,7 +23,11 @@ export const createUser = async ({
     //   ...userDataWithoutPassword,
     //   passwordHash: await bcrypt.hash(userData.password, 10),
     // },
-    data: { ...userDataRest, organisationId, departments: {create: {departmentId: departmentId ?? ""}} },
+    data: {
+      ...userDataRest,
+      organisationId,
+      departments: { create: { departmentId: departmentId ?? '' } },
+    },
   });
 };
 
@@ -52,7 +56,7 @@ export async function register({
       lastName,
       initials,
       email,
-      organisation: { connect: { slugName: organisationSlug } },
+      organisation: { connect: { slug: organisationSlug } },
       passwordHash,
       emailValidationToken,
     },
@@ -63,15 +67,23 @@ export const getOrganisationEmployees = async ({
   organisationId,
 }: {
   organisationId: string;
-}): Promise<(Pick<User, 'id' | 'firstName' | 'lastName'> & {organisation: Organisation})[]> => {
+}): Promise<
+  (Pick<User, 'id' | 'firstName' | 'lastName'> & {
+    organisation: Organisation;
+  })[]
+> => {
   return await db.user.findMany({
     where: {
-      organisationId
+      organisationId,
     },
-    select: {organisation: true, id: true, firstName: true, lastName: true}
+    select: { organisation: true, id: true, firstName: true, lastName: true },
   });
 };
 
-export const getUsers = async ({organisationId}: {organisationId: string}) => {
-  return await db.user.findMany({where: {organisationId}})
-}
+export const getUsers = async ({
+  organisationId,
+}: {
+  organisationId: string;
+}) => {
+  return await db.user.findMany({ where: { organisationId } });
+};

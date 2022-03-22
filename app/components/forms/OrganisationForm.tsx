@@ -43,12 +43,12 @@ export default function OrganisationForm({
           id="nameShort"
           defaultValue={organisation?.nameShort}
         />
-        <label htmlFor="slugName">Slug</label>
+        <label htmlFor="slug">Slug</label>
         <input
           type="text"
-          name="slugName"
-          id="slugName"
-          defaultValue={organisation?.slugName}
+          name="slug"
+          id="slug"
+          defaultValue={organisation?.slug}
         />
       </fieldset>
       <button type="submit" className="btn btn-save">

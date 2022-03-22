@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({
   console.log('gebruikers gevonden 2', user);
 
   const organisation = await db.organisation.findUnique({
-    where: { slugName: params.organisationSlug as string },
+    where: { slug: params.organisationSlug as string },
   });
 
   // if (!organisation) redirect('/');
@@ -40,27 +40,25 @@ export default function Organisation() {
   const { departmentSlug, employeeId } = useParams();
 
   const data = useMatches().find(
-    (m) => m.pathname === `/${organisation?.slugName}/admin/departments`
+    (m) => m.pathname === `/${organisation?.slug}/admin/departments`,
   )?.data as { departments: Department[] };
-  const department = data?.departments.find(
-    (d) => d.slugName === departmentSlug
-  );
+  const department = data?.departments.find((d) => d.slug === departmentSlug);
 
   return (
-    <div className="relative h-full flex-grow flex flex-col">
-      <div className="h-full flex border-b-4 border-purple-400">
+    <div className="relative flex h-full flex-grow flex-col">
+      <div className="flex h-full border-b-4 border-purple-400">
         {!departmentSlug && (
           <div
             id="menu"
-            className="w-1/5 md:w-1/4 border-r-2 border-purple-800"
+            className="w-1/5 border-r-2 border-purple-800 md:w-1/4"
           >
-            <div className="py-4 pr-4 flex flex-col">
+            <div className="flex flex-col py-4 pr-4">
               <NavLink
                 to="employees"
                 className={({ isActive }) =>
                   classNames(
-                    'w-full m-2 text-lg border-b border-gray-400',
-                    `block ${isActive ? 'text-purple-300' : ''}`
+                    'm-2 w-full border-b border-gray-400 text-lg',
+                    `block ${isActive ? 'text-purple-300' : ''}`,
                   )
                 }
               >
@@ -71,8 +69,8 @@ export default function Organisation() {
                 to="departments"
                 className={({ isActive }) =>
                   classNames(
-                    'w-full m-2 text-lg border-b border-gray-400',
-                    `block ${isActive ? 'text-purple-300' : ''}`
+                    'm-2 w-full border-b border-gray-400 text-lg',
+                    `block ${isActive ? 'text-purple-300' : ''}`,
                   )
                 }
               >
