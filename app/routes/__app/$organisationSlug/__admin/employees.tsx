@@ -11,9 +11,10 @@ import {
 import { db } from '~/utils/db.server';
 import UserTable from '~/components/tables/UserTable';
 import { useDialog } from '~/contexts/dialog';
-import UserForm from '~/components/forms/UserForm';
+import { UserForm } from '~/components/forms/user-form';
 import { findOrganisation, getOrganisation } from '~/controllers/organisation';
 import { getOrganisationEmployees } from '~/controllers/user.server';
+import { BBLoader } from 'types';
 
 export const meta: MetaFunction = () => {
   return {
@@ -26,14 +27,13 @@ type LoaderData = {
   employees: User[];
 };
 
-export const loader: LoaderFunction = async ({
-  params,
+export const loader: BBLoader<{ organisationSlug: string }> = async ({
+  params: { organisationSlug: slug },
 }): Promise<LoaderData> => {
-  const organisation: Promise<(Organisation & { employees: User[] }) | null> =
-    await getOrganisation({
-      where: { slug: String(params.organisationSlug) },
-      include: { employees: true },
-    });
+  const organisation = await getOrganisation({
+    where: { slug },
+    include: { employees: true },
+  });
 
   return { employees: organisation?.employees };
 };

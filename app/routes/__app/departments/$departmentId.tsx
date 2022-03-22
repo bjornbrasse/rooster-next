@@ -7,7 +7,7 @@ import { BBLoader } from 'types';
 import DialogButton from '~/components/DialogButton';
 import ScheduleForm from '~/components/forms/ScheduleForm';
 import TaskForm from '~/components/forms/TaskForm';
-import UserForm from '~/components/forms/UserForm';
+import { UserForm } from '~/components/forms/user-form';
 import Navigator from '~/components/Navigator';
 import Tabs from '~/components/Tabs';
 import { useDialog } from '~/contexts/dialog';

@@ -3,7 +3,7 @@ import {
   Department,
   DepartmentEmployee,
   DepartmentPresence,
-  DepartmentPresenceDays,
+  DepartmentPresenceDay,
   Organisation,
   User,
 } from '@prisma/client';
@@ -49,7 +49,9 @@ export const getDepartment = async ({
 type ReturnType = Promise<
   DepartmentEmployee & {
     user: User;
-    presences: (DepartmentPresence & { days: DepartmentPresenceDays[] })[];
+    departmentPresences: (DepartmentPresence & {
+      departmentPresenceDays: DepartmentPresenceDay[];
+    })[];
   }
 >;
 
@@ -70,18 +72,21 @@ export async function getDepartmentEmployee(callSignatures: {
   userId?: string;
   departmentEmployeeId?: string;
 }): ReturnType {
-  let departmentEmployee:
-    | (DepartmentEmployee & {
-        user: User;
-        presences: (DepartmentPresence & { days: DepartmentPresenceDays[] })[];
-      })
-    | null = null;
+  // let departmentEmployee:
+  //   | (DepartmentEmployee & {
+  //       user: User;
+  //       presences: (DepartmentPresence & { days: DepartmentPresenceDays[] })[];
+  //     })
+  //   | null = null;
 
   const { departmentId, userId, departmentEmployeeId: id } = callSignatures;
 
-  departmentEmployee = await db.departmentEmployee.findFirst({
+  const departmentEmployee = await db.departmentEmployee.findFirst({
     where: { OR: [{ id }, { AND: [{ departmentId, userId }] }] },
-    include: { user: true, presences: { include: { days: true } } },
+    include: {
+      user: true,
+      departmentPresences: { include: { departmentPresenceDays: true } },
+    },
   });
 
   if (!departmentEmployee) throw redirect('/organisations');

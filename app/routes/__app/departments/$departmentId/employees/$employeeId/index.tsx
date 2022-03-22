@@ -1,10 +1,17 @@
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { Form, useLoaderData } from 'remix';
+import {
+  PresenceForm,
+  links as presenceFormLinks,
+} from '~/components/forms/presence-form';
 import { Section } from '~/components/section';
+import { useDialog } from '~/contexts/dialog';
 import { getDepartmentEmployee } from '~/controllers/department';
 import { BBLoader } from '~/types';
 import { WEEKDAYS } from '~/utils/date';
+
+export const links = () => [...presenceFormLinks()];
 
 type LoaderData = {
   departmentEmployee: Awaited<ReturnType<typeof getDepartmentEmployee>>;
@@ -25,27 +32,42 @@ export const loader: BBLoader<{
 const WEEKDAYS_NAME_ENG = WEEKDAYS.map((d) => d.name.eng);
 const WEEKDAYS_ABBR_NL = WEEKDAYS.map((d) => d.abbr.nl);
 
-export default function Employee() {
+export default function DepartmentEmployee() {
   const { departmentEmployee } = useLoaderData() as LoaderData;
+  const { closeDialog, openDialog } = useDialog();
+
   const { canCreateEmployee, canViewEmployees, canDeleteEmployee, user } =
     departmentEmployee;
-
   const { canCreateTask, canViewTasks } = departmentEmployee;
 
   return (
-    <div className="p-2 flex flex-col space-y-6">
+    <div className="flex flex-col space-y-6 p-2">
       <Section caption="Algemeen">
         <span>{`${user.firstName} ${user.lastName}`}</span>
       </Section>
       <Section caption="Aanwezigheid">
-        {departmentEmployee.presences.length === 0 ? (
+        {departmentEmployee.departmentPresences.length === 0 ? (
           <div className="flex items-center">
             <span>Er is nog geen standaard planning</span>
-            <button className="btn btn-save ml-6">Toevoegen</button>
+            <button
+              onClick={() =>
+                openDialog(
+                  'Toevoegen',
+                  <PresenceForm
+                    departmentEmployeeId={departmentEmployee.id}
+                    onSaved={() => closeDialog()}
+                  />,
+                  '',
+                )
+              }
+              className="btn btn-save ml-6"
+            >
+              Toevoegen
+            </button>
           </div>
         ) : (
           <>
-            <div className="mb-1 grid grid-cols-[minmax(200px,300px)_56px_56px_56px_56px_56px_56px_56px] space-x-2 justify-start">
+            <div className="mb-1 grid grid-cols-[minmax(200px,300px)_56px_56px_56px_56px_56px_56px_56px] justify-start space-x-2">
               <p>Vanaf</p>
               {[1, 2, 3, 4, 5, 6, 0].map((day) => (
                 <label htmlFor={WEEKDAYS_NAME_ENG[day]} className="text-center">
@@ -53,11 +75,11 @@ export default function Employee() {
                 </label>
               ))}
             </div>
-            {departmentEmployee.presences.map((presence) => {
+            {departmentEmployee.departmentPresences.map((presence) => {
               const isBefore = dayjs(presence.from).isBefore(dayjs(), 'day');
 
               return (
-                <div className="grid grid-cols-[minmax(200px,300px)_56px_56px_56px_56px_56px_56px_56px] space-x-2 space-y-2 items-center">
+                <div className="grid grid-cols-[minmax(200px,300px)_56px_56px_56px_56px_56px_56px_56px] items-center space-x-2 space-y-2">
                   <span>{presence.from}</span>
                   {[1, 2, 3, 4, 5, 6, 0].map((day) => (
                     <input
@@ -65,12 +87,12 @@ export default function Employee() {
                       name={WEEKDAYS_NAME_ENG[day]}
                       id={WEEKDAYS_NAME_ENG[day]}
                       value={
-                        presence.days
+                        presence.departmentPresenceDays
                           .find((d) => d.day === day)
                           ?.hours.toString() || '0'
                       }
                       className={clsx('w-12 p-1 text-center', {
-                        'text-gray-400 bg-gray-200 border-gray-300': isBefore,
+                        'border-gray-300 bg-gray-200 text-gray-400': isBefore,
                       })}
                       disabled={isBefore}
                     />
@@ -82,8 +104,8 @@ export default function Employee() {
         )}
       </Section>
       <Section caption="Rechten">
-        <Form className="grid grid-cols-[minmax(200px,300px)_1fr] space-y-2 items-center text-[16px]">
-          <span className="pt-2 col-span-2 border-b border-slate-400">
+        <Form className="grid grid-cols-[minmax(200px,300px)_1fr] items-center space-y-2 text-[16px]">
+          <span className="col-span-2 border-b border-slate-400 pt-2">
             Medewerkers
           </span>
           <label htmlFor="canViewEmploysees">Kan medewerkers zien</label>
@@ -107,7 +129,7 @@ export default function Employee() {
             id="canDeleteEmployee"
             checked={canDeleteEmployee}
           />
-          <span className="pt-2 col-span-2 border-b border-slate-400">
+          <span className="col-span-2 border-b border-slate-400 pt-2">
             Taken
           </span>
           <label htmlFor="canViewTasks">Lijst weergeven</label>

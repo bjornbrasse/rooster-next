@@ -6,7 +6,7 @@ import {
   useLoaderData,
   useParams,
 } from 'remix';
-import UserForm from '~/components/forms/UserForm';
+import { UserForm } from '~/components/forms/user-form';
 import { db } from '~/utils/db.server';
 
 type ActionData = {

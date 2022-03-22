@@ -1,13 +1,14 @@
-import * as React from "react";
-import { User } from "@prisma/client";
-import { useFetcher } from "remix";
-import { UserActionData } from "~/routes/_api/user";
+import * as React from 'react';
+import { User } from '@prisma/client';
+import { useFetcher } from 'remix';
+// import { UserActionData } from '~/routes/_api/user';
+import { ActionData as UserActionData } from '~/routes/_api/user2';
 
-const UserForm = ({
+export const UserForm = ({
   departmentId,
   onSaved: savedHandler,
   organisationId,
-  redirectTo = "/",
+  redirectTo = '/',
   user,
 }: {
   onSaved: (user: User) => void;
@@ -26,7 +27,7 @@ const UserForm = ({
   }, [fetcher]);
 
   return (
-    <fetcher.Form method="post" action="/_api/user">
+    <fetcher.Form method="post" action="/_api/user2">
       <input type="hidden" name="userId" value={user?.id} />
       <input type="hidden" name="departmentId" value={departmentId} />
       <input type="hidden" name="organisationId" value={organisationId} />
@@ -39,8 +40,8 @@ const UserForm = ({
           id="firstName"
           defaultValue={user?.firstName}
         />
-        {fetcher.data?.error?.fields?.firstName && (
-          <p>Fout - {fetcher.data?.error?.fields?.firstName}</p>
+        {fetcher.data?.errors?.firstName && (
+          <p>Fout - {fetcher.data?.errors.firstName}</p>
         )}
         <label htmlFor="lastName">Achternaam</label>
         <input
@@ -54,7 +55,7 @@ const UserForm = ({
         <button
           type="button"
           onClick={() => setChangingPassword(!changingPassword)}
-          className="col-span-2 btn btn-save"
+          className="btn btn-save col-span-2"
         >
           Verander wachtwoord
         </button>
@@ -73,5 +74,3 @@ const UserForm = ({
     </fetcher.Form>
   );
 };
-
-export default UserForm;
