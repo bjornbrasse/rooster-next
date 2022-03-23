@@ -3,9 +3,8 @@ import bcrypt from 'bcrypt';
 import { Department, Organisation, User } from '@prisma/client';
 import { nanoid } from 'nanoid';
 
-export const createUser = async ({
-  userData,
-}: {
+export const createUser = async (
+  author: string,
   userData: {
     departmentId?: string;
     email: string;
@@ -14,9 +13,9 @@ export const createUser = async ({
     lastName: string;
     organisationId: string;
     // password: string;
-  };
-}): Promise<User> => {
-  const { departmentId, organisationId, ...userDataRest } = userData;
+  },
+): Promise<User> => {
+  const { departmentId, ...userDataRest } = userData;
 
   return await db.user.create({
     // data: {
@@ -25,8 +24,7 @@ export const createUser = async ({
     // },
     data: {
       ...userDataRest,
-      organisationId,
-      departments: { create: { departmentId: departmentId ?? '' } },
+      departmentEmployees: { create: { departmentId: departmentId ?? '' } },
     },
   });
 };
