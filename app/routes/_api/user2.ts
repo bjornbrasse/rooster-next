@@ -24,7 +24,7 @@ export interface ActionData extends ActionDataBase {
 }
 
 export const action: ActionFunction = async ({ request }) => {
-  const author = await requireUserId(request);
+  const userId = await requireUserId(request);
 
   return handleFormSubmission<ActionData>({
     request,
@@ -42,13 +42,7 @@ export const action: ActionFunction = async ({ request }) => {
     handleFormValues: async (fields) => {
       console.log('dit gebeurt er', fields);
 
-      const user = await createUser({ ...fields });
-
-      const actionData: ActionData = {
-        errors: {},
-        fields,
-        status: 'success',
-      };
+      const user = await createUser(userId, { ...fields });
 
       return json<ActionData>({ user, fields, status: 'success', errors: {} });
     },
