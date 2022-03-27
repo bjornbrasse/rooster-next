@@ -13,7 +13,7 @@ model Organisation {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   name        String
-  nameShort   String
+  nameShort   String?
   slug        String       @unique
   departments Department[]
   employees   User[]
@@ -24,13 +24,14 @@ model Department {
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
   name             String
-  nameShort        String
+  nameShort        String?
+  slug             String
   organisation     Organisation         @relation(fields: [organisationSlug], references: [slug])
   organisationSlug String
-  slug             String
   employees        DepartmentEmployee[]
   schedules        Schedule[]
   tasks            Task[]
+  users            User[]
 
   @@unique([organisationSlug, slug])
 }
@@ -41,22 +42,26 @@ enum Role {
 }
 
 model User {
-  id                    String               @id @default(cuid())
-  createdAt             DateTime             @default(now())
-  updatedAt             DateTime             @updatedAt
-  createdBy             User                 @relation("AuthorUsers", fields: [createdById], references: [id])
-  createdById           String
-  createdUsers          User[]               @relation("AuthorUsers")
-  role                  Role                 @default(USER)
-  firstName             String
-  lastName              String
-  initials              String
-  email                 String               @unique
-  passwordHash          String?
-  passwordResetToken    String?
-  emailValidationToken  String?
-  organisation          Organisation         @relation(fields: [organisationId], references: [id])
-  organisationId        String
+  id                                String       @id @default(cuid())
+  createdAt                         DateTime     @default(now())
+  updatedAt                         DateTime     @updatedAt
+  createdBy                         User?        @relation("AuthorUsers", fields: [createdById], references: [id])
+  createdById                       String?
+  createdUsers                      User[]       @relation("AuthorUsers")
+  role                              Role         @default(USER)
+  firstName                         String
+  lastName                          String
+  initials                          String
+  email                             String       @unique
+  passwordHash                      String?
+  passwordResetToken                String?
+  emailValidationToken              String?
+  organisation                      Organisation @relation(fields: [organisationSlug], references: [slug])
+  organisationSlug                  String
+  defaultDepartment                 Department?  @relation(fields: [defaultDepartmentSlug, defaultDepartmentOrganisationSlug], references: [organisationSlug, slug])
+  defaultDepartmentSlug             String?
+  defaultDepartmentOrganisationSlug String?
+
   departmentEmployees   DepartmentEmployee[]
   canViewOrganisations  Boolean              @default(false)
   canCreateOrganisation Boolean              @default(false)

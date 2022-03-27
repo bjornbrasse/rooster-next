@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { seedDepartments } from './seed/departments';
 import { seedOrganisations } from './seed/organisations';
 import { seedUsers } from './seed/users';
 
@@ -11,9 +12,9 @@ async function seed() {
   //   })
   // );
 
-  // await seedUsers({ db });
-
   await seedOrganisations({ db });
+  await seedDepartments({ db });
+  await seedUsers({ db });
 }
 
 seed();

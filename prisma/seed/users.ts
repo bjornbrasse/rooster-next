@@ -1,39 +1,44 @@
 import { PrismaClient, User } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import { customRandom, random, urlAlphabet } from 'nanoid';
-
-// const getDepartment = async (
-//   db: PrismaClient,
-//   organisationSlug: string,
-//   departmentSlug: string
-// ) =>
-//   await db.department.findFirst({
-//     where: {
-//       AND: [
-//         { organisation: { slug: organisationSlug } },
-//         { slug: departmentSlug },
-//       ],
-//     },
-//   });
-
-// const getTeam = async (
-//   db: PrismaClient,
-//   departmentSlug: string,
-//   teamSlug: string
-// ) =>
-//   await db.team.findFirst({
-//     where: {
-//       AND: [{ department: { slug: departmentSlug } }, { slug: teamSlug }],
-//     },
-//   });
+import { customRandom, nanoid, random, urlAlphabet } from 'nanoid';
 
 export async function seedUsers({ db }: { db: PrismaClient }): Promise<User[]> {
- const users = await getUsers()
- 
-  const adminUser = await db.user.create({data: users.filter(u => u.role === 'ADMIN')[0]})
+  const userId = nanoid();
 
-    const users = await db.user.createMany({data: (await getUsers()).map(u => ({}))})
-  }
+  const adminUser = await db.user.create({
+    data: {
+      id: userId,
+      role: 'ADMIN',
+      firstName: 'Bjorn',
+      lastName: 'Brassé',
+      initials: 'BB',
+      email: 'b.brasse@etz.nl',
+      passwordHash: await bcrypt.hash('test', 10),
+      organisation: { connect: { slug: 'etz' } },
+      defaultDepartment: {
+        connect: {
+          organisationSlug_slug: {
+            organisationSlug: 'etz',
+            slug: 'ziekenhuisapotheek',
+          },
+        },
+      },
+    },
+  });
+
+  const us = await getUsers();
+
+  const users = await db.user.createMany({
+    data: us.map(({ organisationSlug, defaultDepartmentSlug, ...u }) => ({
+      ...u,
+      createdById: adminUser.id,
+      organisationSlug,
+      defaultDepartmentSlug,
+    })),
+  });
+
+  // return users;
+  return [adminUser];
 }
 
 export async function getUsers(): Promise<
@@ -43,20 +48,10 @@ export async function getUsers(): Promise<
   > & {
     organisationSlug: string;
     defaultDepartmentSlug: string;
-    defaultTeamSlug: string;
+    // defaultTeamSlug: string;
   } & Partial<User>)[]
 > {
   return [
-    {
-      firstName: 'Bjorn',
-      lastName: 'Brassé',
-      initials: 'BB',
-      email: 'b.brasse@etz.nl',
-      passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: 'etz',
-      defaultDepartmentSlug: '/etz/ziekenhuisapotheek',
-      defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
-    },
     {
       firstName: 'Barbara',
       lastName: 'Maat',
@@ -64,8 +59,8 @@ export async function getUsers(): Promise<
       email: 'b.maat@etz.nl',
       passwordHash: await bcrypt.hash('test', 10),
       organisationSlug: 'etz',
-      defaultDepartmentSlug: '/etz/ziekenhuisapotheek',
-      defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
+      defaultDepartmentSlug: 'ziekenhuisapotheek',
+      // defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
       // emailValidationToken: customRandom(urlAlphabet, 48, random)(),
     },
     {
@@ -75,8 +70,8 @@ export async function getUsers(): Promise<
       email: 'm.jansen@etz.nl',
       passwordHash: await bcrypt.hash('test', 10),
       organisationSlug: 'etz',
-      defaultDepartmentSlug: '/etz/ziekenhuisapotheek',
-      defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
+      defaultDepartmentSlug: 'ziekenhuisapotheek',
+      // defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
       // passwordResetToken: customRandom(urlAlphabet, 48, random)(),
     },
     {
@@ -85,9 +80,9 @@ export async function getUsers(): Promise<
       initials: 'RvN',
       email: 'rvnoort@elkerliek.nl',
       passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: '/elkerliek',
-      defaultDepartmentSlug: '/elkerliek/ziekenhuisapotheek',
-      defaultTeamSlug: '/elkerliek/ziekenhuisapotheek/vakgroep',
+      organisationSlug: 'elkerliek',
+      defaultDepartmentSlug: 'ziekenhuisapotheek',
+      // defaultTeamSlug: '/elkerliek/ziekenhuisapotheek/vakgroep',
     },
     {
       firstName: 'Theo',
@@ -95,9 +90,9 @@ export async function getUsers(): Promise<
       initials: 'TvdS',
       email: 'tvdsteen@elkerliek.nl',
       passwordHash: await bcrypt.hash('appels', 10),
-      organisationSlug: '/elkerliek',
-      defaultDepartmentSlug: '/elkerliek/ziekenhuisapotheek',
-      defaultTeamSlug: '/elkerliek/ziekenhuisapotheek/vakgroep',
+      organisationSlug: 'elkerliek',
+      defaultDepartmentSlug: 'ziekenhuisapotheek',
+      // defaultTeamSlug: '/elkerliek/ziekenhuisapotheek/vakgroep',
     },
   ];
 }

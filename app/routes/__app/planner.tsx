@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Booking, Schedule, Task, User } from "@prisma/client";
-import dayjs from "dayjs";
+import * as React from 'react';
+import { Booking, Schedule, Task, User } from '@prisma/client';
+import dayjs from 'dayjs';
 import {
   Form,
   Link,
@@ -8,26 +8,26 @@ import {
   redirect,
   useLoaderData,
   useSearchParams,
-} from "remix";
-import Container from "~/components/Container";
-import PlannerWeekView from "~/components/plannerViews/WeekView";
+} from 'remix';
+import Container from '~/components/Container';
+import PlannerWeekView from '~/components/planners/WeekPlanner';
 import PlannerViewToggleButtons, {
   View,
-} from "~/components/PlannerViewToggleButtons";
-import { getSchedule, getSchedules } from "~/controllers/schedule.server";
-import useDate from "~/hooks/useDate";
-import { WEEKDAYS } from "~/utils/date";
-import { getBookings } from "~/controllers/booking.server";
-import { requireUser } from "~/controllers/auth.server";
-import { useSchedule } from "~/hooks/useSchedule";
-import Editor from "~/components/Editor";
+} from '~/components/PlannerViewToggleButtons';
+import { getSchedule, getSchedules } from '~/controllers/schedule.server';
+import useDate from '~/hooks/useDate';
+import { WEEKDAYS } from '~/utils/date';
+import { getBookings } from '~/controllers/booking.server';
+import { requireUser } from '~/controllers/auth.server';
+import { useSchedule } from '~/hooks/useSchedule';
+import Editor from '~/components/Editor';
 
-var customParseFormat = require("dayjs/plugin/customParseFormat");
+var customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
 
 type LoaderData = {
   bookings: (Booking & { user: User })[];
-  schedule: Schedule & { tasks: Task[] };
+  schedule: Awaited<ReturnType<typeof getSchedule>>;
   schedules: Schedule[];
 };
 
@@ -43,9 +43,9 @@ export const loader: LoaderFunction = async ({
   const bookings = await getBookings();
 
   const schedule = await getSchedule({
-    scheduleId: url.searchParams.get("schedule") ?? "",
+    scheduleId: url.searchParams.get('schedule') ?? '',
   });
-  if (!schedule) return redirect("/schedules");
+  if (!schedule) return redirect('/schedules');
 
   // const dateParam = url.searchParams.get('d');
   // if (!dateParam || !dayjs(dateParam).isValid()) {
@@ -81,8 +81,8 @@ export default function Planner() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { showSelectionDrawer } = useSchedule();
 
-  const view = (searchParams.get("v") ?? "week") as View;
-  const date = new Date(searchParams.get("d") ?? new Date());
+  const view = (searchParams.get('v') ?? 'week') as View;
+  const date = new Date(searchParams.get('d') ?? new Date());
 
   const onDateChangeHandler = (date: string) => {
     // if (dayjs(date, 'DD-MM-YYYY').isValid()) setDate(new Date(date));
@@ -102,7 +102,7 @@ export default function Planner() {
   };
 
   return (
-    <div className="w-full flex">
+    <div className="flex w-full">
       <Container>
         <h1>{`Rooster - ${schedule.name}`}</h1>
         <Form>
@@ -118,7 +118,7 @@ export default function Planner() {
           <div className="mb-2 flex items-center">
             <button
               onClick={() =>
-                goToDateHandler(dayjs(date).subtract(7, "days").toDate())
+                goToDateHandler(dayjs(date).subtract(7, 'days').toDate())
               }
               className="btn btn-save"
             >
@@ -127,12 +127,12 @@ export default function Planner() {
             <p className="mr-2">{WEEKDAYS[date.getDay()].short}</p>
             <input
               type="text"
-              defaultValue={dayjs(date).format("DD-MM-YYYY")}
+              defaultValue={dayjs(date).format('DD-MM-YYYY')}
               onChange={(e) => onDateChangeHandler(e.target.value)}
             />
             <button
               onClick={() =>
-                goToDateHandler(dayjs(date).add(7, "days").toDate())
+                goToDateHandler(dayjs(date).add(7, 'days').toDate())
               }
               className="btn btn-save"
             >
@@ -141,7 +141,7 @@ export default function Planner() {
           </div>
           <input
             // value={searchParams.get('d') || ''}
-            value={searchParams.toString() || ""}
+            value={searchParams.toString() || ''}
             onChange={(event) => {
               let filter = event.target.value;
               // if (filter) {
@@ -152,7 +152,7 @@ export default function Planner() {
             }}
           />
         </Form>
-        {view === "week" ? (
+        {/* {view === 'week' ? (
           <PlannerWeekView
             bookings={bookings}
             date={date}
@@ -160,11 +160,11 @@ export default function Planner() {
             tasks={schedule.tasks}
           />
         ) : (
-          <Schedule date={new Date(date)} view={"day"} />
-        )}
+          <Schedule date={new Date(date)} view={'day'} />
+        )} */}
       </Container>
       {showSelectionDrawer && (
-        <div className="w-1/3 lg:w-1/4 shrink-0 p-2 border-2 border-green-900">
+        <div className="w-1/3 shrink-0 border-2 border-green-900 p-2 lg:w-1/4">
           <Editor />
         </div>
       )}
