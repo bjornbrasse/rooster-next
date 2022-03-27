@@ -27,37 +27,12 @@ import { customRandom, random, urlAlphabet } from 'nanoid';
 //     },
 //   });
 
-export async function seedUsers({ db }: { db: PrismaClient }) {
-  const users = await getUsers();
-  for (const user of users) {
-    const {
-      firstName,
-      lastName,
-      initials,
-      email,
-      passwordHash,
-      defaultDepartmentSlug,
-      defaultTeamSlug,
-    } = user;
+export async function seedUsers({ db }: { db: PrismaClient }): Promise<User[]> {
+ const users = await getUsers()
+ 
+  const adminUser = await db.user.create({data: users.filter(u => u.role === 'ADMIN')[0]})
 
-    await db.user.create({
-      data: {
-        firstName,
-        lastName,
-        initials,
-        email,
-        passwordHash,
-        organisation: {
-          connect: { slug: user.organisationSlug },
-        },
-        // defaultDepartment: {
-        //   connect: { slug: defaultDepartmentSlug },
-        // },
-        // defaultTeam: {
-        //   connect: { slug: defaultTeamSlug },
-        // },
-      },
-    });
+    const users = await db.user.createMany({data: (await getUsers()).map(u => ({}))})
   }
 }
 
@@ -78,7 +53,7 @@ export async function getUsers(): Promise<
       initials: 'BB',
       email: 'b.brasse@etz.nl',
       passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: '/etz',
+      organisationSlug: 'etz',
       defaultDepartmentSlug: '/etz/ziekenhuisapotheek',
       defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
     },
@@ -88,7 +63,7 @@ export async function getUsers(): Promise<
       initials: 'BM',
       email: 'b.maat@etz.nl',
       passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: '/etz',
+      organisationSlug: 'etz',
       defaultDepartmentSlug: '/etz/ziekenhuisapotheek',
       defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
       // emailValidationToken: customRandom(urlAlphabet, 48, random)(),
@@ -99,7 +74,7 @@ export async function getUsers(): Promise<
       initials: 'MJ',
       email: 'm.jansen@etz.nl',
       passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: '/etz',
+      organisationSlug: 'etz',
       defaultDepartmentSlug: '/etz/ziekenhuisapotheek',
       defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
       // passwordResetToken: customRandom(urlAlphabet, 48, random)(),
