@@ -1,9 +1,9 @@
 import { Department, Organisation, Task, User } from '@prisma/client';
-import type { LoaderFunction, MetaFunction } from 'remix';
+import { Link, LoaderFunction, MetaFunction } from 'remix';
 import { useLoaderData, useLocation } from 'remix';
 import { redirect } from 'remix';
 import { Outlet, useParams } from 'remix';
-import { BBLoader } from 'types';
+import { BBHandle, BBLoader, Breadcrumb, LoaderDataBase } from 'types';
 import DialogButton from '~/components/DialogButton';
 import ScheduleForm from '~/components/forms/ScheduleForm';
 import TaskForm from '~/components/forms/TaskForm';
@@ -19,7 +19,11 @@ export const meta: MetaFunction = ({ data }) => {
   return { title: data.department.name };
 };
 
-type LoaderData = {
+export const handle: BBHandle = {
+  id: 'Bjorn',
+};
+
+type LoaderData = LoaderDataBase & {
   department: Awaited<ReturnType<typeof getDepartment>>;
   departmentEmployee: Awaited<ReturnType<typeof getDepartmentEmployee>>;
 };
@@ -37,7 +41,18 @@ export const loader: BBLoader<{ departmentId: string }> = async ({
     userId: user.id,
   });
 
-  return { department, departmentEmployee };
+  const breadcrumbs: Breadcrumb[] = [
+    {
+      caption: department.organisation.name,
+      to: `/organisations/${department.organisation.id}`,
+    },
+    {
+      caption: department.name,
+      to: `/departments/${department.id}`,
+    },
+  ];
+
+  return { breadcrumbs, department, departmentEmployee };
 };
 
 export default function DepartmentLayout() {

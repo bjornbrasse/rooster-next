@@ -11,13 +11,14 @@ import Tabs from '~/components/Tabs';
 import { getOrganisation } from '~/controllers/organisation';
 import Navigator from '~/components/Navigator';
 import { BBLoader } from '~/types';
-import { BBHandle } from 'types';
+import { BBHandle, Breadcrumb } from 'types';
 
 export const handle: BBHandle = {
   id: 'organisationRoute',
 };
 
 type LoaderData = {
+  breadcrumb: Breadcrumb;
   organisation: Organisation;
 };
 
@@ -30,7 +31,12 @@ export const loader: BBLoader<{ organisationId: string }> = async ({
 
   if (!organisation) return redirect('/organisations');
 
-  return { organisation };
+  const breadcrumb: Breadcrumb = {
+    caption: organisation.name,
+    to: organisation.id,
+  };
+
+  return { breadcrumb, organisation };
 };
 
 export default function OrganisationAdmin() {
@@ -38,8 +44,7 @@ export default function OrganisationAdmin() {
   const { organisationId } = useParams();
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <Navigator organisation={organisation} />
+    <div className="flex h-full w-full flex-col">
       <Tabs>
         <Tabs.Tab to={`/organisations/${organisationId}/departments`}>
           Afdelingen

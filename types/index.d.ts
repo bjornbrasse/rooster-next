@@ -3,6 +3,7 @@
 
 import type { ActionFunction, LoaderFunction } from 'remix';
 import type { User, Role } from '@prisma/client';
+import React from 'react';
 
 type NonNullProperties<Type> = {
   [Key in keyof Type]-?: Exclude<Type[Key], null | undefined>;
@@ -192,23 +193,35 @@ type BBHandle = {
   /** this is here to allow us to disable scroll restoration until Remix gives us better control */
   restoreScroll?: false;
   getSitemapEntries?: (
-    request: Request
+    request: Request,
   ) =>
     | Promise<Array<BBSitemapEntry | null> | null>
     | Array<BBSitemapEntry | null>
     | null;
 };
 
+export type Breadcrumb = {
+  caption: string;
+  to: string | (() => string);
+};
+
+export type LoaderDataBase =
+  | {
+      breadcrumb: Breadcrumb;
+      breadcrumbs?: never;
+    }
+  | { breadcrumb?: never; breadcrumbs?: Breadcrumb[] };
+
 type BBLoader<
-  Params extends Record<string, unknown> = Record<string, unknown>
+  Params extends Record<string, unknown> = Record<string, unknown>,
 > = (
-  args: Omit<Parameters<LoaderFunction>['0'], 'params'> & { params: Params }
+  args: Omit<Parameters<LoaderFunction>['0'], 'params'> & { params: Params },
 ) => ReturnType<LoaderFunction>;
 
 type BBAction<
-  Params extends Record<string, unknown> = Record<string, unknown>
+  Params extends Record<string, unknown> = Record<string, unknown>,
 > = (
-  args: Omit<Parameters<ActionFunction>['0'], 'params'> & { params: Params }
+  args: Omit<Parameters<ActionFunction>['0'], 'params'> & { params: Params },
 ) => ReturnType<ActionFunction>;
 
 type GitHubFile = { path: string; content: string };

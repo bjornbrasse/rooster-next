@@ -7,6 +7,7 @@ import {
   ScrollRestoration,
   useCatch,
   useLocation,
+  useMatches,
 } from 'remix';
 import type { MetaFunction } from 'remix';
 import styles from './tailwind.css';
@@ -15,6 +16,7 @@ import { ScheduleProvider } from '~/contexts/schedule';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { ErrorPage } from './components/errors';
+import * as React from 'react';
 
 export function links() {
   return [{ rel: 'stylesheet', href: styles, as: 'css' }];

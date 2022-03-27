@@ -11,7 +11,7 @@ import {
 import { db } from '~/utils/db.server';
 import { classNames } from '~/utils/helpers';
 import { requireUser } from '~/controllers/auth.server';
-import { BBLoader } from 'types';
+import { BBLoader, Breadcrumb } from 'types';
 
 type LoaderData = {
   organisation: Organisation;

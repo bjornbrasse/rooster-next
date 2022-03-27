@@ -1,6 +1,6 @@
-import { Department, Organisation } from "@prisma/client";
-import * as React from "react";
-import { Link } from "remix";
+import { Department, Organisation } from '@prisma/client';
+import * as React from 'react';
+import { Link } from 'remix';
 
 const Navigator: React.FC<{
   caption?: string;
@@ -9,7 +9,7 @@ const Navigator: React.FC<{
   department?: Department;
 }> = ({ caption, department, organisation, organisationTo }) => {
   return (
-    <div id="Navigator" className="px-4 py-1 flex items-center bg-gray-300">
+    <div id="Navigator" className="flex items-center bg-gray-300 px-4 py-1">
       {caption && <span>{caption}</span>}
       {organisation && (
         <>
