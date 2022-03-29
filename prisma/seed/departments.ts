@@ -1,26 +1,7 @@
 import { Department, PrismaClient, Schedule, Task, User } from '@prisma/client';
+import { departmentsData } from './data';
 
-export async function seedDepartments({ db }: { db: PrismaClient }) {
-  const departments = await getDepartments();
-
-  await db.department.createMany({
-    data: departments?.map(
-      ({ name, nameShort, organisationSlug, slug, ...department }) => ({
-        name,
-        nameShort: nameShort ?? '',
-        organisationSlug,
-        slug,
-        // tasks: {
-        //   create: department.tasks?.map(({ name }) => ({
-        //     name,
-        //   })),
-        // },
-      }),
-    ),
-  });
-}
-
-export function getDepartments(): (Pick<
+export type NewDeparmtentData = Pick<
   Department,
   'name' | 'slug' | 'organisationSlug'
 > &
@@ -39,50 +20,31 @@ export function getDepartments(): (Pick<
         canViewTasks: boolean;
       };
     } & Partial<User>)[];
-  })[] {
-  return [
-    {
-      name: 'Interne Geneeskunde',
-      nameShort: 'H1',
-      slug: 'h1',
-      organisationSlug: 'etz',
-      tasks: [
-        { name: 'Cluster 1' },
-        { name: 'Cluster 2' },
-        { name: 'Cluster 3' },
-      ],
-    },
-    {
-      name: 'Longgeneeskunde',
-      slug: 'longgk',
-      organisationSlug: 'etz',
-      tasks: [
-        { name: 'Cluster 1' },
-        { name: 'Cluster 2' },
-        { name: 'Cluster 3' },
-      ],
-    },
-    {
-      name: 'Ziekenhuisapotheek',
-      nameShort: 'zapo',
-      slug: 'ziekenhuisapotheek',
-      organisationSlug: 'etz',
-      tasks: [
-        { name: 'Cluster 1' },
-        { name: 'Cluster 2' },
-        { name: 'Cluster 3' },
-      ],
-    },
-    {
-      name: 'Ziekenhuisapotheek',
-      nameShort: 'zapo',
-      slug: 'ziekenhuisapotheek',
-      organisationSlug: 'elkerliek',
-      // tasks: [
-      //   { name: 'Cluster 1' },
-      //   { name: 'Cluster 2' },
-      //   { name: 'Cluster 3' },
-      // ],
-    },
-  ];
+  };
+
+export async function seedDepartments({
+  db,
+  adminUser,
+}: {
+  db: PrismaClient;
+  adminUser: User;
+}): Promise<Department[]> {
+  const data: NewDeparmtentData[] = departmentsData();
+
+  return await Promise.all(
+    data.map((department) => {
+      return db.department.create({
+        data: {
+          createdById: adminUser.id,
+          tasks: {
+            create: department.tasks?.map((task) => ({
+              createdById: adminUser.id,
+              ...task,
+            })),
+          },
+          ...department,
+        },
+      });
+    }),
+  );
 }

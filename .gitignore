@@ -17,6 +17,7 @@ other/postcss.ignored
 *.local.*
 
 /prisma/dev.db
+/prisma/seed/data.ts
 
 .env
 .env.production

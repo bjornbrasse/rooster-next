@@ -1,98 +1,54 @@
 import { PrismaClient, User } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import { customRandom, nanoid, random, urlAlphabet } from 'nanoid';
+import { adminUserData, usersData } from './data';
 
-export async function seedUsers({ db }: { db: PrismaClient }): Promise<User[]> {
-  const userId = nanoid();
+export type NewAdminUserData = {
+  role: string;
+  firstName: string;
+  lastName: string;
+  initials: string;
+  email: string;
+  passwordHash: string;
+};
 
-  const adminUser = await db.user.create({
-    data: {
-      id: userId,
-      role: 'ADMIN',
-      firstName: 'Bjorn',
-      lastName: 'Brassé',
-      initials: 'BB',
-      email: 'b.brasse@etz.nl',
-      passwordHash: await bcrypt.hash('test', 10),
-      organisation: { connect: { slug: 'etz' } },
-      defaultDepartment: {
-        connect: {
-          organisationSlug_slug: {
-            organisationSlug: 'etz',
-            slug: 'ziekenhuisapotheek',
-          },
-        },
-      },
-    },
+export type NewUserData = Pick<
+  User,
+  'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
+> & {
+  organisationSlug: string;
+  defaultDepartmentSlug: string;
+  // defaultTeamSlug: string;
+} & Partial<User>;
+
+export async function seedAdminUser({
+  db,
+}: {
+  db: PrismaClient;
+}): Promise<User> {
+  const data = await adminUserData();
+
+  return await db.user.create({
+    data,
   });
-
-  const us = await getUsers();
-
-  const users = await db.user.createMany({
-    data: us.map(({ organisationSlug, defaultDepartmentSlug, ...u }) => ({
-      ...u,
-      createdById: adminUser.id,
-      organisationSlug,
-      defaultDepartmentSlug,
-    })),
-  });
-
-  // return users;
-  return [adminUser];
 }
 
-export async function getUsers(): Promise<
-  (Pick<
-    User,
-    'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
-  > & {
-    organisationSlug: string;
-    defaultDepartmentSlug: string;
-    // defaultTeamSlug: string;
-  } & Partial<User>)[]
-> {
-  return [
-    {
-      firstName: 'Barbara',
-      lastName: 'Maat',
-      initials: 'BM',
-      email: 'b.maat@etz.nl',
-      passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: 'etz',
-      defaultDepartmentSlug: 'ziekenhuisapotheek',
-      // defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
-      // emailValidationToken: customRandom(urlAlphabet, 48, random)(),
-    },
-    {
-      firstName: 'Mark',
-      lastName: 'Jansen',
-      initials: 'MJ',
-      email: 'm.jansen@etz.nl',
-      passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: 'etz',
-      defaultDepartmentSlug: 'ziekenhuisapotheek',
-      // defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
-      // passwordResetToken: customRandom(urlAlphabet, 48, random)(),
-    },
-    {
-      firstName: 'Rien',
-      lastName: 'van Noort',
-      initials: 'RvN',
-      email: 'rvnoort@elkerliek.nl',
-      passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: 'elkerliek',
-      defaultDepartmentSlug: 'ziekenhuisapotheek',
-      // defaultTeamSlug: '/elkerliek/ziekenhuisapotheek/vakgroep',
-    },
-    {
-      firstName: 'Theo',
-      lastName: 'van der Steen',
-      initials: 'TvdS',
-      email: 'tvdsteen@elkerliek.nl',
-      passwordHash: await bcrypt.hash('appels', 10),
-      organisationSlug: 'elkerliek',
-      defaultDepartmentSlug: 'ziekenhuisapotheek',
-      // defaultTeamSlug: '/elkerliek/ziekenhuisapotheek/vakgroep',
-    },
-  ];
+export async function seedUsers({
+  db,
+  adminUser,
+}: {
+  db: PrismaClient;
+  adminUser: User;
+}): Promise<User[]> {
+  const newUsers: NewUserData[] = await usersData();
+
+  const res = await Promise.all(
+    newUsers.map((newUser) => {
+      return db.user.create({
+        data: newUser,
+      });
+    }),
+  );
+
+  console.log('PA', res.values);
+
+  return [adminUser];
 }

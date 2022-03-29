@@ -11,17 +11,21 @@ datasource db {
 model Organisation {
   id          String       @id @default(cuid())
   createdAt   DateTime     @default(now())
+  // createdBy   User         @relation(name: "CreatedBy", fields: [createdById], references: [id])
+  // createdById String       @unique
   updatedAt   DateTime     @updatedAt
   name        String
   nameShort   String?
   slug        String       @unique
   departments Department[]
-  employees   User[]
+  employees   User[]       @relation(name: "Employees")
 }
 
 model Department {
   id               String               @id @default(cuid())
   createdAt        DateTime             @default(now())
+  createdBy        User                 @relation(fields: [createdById], references: [id])
+  createdById      String               @unique
   updatedAt        DateTime             @updatedAt
   name             String
   nameShort        String?
@@ -31,7 +35,6 @@ model Department {
   employees        DepartmentEmployee[]
   schedules        Schedule[]
   tasks            Task[]
-  users            User[]
 
   @@unique([organisationSlug, slug])
 }
@@ -42,31 +45,30 @@ enum Role {
 }
 
 model User {
-  id                                String       @id @default(cuid())
-  createdAt                         DateTime     @default(now())
-  updatedAt                         DateTime     @updatedAt
-  createdBy                         User?        @relation("AuthorUsers", fields: [createdById], references: [id])
-  createdById                       String?
-  createdUsers                      User[]       @relation("AuthorUsers")
-  role                              Role         @default(USER)
-  firstName                         String
-  lastName                          String
-  initials                          String
-  email                             String       @unique
-  passwordHash                      String?
-  passwordResetToken                String?
-  emailValidationToken              String?
-  organisation                      Organisation @relation(fields: [organisationSlug], references: [slug])
-  organisationSlug                  String
-  defaultDepartment                 Department?  @relation(fields: [defaultDepartmentSlug, defaultDepartmentOrganisationSlug], references: [organisationSlug, slug])
-  defaultDepartmentSlug             String?
-  defaultDepartmentOrganisationSlug String?
-
+  id                    String               @id @default(cuid())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  createdBy             User?                @relation("AuthorUsers", fields: [createdById], references: [id])
+  createdById           String?
+  createdUsers          User[]               @relation("AuthorUsers")
+  role                  Role                 @default(USER)
+  firstName             String
+  lastName              String
+  initials              String
+  email                 String               @unique
+  passwordHash          String?
+  passwordResetToken    String?
+  emailValidationToken  String?
+  organisation          Organisation         @relation(name: "Employees", fields: [organisationSlug], references: [slug])
+  organisationSlug      String
   departmentEmployees   DepartmentEmployee[]
   canViewOrganisations  Boolean              @default(false)
   canCreateOrganisation Boolean              @default(false)
   bookings              Booking[]
   schedules             ScheduleMember[]
+  tasksCreated          Task[]
+  departmentsCreated    Department[]
+  // organisationsCreated  Organisation[]       @relation("CreatedBy")
 }
 
 enum CRUD {
@@ -115,8 +117,10 @@ model DepartmentPresenceDay {
 model Task {
   id             String         @id @default(cuid())
   createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  createdBy      User           @relation(fields: [createdById], references: [id])
+  createdById    String
   name           String
+  nameShort      String?
   department     Department     @relation(fields: [departmentId], references: [id])
   departmentId   String
   description    String?
