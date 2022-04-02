@@ -6,26 +6,13 @@ import { seedAdminUser, seedUsers } from './seed/users';
 const db = new PrismaClient();
 
 async function seed() {
-  await db.organisation.create({
-    data: {
-      name: 'Bra-c',
-      slug: 'bra-c',
-      employees: {
-        create: {
-          firstName: 'Bjorn',
-          lastName: 'Brassé',
-          email: 'bpbrasse@bra-c.nl  ',
-        },
-      },
-    },
-  });
-  // const adminUser = await seedAdminUser({ db });
+  const adminUser = await seedAdminUser({ db });
 
-  // await seedOrganisations({ db });
+  await seedOrganisations({ db, adminUser });
+
   // const departments = await seedDepartments({ db, adminUser });
-  // await seedUsers({ db, adminUser });
 
-  // console.log('dit zijn ze:', departments);
+  await seedUsers({ db, adminUser });
 }
 
 seed();

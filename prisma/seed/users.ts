@@ -1,5 +1,5 @@
 import { PrismaClient, User } from '@prisma/client';
-import { adminUserData, usersData } from './data';
+import { usersData } from './data';
 
 export type NewAdminUserData = {
   role: string;
@@ -15,7 +15,7 @@ export type NewUserData = Pick<
   'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
 > & {
   organisationSlug: string;
-  defaultDepartmentSlug: string;
+  // defaultDepartmentSlug: string;
   // defaultTeamSlug: string;
 } & Partial<User>;
 
@@ -24,10 +24,19 @@ export async function seedAdminUser({
 }: {
   db: PrismaClient;
 }): Promise<User> {
-  const data = await adminUserData();
-
   return await db.user.create({
-    data,
+    data: {
+      firstName: 'Bjorn',
+      lastName: 'Brassé',
+      initials: 'BB',
+      email: 'bpbrasse@bra-c.nl',
+      organisation: {
+        create: {
+          name: 'Bra-c',
+          slug: 'bra-c',
+        },
+      },
+    },
   });
 }
 
@@ -43,12 +52,10 @@ export async function seedUsers({
   const res = await Promise.all(
     newUsers.map((newUser) => {
       return db.user.create({
-        data: newUser,
+        data: { ...newUser, createdById: adminUser.id },
       });
     }),
   );
-
-  console.log('PA', res.values);
 
   return [adminUser];
 }
