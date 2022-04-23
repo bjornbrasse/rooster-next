@@ -13,7 +13,12 @@ interface IProps {
   tasks: Task[];
 }
 
-const WeekView: React.FC<IProps> = ({ bookings, date, schedule, tasks }) => {
+export const WeekPlanner: React.FC<IProps> = ({
+  bookings,
+  date,
+  schedule,
+  tasks,
+}) => {
   const { getWeekDays } = useDate(date);
   const { addToSelection } = useSchedule();
 
@@ -36,7 +41,7 @@ const WeekView: React.FC<IProps> = ({ bookings, date, schedule, tasks }) => {
 
               return (
                 <th
-                  className={`px-2 border border-blue-200 ${
+                  className={`border border-blue-200 px-2 ${
                     isCurrentDate ? 'bg-green-400' : null
                   }`}
                   key={index}
@@ -56,7 +61,7 @@ const WeekView: React.FC<IProps> = ({ bookings, date, schedule, tasks }) => {
                 const bks = bookings.filter(
                   (booking) =>
                     dayjs(booking.date).date() === dayjs(day).date() &&
-                    booking.taskId === task.id
+                    booking.taskId === task.id,
                 );
                 const isCurrentDate = day.getDate() === date.getDate();
 
@@ -65,7 +70,7 @@ const WeekView: React.FC<IProps> = ({ bookings, date, schedule, tasks }) => {
                     onClick={() =>
                       addToSelection({ date: day, task, bookings: bks })
                     }
-                    className={`px-2 border border-blue-200 hover:bg-blue-200 cursor-pointer ${
+                    className={`cursor-pointer border border-blue-200 px-2 hover:bg-blue-200 ${
                       isCurrentDate ? 'bg-green-200' : null
                     }`}
                     key={index}
@@ -85,5 +90,3 @@ const WeekView: React.FC<IProps> = ({ bookings, date, schedule, tasks }) => {
     </div>
   );
 };
-
-export default WeekView;

@@ -1,128 +1,61 @@
 import { PrismaClient, User } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import { customRandom, random, urlAlphabet } from 'nanoid';
+import { usersData } from './data';
 
-// const getDepartment = async (
-//   db: PrismaClient,
-//   organisationSlug: string,
-//   departmentSlug: string
-// ) =>
-//   await db.department.findFirst({
-//     where: {
-//       AND: [
-//         { organisation: { slug: organisationSlug } },
-//         { slug: departmentSlug },
-//       ],
-//     },
-//   });
+export type NewAdminUserData = {
+  role: string;
+  firstName: string;
+  lastName: string;
+  initials: string;
+  email: string;
+  passwordHash: string;
+};
 
-// const getTeam = async (
-//   db: PrismaClient,
-//   departmentSlug: string,
-//   teamSlug: string
-// ) =>
-//   await db.team.findFirst({
-//     where: {
-//       AND: [{ department: { slug: departmentSlug } }, { slug: teamSlug }],
-//     },
-//   });
+export type NewUserData = Pick<
+  User,
+  'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
+> & {
+  organisationSlug: string;
+  // defaultDepartmentSlug: string;
+  // defaultTeamSlug: string;
+} & Partial<User>;
 
-export async function seedUsers({ db }: { db: PrismaClient }) {
-  const users = await getUsers();
-  for (const user of users) {
-    const {
-      firstName,
-      lastName,
-      initials,
-      email,
-      passwordHash,
-      defaultDepartmentSlug,
-      defaultTeamSlug,
-    } = user;
-
-    await db.user.create({
-      data: {
-        firstName,
-        lastName,
-        initials,
-        email,
-        passwordHash,
-        organisation: {
-          connect: { slug: user.organisationSlug },
-        },
-        // defaultDepartment: {
-        //   connect: { slug: defaultDepartmentSlug },
-        // },
-        // defaultTeam: {
-        //   connect: { slug: defaultTeamSlug },
-        // },
-      },
-    });
-  }
-}
-
-export async function getUsers(): Promise<
-  (Pick<
-    User,
-    'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
-  > & {
-    organisationSlug: string;
-    defaultDepartmentSlug: string;
-    defaultTeamSlug: string;
-  } & Partial<User>)[]
-> {
-  return [
-    {
+export async function seedAdminUser({
+  db,
+}: {
+  db: PrismaClient;
+}): Promise<User> {
+  return await db.user.create({
+    data: {
       firstName: 'Bjorn',
       lastName: 'Brassé',
       initials: 'BB',
-      email: 'b.brasse@etz.nl',
-      passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: '/etz',
-      defaultDepartmentSlug: '/etz/ziekenhuisapotheek',
-      defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
+      email: 'bpbrasse@bra-c.nl',
+      organisation: {
+        create: {
+          name: 'Bra-c',
+          slug: 'bra-c',
+        },
+      },
     },
-    {
-      firstName: 'Barbara',
-      lastName: 'Maat',
-      initials: 'BM',
-      email: 'b.maat@etz.nl',
-      passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: '/etz',
-      defaultDepartmentSlug: '/etz/ziekenhuisapotheek',
-      defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
-      // emailValidationToken: customRandom(urlAlphabet, 48, random)(),
-    },
-    {
-      firstName: 'Mark',
-      lastName: 'Jansen',
-      initials: 'MJ',
-      email: 'm.jansen@etz.nl',
-      passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: '/etz',
-      defaultDepartmentSlug: '/etz/ziekenhuisapotheek',
-      defaultTeamSlug: '/etz/ziekenhuisapotheek/vakgroep',
-      // passwordResetToken: customRandom(urlAlphabet, 48, random)(),
-    },
-    {
-      firstName: 'Rien',
-      lastName: 'van Noort',
-      initials: 'RvN',
-      email: 'rvnoort@elkerliek.nl',
-      passwordHash: await bcrypt.hash('test', 10),
-      organisationSlug: '/elkerliek',
-      defaultDepartmentSlug: '/elkerliek/ziekenhuisapotheek',
-      defaultTeamSlug: '/elkerliek/ziekenhuisapotheek/vakgroep',
-    },
-    {
-      firstName: 'Theo',
-      lastName: 'van der Steen',
-      initials: 'TvdS',
-      email: 'tvdsteen@elkerliek.nl',
-      passwordHash: await bcrypt.hash('appels', 10),
-      organisationSlug: '/elkerliek',
-      defaultDepartmentSlug: '/elkerliek/ziekenhuisapotheek',
-      defaultTeamSlug: '/elkerliek/ziekenhuisapotheek/vakgroep',
-    },
-  ];
+  });
+}
+
+export async function seedUsers({
+  db,
+  adminUser,
+}: {
+  db: PrismaClient;
+  adminUser: User;
+}): Promise<User[]> {
+  const newUsers: NewUserData[] = await usersData();
+
+  const res = await Promise.all(
+    newUsers.map((newUser) => {
+      return db.user.create({
+        data: { ...newUser, createdById: adminUser.id },
+      });
+    }),
+  );
+
+  return [adminUser];
 }
