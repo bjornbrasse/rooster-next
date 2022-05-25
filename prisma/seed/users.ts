@@ -1,5 +1,5 @@
 import { PrismaClient, User } from '@prisma/client';
-import { usersData } from './data';
+import bcrypt from 'bcrypt';
 
 export type NewAdminUserData = {
   role: string;
@@ -30,32 +30,28 @@ export async function seedAdminUser({
       lastName: 'Brassé',
       initials: 'BB',
       email: 'bpbrasse@bra-c.nl',
-      organisation: {
-        create: {
-          name: 'Bra-c',
-          slug: 'bra-c',
-        },
-      },
+      role: 'ADMIN',
+      passwordHash: await bcrypt.hash('appel', 10),
     },
   });
 }
 
-export async function seedUsers({
-  db,
-  adminUser,
-}: {
-  db: PrismaClient;
-  adminUser: User;
-}): Promise<User[]> {
-  const newUsers: NewUserData[] = await usersData();
+// export async function seedUsers({
+//   db,
+//   adminUser,
+// }: {
+//   db: PrismaClient;
+//   adminUser: User;
+// }): Promise<User[]> {
+//   const newUsers: NewUserData[] = await usersData();
 
-  const res = await Promise.all(
-    newUsers.map((newUser) => {
-      return db.user.create({
-        data: { ...newUser, createdById: adminUser.id },
-      });
-    }),
-  );
+//   const res = await Promise.all(
+//     newUsers.map((newUser) => {
+//       return db.user.create({
+//         data: { ...newUser, createdById: adminUser.id },
+//       });
+//     }),
+//   );
 
-  return [adminUser];
-}
+//   return [adminUser];
+// }

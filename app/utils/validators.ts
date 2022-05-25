@@ -46,6 +46,7 @@ export const validateEmail: validateFn = async (email: string | null) => {
 
   // Does already exist in db?
   const existingUser = await db.user.findUnique({ where: { email } });
+
   if (existingUser) return 'Email al in gebruik!';
 
   // try {

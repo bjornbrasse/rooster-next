@@ -1,8 +1,20 @@
 import { Organisation, PrismaClient, User } from '@prisma/client';
-import { organisationsData } from './data';
 
-export type NewOrganisationData = Pick<Organisation, 'name' | 'slug'> &
+type OrganisationData = Pick<Organisation, 'name' | 'slug'> &
   Partial<Organisation> & {};
+
+const organisationData: OrganisationData[] = [
+  {
+    name: 'Elisabeth-TweeSteden Ziekenhuis',
+    nameShort: 'ETZ',
+    slug: 'etz',
+  },
+  {
+    name: 'Catharina Ziekenhuis Eindhoven',
+    nameShort: 'CZE',
+    slug: 'cze',
+  },
+];
 
 export async function seedOrganisations({
   db,
@@ -11,9 +23,11 @@ export async function seedOrganisations({
   db: PrismaClient;
   adminUser: User;
 }) {
-  const data: NewOrganisationData[] = await organisationsData();
-
-  await db.organisation.createMany({
-    data,
-  });
+  return await Promise.all(
+    organisationData.map((organisation) => {
+      return db.organisation.create({
+        data: { ...organisation, createdById: adminUser.id },
+      });
+    }),
+  );
 }

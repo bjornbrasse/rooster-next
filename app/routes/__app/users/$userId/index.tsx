@@ -32,7 +32,6 @@ export const loader: LoaderFunction = async ({ params }) => {
   const userId = params.userId as string;
 
   const user = await db.user.findUnique({ where: { id: userId } });
-  console.log('gebruiker gevonden', user);
 
   return { user };
 };

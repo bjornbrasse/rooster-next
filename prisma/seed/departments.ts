@@ -1,12 +1,14 @@
-import { Department, PrismaClient, Schedule, Task, User } from '@prisma/client';
-import { departmentsData } from './data';
-
-export type NewDeparmtentData = Pick<
+import {
   Department,
-  'name' | 'slug' | 'organisationSlug'
-> &
+  Organisation,
+  PrismaClient,
+  Schedule,
+  Task,
+  User,
+} from '@prisma/client';
+
+export type DepartmentData = Pick<Department, 'name' | 'slug'> &
   Partial<Department> & {
-    organisationSlug: string;
     tasks?: Pick<Task, 'name'>[];
     schedules?: Pick<Schedule, 'name' | 'slug'>[];
     users?: (Pick<
@@ -22,27 +24,35 @@ export type NewDeparmtentData = Pick<
     } & Partial<User>)[];
   };
 
+const departmentData: DepartmentData[] = [
+  {
+    name: 'Ziekenhuisapotheek',
+    slug: 'ziekenhuisapotheek',
+  },
+];
+
 export async function seedDepartments({
   db,
   adminUser,
+  organisation,
 }: {
   db: PrismaClient;
   adminUser: User;
+  organisation: Organisation;
 }): Promise<Department[]> {
-  const data: NewDeparmtentData[] = departmentsData();
-
   return await Promise.all(
-    data.map((department) => {
+    departmentData.map((department) => {
       return db.department.create({
         data: {
-          createdById: adminUser.id,
-          tasks: {
-            create: department.tasks?.map((task) => ({
-              createdById: adminUser.id,
-              ...task,
-            })),
-          },
           ...department,
+          createdById: adminUser.id,
+          organisationId: organisation.id,
+          // tasks: {
+          //   create: department.tasks?.map((task) => ({
+          //     createdById: adminUser.id,
+          //     ...task,
+          //   })),
+          // },
         },
       });
     }),

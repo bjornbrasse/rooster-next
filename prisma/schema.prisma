@@ -7,66 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Organisation {
-  id          String       @id @default(cuid())
-  createdAt   DateTime     @default(now())
-  name        String
-  nameShort   String?
-  slug        String       @unique
-  departments Department[]
-  employees   User[]       @relation(name: "Employees")
-  User        User?        @relation("OrganisationsCreated", fields: [userId], references: [id])
-  userId      String?
-}
-
-model Department {
-  id               String               @id @default(cuid())
-  createdAt        DateTime             @default(now())
-  createdBy        User                 @relation(fields: [createdById], references: [id])
-  createdById      String               @unique
-  updatedAt        DateTime             @updatedAt
-  name             String
-  nameShort        String?
-  slug             String
-  organisation     Organisation         @relation(fields: [organisationSlug], references: [slug])
-  organisationSlug String
-  employees        DepartmentEmployee[]
-  schedules        Schedule[]
-  tasks            Task[]
-
-  @@unique([organisationSlug, slug])
-}
-
-enum Role {
-  USER
-  ADMIN
-}
-
-model User {
-  id                    String               @id @default(cuid())
-  createdAt             DateTime             @default(now())
-  createdBy             User?                @relation(name: "UsersCreated", fields: [createdById], references: [id])
-  createdById           String?
-  usersCreated          User[]               @relation(name: "UsersCreated")
-  updatedAt             DateTime             @updatedAt
-  role                  Role                 @default(USER)
-  firstName             String
-  lastName              String
-  initials              String
-  email                 String               @unique
-  passwordHash          String?
-  passwordResetToken    String?
-  emailValidationToken  String?
-  organisation          Organisation         @relation(name: "Employees", fields: [organisationSlug], references: [slug])
-  organisationSlug      String
-  departmentEmployees   DepartmentEmployee[]
-  canViewOrganisations  Boolean              @default(false)
-  canCreateOrganisation Boolean              @default(false)
-  bookings              Booking[]
-  schedules             ScheduleMember[]
-  tasksCreated          Task[]
-  organisationsCreated  Organisation[]       @relation(name: "OrganisationsCreated")
-  departmentsCreated    Department[]
+model Booking {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  date      DateTime
+  task      Task     @relation(fields: [taskId], references: [id])
+  taskId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
 }
 
 enum CRUD {
@@ -74,6 +23,24 @@ enum CRUD {
   READ
   UPDATE
   DELETE
+}
+
+model Department {
+  id             String               @id @default(cuid())
+  createdAt      DateTime             @default(now())
+  createdBy      User                 @relation(name: "DepartmentCreatedBy", fields: [createdById], references: [id])
+  createdById    String
+  updatedAt      DateTime             @updatedAt
+  name           String
+  nameShort      String?
+  slug           String               @unique
+  organisation   Organisation         @relation(fields: [organisationId], references: [id])
+  organisationId String
+  employees      DepartmentEmployee[]
+  schedules      Schedule[]
+  tasks          Task[]
+
+  @@unique([organisationId, slug])
 }
 
 model DepartmentEmployee {
@@ -112,20 +79,21 @@ model DepartmentPresenceDay {
   hours                Decimal
 }
 
-model Task {
-  id             String         @id @default(cuid())
-  createdAt      DateTime       @default(now())
-  createdBy      User           @relation(fields: [createdById], references: [id])
-  createdById    String
-  name           String
-  nameShort      String?
-  department     Department     @relation(fields: [departmentId], references: [id])
-  departmentId   String
-  description    String?
-  bookings       Booking[]
-  durationPerDay Decimal        @default(1)
-  daysOfTheWeek  String         @default("0111110")
-  scheduleTasks  ScheduleTask[]
+model Organisation {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  createdBy   User         @relation(name: "OrganisationCreatedBy", fields: [createdById], references: [id])
+  createdById String
+  name        String
+  nameShort   String?
+  slug        String       @unique
+  departments Department[]
+  employees   User[]       @relation(name: "UserOrganisation")
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Schedule {
@@ -166,17 +134,6 @@ model ScheduleTask {
   @@unique([scheduleId, taskId])
 }
 
-model Booking {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  date      DateTime
-  task      Task     @relation(fields: [taskId], references: [id])
-  taskId    String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-}
-
 model SpecialDate {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -184,4 +141,44 @@ model SpecialDate {
   createdBy String
   date      DateTime
   name      String
+}
+
+model Task {
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  createdBy      User           @relation(fields: [createdById], references: [id])
+  createdById    String
+  name           String
+  nameShort      String?
+  department     Department     @relation(fields: [departmentId], references: [id])
+  departmentId   String
+  description    String?
+  bookings       Booking[]
+  durationPerDay Decimal        @default(1)
+  daysOfTheWeek  String         @default("0111110")
+  scheduleTasks  ScheduleTask[]
+}
+
+model User {
+  id                    String               @id @default(cuid())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  role                  Role                 @default(USER)
+  firstName             String
+  lastName              String
+  initials              String
+  email                 String               @unique
+  passwordHash          String?
+  passwordResetToken    String?
+  emailValidationToken  String?
+  organisation          Organisation?        @relation(name: "UserOrganisation", fields: [organisationId], references: [id])
+  organisationId        String?
+  departmentEmployees   DepartmentEmployee[]
+  canViewOrganisations  Boolean              @default(false)
+  canCreateOrganisation Boolean              @default(false)
+  bookings              Booking[]
+  schedules             ScheduleMember[]
+  tasksCreated          Task[]
+  organisationsCreated  Organisation[]       @relation(name: "OrganisationCreatedBy")
+  departmentsCreated    Department[]         @relation(name: "DepartmentCreatedBy")
 }

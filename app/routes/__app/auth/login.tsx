@@ -62,7 +62,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-  return createUserSession(user, `/${user.organisation.slug}`);
+  return createUserSession(user, `/${user?.organisation?.slug ?? ''}`);
 };
 
 export default function LoginRoute() {

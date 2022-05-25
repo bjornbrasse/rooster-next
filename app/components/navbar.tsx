@@ -17,7 +17,11 @@ export const Navbar: React.FC<{
       className="flex h-12 items-center justify-between bg-primary px-4"
     >
       <Link
-        to={user ? `/${user.organisation.slug}/${user.firstName}` : '/home'}
+        to={
+          user?.organisation
+            ? `/${user.organisation.slug}/${user.firstName}`
+            : '/home'
+        }
         className="cursor-pointer text-3xl font-bold text-accent"
       >
         Rooster

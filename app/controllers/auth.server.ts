@@ -89,28 +89,6 @@ export async function useSession(request: Request) {
   };
 }
 
-export async function login({
-  email,
-  password,
-}: {
-  email: string;
-  password: string;
-}) {
-  const user = await db.user.findUnique({
-    where: { email },
-    include: { organisation: true, departmentEmployees: true },
-  });
-  if (!user) return null;
-
-  const isCorrectPassword = await bcrypt.compare(
-    password,
-    user.passwordHash ?? '',
-  );
-  if (!isCorrectPassword) return null;
-
-  return user;
-}
-
 export async function getUserPasswordReset({ email }: { email: string }) {
   const passwordResetToken = customRandom(urlAlphabet, 48, random)();
 
@@ -137,27 +115,44 @@ export async function getUserId(request: Request) {
 export async function getUser(request: Request) {
   const userId = await getUserId(request);
 
-  let user:
-    | (User & {
-        organisation: Organisation;
-        departmentEmployees: DepartmentEmployee[];
-      })
-    | null = null;
+  return await db.user.findUnique({
+    where: { id: userId ?? '' },
+    include: {
+      organisation: true,
+      // departmentEmployees: true,
+    },
+  });
+}
 
-  try {
-    user = await db.user.findUnique({
-      where: { id: userId ?? '' },
-      include: {
-        organisation: true,
-        departmentEmployees: true,
-      },
-    });
-  } catch (e) {
-    console.log('Fout in auth.server.ts', e);
-    // throw logout(request);
-  }
+export async function login({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) {
+  const user = await db.user.findUnique({
+    where: { email },
+    include: { organisation: true, departmentEmployees: true },
+  });
+  if (!user) return null;
+
+  const isCorrectPassword = await bcrypt.compare(
+    password,
+    user.passwordHash ?? '',
+  );
+  if (!isCorrectPassword) return null;
 
   return user;
+}
+
+export async function logout(request: Request) {
+  const session = await storage.getSession(request.headers.get('Cookie'));
+  return redirect('/auth/login', {
+    headers: {
+      'Set-Cookie': await storage.destroySession(session),
+    },
+  });
 }
 
 export async function requireUserId(
@@ -186,15 +181,6 @@ export async function requireUser(
   }
 
   return user;
-}
-
-export async function logout(request: Request) {
-  const session = await storage.getSession(request.headers.get('Cookie'));
-  return redirect('/auth/login', {
-    headers: {
-      'Set-Cookie': await storage.destroySession(session),
-    },
-  });
 }
 
 export async function createUserSession(user: User, redirectTo: string) {
