@@ -62,7 +62,10 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-  return createUserSession(user, `/${user?.organisation?.slug ?? ''}`);
+  return createUserSession(
+    user,
+    user.role === 'ADMIN' ? '/organisations' : `/my-planning`,
+  );
 };
 
 export default function LoginRoute() {

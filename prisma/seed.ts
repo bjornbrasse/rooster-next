@@ -9,11 +9,11 @@ async function seed() {
   const adminUser = await seedAdminUser({ db });
 
   const organisations = await seedOrganisations({ db, adminUser });
-  const departments = await seedDepartments({
-    db,
-    adminUser,
-    organisation: organisations[0],
-  });
+  // const departments = await seedDepartments({
+  //   db,
+  //   adminUser,
+  //   organisation: organisations[0],
+  // });
 
   // await seedUsers({ db, adminUser });
 }

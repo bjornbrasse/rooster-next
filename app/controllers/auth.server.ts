@@ -1,10 +1,11 @@
-import { createCookieSessionStorage, redirect } from 'remix';
+import { createCookieSessionStorage, json, redirect } from 'remix';
 import { DepartmentEmployee, Organisation, User } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { customRandom, random, urlAlphabet } from 'nanoid';
 import { db } from '../utils/db.server';
 import { sendEmail } from '~/utils/email';
 import { passwordResetEmail } from '~/utils/email/templates';
+import { badRequest } from '~/utils/helpers';
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -103,29 +104,21 @@ export async function getUserPasswordReset({ email }: { email: string }) {
   return user;
 }
 
-export async function sendPasswordResetToken(
+export async function setPasswordResetToken(
   args: { email: string; userId?: never } | { email?: never; userId: string },
-) {
+): Promise<
+  { success: true; user: Omit<User, 'passwordHash'> } | { success: false }
+> {
   const passwordResetToken = customRandom(urlAlphabet, 48, random)();
 
   const user = await db.user.update({
     where: { email: args?.email, id: args?.userId },
     data: { passwordResetToken },
-    select: { firstName: true, email: true, passwordResetToken: true },
   });
 
-  if (!user) return false;
+  if (!user) return { success: false };
 
-  sendEmail(
-    [user.email],
-    passwordResetEmail(
-      user.firstName,
-      `/auth/passwordReset?token=${user.passwordResetToken}`,
-    ),
-    'pwrt',
-  );
-
-  return true;
+  return { success: true, user };
 }
 
 export function getUserSession(request: Request) {
@@ -182,6 +175,28 @@ export async function logout(request: Request) {
   });
 }
 
+// export async function register({
+//   firstName,
+//   lastName,
+//   initials,
+//   email,
+//   password,
+// }: {
+//   firstName: string;
+//   lastName: string;
+//   initials: string;
+//   email: string;
+//   password: string;
+// }) {
+//   const passwordHash = await bcrypt.hash(password, 10);
+//   const emailValidationToken = nanoid(24);
+
+//   // TODO: replace with real entry organisation
+//   const organisationSlug = email.split('@').pop()?.split('.')[0];
+
+//   return db.user.create();
+// }
+
 export async function requireUserId(
   request: Request,
   options: { redirectTo?: string } = { redirectTo: '/' },
@@ -201,7 +216,7 @@ export async function requireUser(
 ): Promise<User> {
   const user = await getUser(request);
 
-  if (!user) throw redirect('/hahaha');
+  if (!user) throw redirect(`/auth/login?redirectTo=${options.redirectTo}`);
 
   if (options.isAdmin) {
     if (user.role !== 'ADMIN') throw redirect(options.redirectTo!);

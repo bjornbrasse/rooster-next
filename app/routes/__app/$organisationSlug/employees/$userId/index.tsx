@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { ActionFunction, Form, json, redirect, useLoaderData } from 'remix';
 import { BBLoader } from 'types';
-import { sendPasswordResetToken } from '~/controllers/auth.server';
+import { setPasswordResetToken } from '~/controllers/auth.server';
 import { getUser } from '~/controllers/user.server';
+import { sendEmail } from '~/utils/email';
+import { passwordResetEmail } from '~/utils/email/templates';
+import { badRequest } from '~/utils/helpers';
 
 type LoaderData = {
   user: Exclude<Awaited<ReturnType<typeof getUser>>, null>;
@@ -24,13 +27,32 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   if (action === 'resetPassword') {
     const { userId } = params;
+    console.log('SENDING MESSAGE 1');
 
-    const isSent = await sendPasswordResetToken({ userId: userId ?? '' });
+    const response = await setPasswordResetToken({ userId: userId ?? '' });
 
-    return { isSent };
+    if (response.success) {
+      const { user } = response;
+
+      try {
+        await sendEmail(
+          [user.email],
+          passwordResetEmail(
+            user.firstName,
+            `/auth/passwordReset?token=${user.passwordResetToken}`,
+          ),
+          'pwrt',
+        );
+      } catch (error) {
+        return console.log('Er is iets fout gegaan', error);
+      }
+    }
+    console.log('SENDING MESSAGE 2');
+
+    return json({ isSent: true });
   }
 
-  return { success: false };
+  return badRequest({ success: false });
 };
 
 export default function OrganisationEmployee() {

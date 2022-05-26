@@ -17,37 +17,11 @@ export const createUser = async ({
   });
 };
 
-export async function register({
-  firstName,
-  lastName,
-  initials,
-  email,
-  password,
-}: {
-  firstName: string;
-  lastName: string;
-  initials: string;
-  email: string;
-  password: string;
-}) {
-  const passwordHash = await bcrypt.hash(password, 10);
-  const emailValidationToken = nanoid(24);
-
-  // TODO: replace with real entry organisation
-  const organisationSlug = email.split('@').pop()?.split('.')[0];
-
-  return db.user.create();
-}
-
 export const getOrganisationEmployees = async ({
   organisationId,
 }: {
   organisationId: string;
-}): Promise<
-  (Pick<User, 'id' | 'firstName' | 'lastName'> & {
-    organisation: Organisation;
-  })[]
-> => {
+}) => {
   return await db.user.findMany({
     where: {
       organisationId,

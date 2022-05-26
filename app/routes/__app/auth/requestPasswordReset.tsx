@@ -30,14 +30,16 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (!user) return redirect('/login');
 
-  sendEmail(
+  const response = await sendEmail(
     [user.email],
     passwordResetEmail(
       user.firstName,
-      `/auth/passwordReset?token=${user.passwordResetToken}`
+      `/auth/passwordReset?token=${user.passwordResetToken}`,
     ),
-    'pwrt'
+    'pwrt',
   );
+
+  if (response?.success) console.log('het is gelukt', response.message);
 
   return redirect('/auth/login');
 };
@@ -56,7 +58,7 @@ export default function PasswordResetRoute() {
             name="email"
             defaultValue={actionData?.fields?.email}
             type="email"
-            className="w-full mb-2 block"
+            className="mb-2 block w-full"
             aria-invalid={Boolean(actionData?.fieldErrors?.email) || undefined}
             aria-describedby={
               actionData?.fieldErrors?.email ? 'email-error' : undefined
