@@ -1,6 +1,5 @@
 import { Link, LoaderFunction, Outlet, useLoaderData } from 'remix';
 import { BBLoader } from 'types';
-import { ColumnLookupView } from '~/components/column-lookp-view';
 import { getTasks } from '~/controllers/task.server';
 
 type LoaderData = {
@@ -20,7 +19,7 @@ export default function DepartmentTasks() {
 
   return (
     <div>
-      <p>Afdelings Taak</p>
+      <p>Afdelingstaken</p>
     </div>
   );
 }

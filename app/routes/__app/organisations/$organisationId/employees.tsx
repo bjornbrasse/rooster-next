@@ -9,13 +9,12 @@ import {
   useLoaderData,
   useMatches,
 } from 'remix';
-import { ColumnLookupView } from '~/components/column-lookp-view';
 import { Await, BBLoader } from 'types';
 import { useMatch } from 'react-router';
 import { Drawer } from '~/components/drawer';
 import { List } from '~/components/list';
 import clsx from 'clsx';
-import { useParams } from 'remix';
+import { userWithFullName, WithFullName } from '~/utils/user';
 
 type LoaderData = {
   employees: Awaited<ReturnType<typeof getUsers>>;
@@ -23,7 +22,7 @@ type LoaderData = {
 
 export const loader: BBLoader<{ organisationId: string }> = async ({
   params,
-}): Promise<LoaderData> => {
+}) => {
   const employees = await getUsers({
     organisationId: params.organisationId,
   });
@@ -33,20 +32,19 @@ export const loader: BBLoader<{ organisationId: string }> = async ({
 
 export default function OrganisationEmployees() {
   const { employees } = useLoaderData() as LoaderData;
-  const {} = useParams();
 
   return (
     <div className="flex h-full">
       <Drawer>
         <List
           headerButtons={
-            <Link to="new" className="btn btn-save">
+            <Link to="create" className="btn btn-save">
               <i className="fas fa-plus"></i>
             </Link>
           }
           title={'Medewerkers'}
         >
-          {employees.map(({ id, firstName }) => (
+          {employees.map(({ id, fullName }) => (
             <List.ListItem
               item={{ id, caption: firstName, to: (id: string) => `${id}` }}
               key="id"

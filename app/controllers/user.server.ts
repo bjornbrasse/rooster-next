@@ -2,6 +2,7 @@ import { db } from '~/utils/db.server';
 import bcrypt from 'bcrypt';
 import { Department, Organisation, Prisma, User } from '@prisma/client';
 import { nanoid } from 'nanoid';
+import { userWithFullName } from '~/utils/user';
 
 export const createUser = async ({
   data,
@@ -51,12 +52,19 @@ export const getUsers = async (
       }
     | { organisationId?: never; organisationSlug: string },
 ) => {
+  let users: { id: string; firstName: string; lastName: string }[] = [];
+
   if (args.organisationId)
-    return await db.user.findMany({
+    users = await db.user.findMany({
       where: { organisationId: args.organisationId },
+      select: { id: true, firstName: true, lastName: true },
     });
 
-  return await db.user.findMany({
-    where: { organisation: { slug: args.organisationSlug } },
-  });
+  if (args.organisationSlug)
+    users = await db.user.findMany({
+      where: { organisation: { slug: args.organisationSlug } },
+      select: { id: true, firstName: true, lastName: true },
+    });
+
+  return { users: users.map((u) => userWithFullName(u)) };
 };

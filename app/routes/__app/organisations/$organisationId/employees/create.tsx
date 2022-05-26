@@ -1,32 +1,33 @@
-import React from 'react';
 import { ActionFunction, Form, redirect, useActionData } from 'remix';
 import { z } from 'zod';
 import { Field } from '~/components/form-elements';
-import { createOrganisation } from '~/controllers/organisation';
+import { requireUserId } from '~/controllers/auth.server';
 import { createUser } from '~/controllers/user.server';
 import { inferSafeParseErrors, User } from '~/types';
 import { badRequest } from '~/utils/helpers';
 
 const schema = z.object({
-  // organisationSlug: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   initials: z.string().optional(),
   email: z.string().email(),
+  organisationId: z.string().cuid(),
 });
 
 type ActionData = {
-  fields: z.input<typeof schema>;
+  fields?: z.input<typeof schema>;
   errors?: inferSafeParseErrors<typeof schema>;
   employee?: User;
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
-  const { organisationSlug } = params;
+  const userId = await requireUserId(request);
+
+  const { organisationId } = params;
 
   const result = schema.safeParse({
-    organisationSlug,
     ...Object.fromEntries(await request.formData()),
+    organisationId,
   });
 
   if (!result.success) {
@@ -35,10 +36,8 @@ export const action: ActionFunction = async ({ request, params }) => {
     });
   }
 
-  const { ...fields } = result.data;
-
   const employee = await createUser({
-    data: { ...fields, organisation: { connect: { slug: organisationSlug } } },
+    data: { ...result.data },
   });
 
   if (!employee) {
@@ -47,7 +46,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     });
   }
 
-  return redirect(`/${organisationSlug}/employees/${employee.id}`);
+  return redirect(`/organisations/${organisationId}/employees/${employee.id}`);
 };
 
 export default function OrganisationEmployeeNew() {

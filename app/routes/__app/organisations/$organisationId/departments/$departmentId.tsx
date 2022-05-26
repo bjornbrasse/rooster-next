@@ -36,7 +36,10 @@ export const loader: BBLoader<{ departmentId: string }> = async ({
 
   const department = await getDepartment({ id: departmentId });
 
-  if (!department) return redirect('/test');
+  if (!department) {
+    console.log('AFDELING NIET GEONVNDEN???');
+    return redirect('/home');
+  }
 
   const departmentEmployee = await getDepartmentEmployee({
     departmentId,

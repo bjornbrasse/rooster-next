@@ -4,6 +4,7 @@ import {
   DepartmentEmployee,
   DepartmentPresence,
   DepartmentPresenceDay,
+  Prisma,
   User,
 } from '@prisma/client';
 import { redirect } from 'remix';
@@ -30,7 +31,7 @@ export const createDepartment = async (
   return await db.department.create({
     data: {
       ...rest,
-      createdBy: {connect: {id: createdById}},
+      createdBy: { connect: { id: createdById } },
       organisation: {
         connect: organisationId
           ? { id: organisationId }
@@ -111,6 +112,7 @@ export const getDepartments = async ({
 }) => {
   return await db.department.findMany({
     where: { organisation: { id: organisationId } },
+    select: { id: true, name: true },
   });
 };
 

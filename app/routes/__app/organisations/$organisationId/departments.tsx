@@ -1,26 +1,25 @@
-import { Department } from '@prisma/client';
-import * as React from 'react';
-import { Link, LoaderFunction, Outlet, useLoaderData } from 'remix';
+import { json, Link, Outlet, useLoaderData } from 'remix';
+import { BBLoader } from 'types';
 import { Drawer } from '~/components/drawer';
 import { List } from '~/components/list';
 import { getDepartments } from '~/controllers/department';
 
 type LoaderData = {
-  departments: Department[];
+  departments: Awaited<ReturnType<typeof getDepartments>>;
 };
 
-export const loader: LoaderFunction = async ({
+export const loader: BBLoader<{ organisationId: string }> = async ({
   params,
-}): Promise<LoaderData> => {
+}) => {
   const departments = await getDepartments({
-    organisationId: String(params.organisationId),
+    organisationId: params.organisationId,
   });
 
-  return { departments };
+  return json<LoaderData>({ departments });
 };
 
-export default function Departments() {
-  const { departments } = useLoaderData<LoaderData>();
+export default function DepartmentsLayout() {
+  const { departments } = useLoaderData() as LoaderData;
 
   return (
     <div className="flex h-full">
