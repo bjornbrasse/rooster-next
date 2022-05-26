@@ -1,76 +1,61 @@
-import type { ActionFunction } from 'remix';
-import { redirect } from 'remix';
-import { db } from '~/utils/db.server';
+import { ActionFunction, Form, json, redirect } from 'remix';
+import { inferSafeParseErrors } from 'types';
+import { z } from 'zod';
+import { Field } from '~/components/form-elements';
+import { requireUserId } from '~/controllers/auth.server';
+import { createDepartment } from '~/controllers/department';
 import { badRequest } from '~/utils/helpers';
-import { validateText } from '~/utils/validation';
+
+const schema = z.object({
+  name: z.string(),
+  slug: z.string(),
+});
 
 type ActionData = {
-  formError?: string;
-  fields?: {
-    name: string;
-  };
-  fieldErrors?: {
-    name: string | undefined;
-  };
+  fields?: z.input<typeof schema>;
+  errors?: inferSafeParseErrors<typeof schema>;
+  department?: Awaited<ReturnType<typeof createDepartment>>;
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
-  const form = await request.formData();
+  const userId = await requireUserId(request);
 
-  const name = form.get('name');
-  const nameShort = form.get('nameShort');
-  const slug = form.get('slug');
+  const { organisationId } = params;
+  if (!organisationId) return redirect('/organisations');
 
-  if (
-    typeof name !== 'string' ||
-    typeof nameShort !== 'string' ||
-    typeof slug !== 'string'
-  ) {
-    return badRequest({ FormError: `Form not submitted correctly.` });
-  }
-  const fields = { name, nameShort };
-
-  const fieldErrors = {
-    title: validateText(name, {
-      min: { length: 4, errorMessage: 'MOORE than 4' },
-    }),
-  };
-  if (Object.values(fieldErrors).some(Boolean))
-    return badRequest({ fieldErrors, fields });
-
-  const organisation = await db.organisation.findUnique({
-    where: { slug: params.organisationSlug as string },
-  });
-
-  if (!organisation) {
-    return badRequest({ formError: 'Something went wrong' });
+  const result = schema.safeParse(Object.fromEntries(await request.formData()));
+  if (!result.success) {
+    return badRequest({ error: result.error.flatten() });
   }
 
-  const department = await db.department.create({
-    data: { name, nameShort, slug, organisationId: organisation.id },
+  const department = await createDepartment({
+    ...result.data,
+    organisationId,
+    createdById: userId,
   });
 
   if (!department)
-    return badRequest<ActionData>({ formError: 'Something went wrong.' });
+    return badRequest<ActionData>({
+      errors: { formErrors: ['Something went wrong.'] },
+    });
 
-  return redirect(`.`);
+  return redirect(`./${department.id}/tasks`);
 };
 
-export default function OrganisationCreate() {
+export default function DepartmentCreate() {
   return (
-    <div className="container">
+    <div className="flex flex-col items-center">
       <h1>Nieuwe afdeling</h1>
-      <form method="POST" className="grid grid-cols-2 gap-y-4">
-        <label htmlFor="name">Naam</label>
-        <input type="text" name="name" id="name" />
-        <label htmlFor="nameShort">Verkorte naam</label>
-        <input type="text" name="nameShort" id="nameShort" />
-        <label htmlFor="slug">Adres naam</label>
-        <input type="text" name="slug" id="slug" />
+      <Form
+        method="post"
+        className="min-w-full max-w-lg border border-gray-400 p-4"
+      >
+        <Field name="name" label="Afdeling" />
+        <Field name="slug" label="Slug" />
         <button type="submit" className="btn btn-save">
           Opslaan
         </button>
-      </form>
+      </Form>
     </div>
   );
 }

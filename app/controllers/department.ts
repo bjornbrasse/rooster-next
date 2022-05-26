@@ -8,24 +8,34 @@ import {
 } from '@prisma/client';
 import { redirect } from 'remix';
 
-export const createDepartment = async ({
-  department,
-  organisationSlug,
-  createdById,
-}: {
-  department: {
+export const createDepartment = async (
+  data: {
+    createdById: string;
     name: string;
-    nameShort: string;
+    nameShort?: string;
     slug: string;
-  };
-  organisationSlug: string;
-  createdById: string;
-}) => {
+  } & (
+    | {
+        organisationId: string;
+        organisationSlug?: never;
+      }
+    | {
+        organisationId?: never;
+        organisationSlug: string;
+      }
+  ),
+) => {
+  const { createdById, organisationSlug, organisationId, ...rest } = data;
+
   return await db.department.create({
     data: {
-      ...department,
-      createdById,
-      organisation: { connect: { slug: organisationSlug } },
+      ...rest,
+      createdBy: {connect: {id: createdById}},
+      organisation: {
+        connect: organisationId
+          ? { id: organisationId }
+          : { slug: organisationSlug },
+      },
     },
   });
 };

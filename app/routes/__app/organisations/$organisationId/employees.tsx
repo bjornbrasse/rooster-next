@@ -48,7 +48,7 @@ export default function OrganisationEmployees() {
         >
           {employees.map(({ id, firstName }) => (
             <List.ListItem
-              item={{ id, caption: firstName, to: (id: string) => `` }}
+              item={{ id, caption: firstName, to: (id: string) => `${id}` }}
               key="id"
             />
           ))}

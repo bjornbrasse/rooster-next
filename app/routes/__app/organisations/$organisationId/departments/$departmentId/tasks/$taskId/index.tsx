@@ -18,6 +18,24 @@ import { db } from '~/utils/db.server';
 import { badRequest } from '~/utils/helpers';
 import { Section } from '~/components/section';
 import useLocalStorage from '~/hooks/useLocalStorage';
+import { BBLoader } from 'types';
+
+type LoaderData = {
+  task: Task;
+};
+
+export const loader: BBLoader<{ taskId: string }> = async ({
+  params,
+  request,
+}): Promise<LoaderData | Response> => {
+  const url = new URL(request.url);
+
+  const task = await getTask(params.taskId);
+
+  if (!task) return redirect(url.pathname);
+
+  return { task };
+};
 
 export const action: ActionFunction = async ({ request }) => {
   const Validator = z.object({
@@ -50,23 +68,6 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   return json(task, { status: 200 });
-};
-
-type LoaderData = {
-  task: Task;
-};
-
-export const loader: LoaderFunction = async ({
-  params,
-  request,
-}): Promise<LoaderData | Response> => {
-  const url = new URL(request.url);
-
-  const task = await getTask(params.taskId as string);
-
-  if (!task) return redirect(url.pathname);
-
-  return { task };
 };
 
 export default function DepartmentTask() {

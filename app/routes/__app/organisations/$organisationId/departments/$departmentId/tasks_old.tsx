@@ -24,11 +24,9 @@ export default function DepartmentTasksLayout() {
   const { tasks } = useLoaderData<LoaderData>();
 
   return (
-    <ColumnLookupView
-      listItems={tasks.map(({ id, name }) => ({ id, name }))}
-      listTitle="Taken"
-    >
+    <div>
+      <h1>Taken layout</h1>
       <Outlet />
-    </ColumnLookupView>
+    </div>
   );
 }

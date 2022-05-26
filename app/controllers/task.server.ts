@@ -13,11 +13,10 @@ export const createTask = async ({
   });
 };
 
-
 export const getTask = async (taskId: string) => {
-  return await db.task.findFirst({where: {id: taskId}})
-}
+  return await db.task.findFirst({ where: { id: taskId } });
+};
 
-export const getTasks = async ({departmentId}: {departmentId: string}) => {
-  return await db.task.findMany({where: {departmentId}})
-}
+export const getTasks = async (args: { departmentId: string }) => {
+  return await db.task.findMany({ where: { departmentId: args.departmentId } });
+};

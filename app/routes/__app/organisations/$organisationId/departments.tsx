@@ -1,6 +1,6 @@
 import { Department } from '@prisma/client';
 import * as React from 'react';
-import { Link, LoaderFunction, useLoaderData } from 'remix';
+import { Link, LoaderFunction, Outlet, useLoaderData } from 'remix';
 import { Drawer } from '~/components/drawer';
 import { List } from '~/components/list';
 import { getDepartments } from '~/controllers/department';
@@ -27,17 +27,23 @@ export default function Departments() {
       <Drawer>
         <List
           headerButtons={
-            <Link to="new" className="btn btn-save">
+            <Link to="create" className="btn btn-save">
               <i className="fas fa-plus"></i>
             </Link>
           }
           title="Afdelingen"
         >
           {departments.map(({ id, name }) => (
-            <List.ListItem item={{ id, caption: name }} key={id} />
+            <List.ListItem
+              item={{ id, caption: name, to: (id: string) => `${id}/tasks` }}
+              key={id}
+            />
           ))}
         </List>
       </Drawer>
+      <div className="w-full p-4">
+        <Outlet />
+      </div>
     </div>
   );
 }

@@ -1,28 +1,26 @@
-import { Task } from '@prisma/client';
-import * as React from 'react';
 import { Link, LoaderFunction, Outlet, useLoaderData } from 'remix';
+import { BBLoader } from 'types';
 import { ColumnLookupView } from '~/components/column-lookp-view';
-import Container from '~/components/Container';
 import { getTasks } from '~/controllers/task.server';
 
 type LoaderData = {
-  tasks: Task[];
+  tasks: Awaited<ReturnType<typeof getTasks>>;
 };
 
-export const loader: LoaderFunction = async ({
-  params,
-}): Promise<LoaderData> => {
-  const tasks = await getTasks({ departmentId: params.departmentId as string });
+// export const loader: BBLoader<{ departmentId: string }> = async ({
+//   params,
+// }): Promise<LoaderData> => {
+//   const tasks = await getTasks({ departmentId: params.departmentId as string });
 
-  return { tasks };
-};
+//   return { tasks };
+// };
 
 export default function DepartmentTasks() {
-  const { tasks } = useLoaderData<LoaderData>();
+  // const { tasks } = useLoaderData() as LoaderData;
 
   return (
     <div>
-      <p>Taak</p>
+      <p>Afdelings Taak</p>
     </div>
   );
 }
