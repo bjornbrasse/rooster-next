@@ -23,7 +23,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input(
   ref,
 ) {
   const className = clsx(
-    'placeholder-gray-500 dark:disabled:text-blueGray-500 focus-ring px-3 py-1 w-full text-black disabled:text-gray-400 dark:text-white font-medium bg-gray-100 dark:bg-sky-800 rounded-lg',
+    'placeholder-gray-500 dark:disabled:text-blueGray-500 focus-ring px-3 py-1 w-full text-black disabled:text-gray-400 dark:text-white font-medium dark:bg-sky-800 rounded-lg bg-white border border-gray-400',
     props.className,
   );
 
@@ -69,7 +69,7 @@ const Field = React.forwardRef<
     name: string;
     label: string;
     className?: string;
-    error?: string | null;
+    error?: string[] | null;
     description?: React.ReactNode;
   } & InputProps
 >(function Field(
@@ -85,8 +85,8 @@ const Field = React.forwardRef<
     <div className={clsx('mb-8', className)}>
       <div className="flex items-baseline justify-between gap-2 px-1">
         <Label htmlFor={inputId}>{label}</Label>
-        {error ? (
-          <InputError id={errorId}>{error}</InputError>
+        {error?.length ? (
+          <InputError id={errorId}>{error.join(',')}</InputError>
         ) : description ? (
           <div id={descriptionId} className="text-lg text-primary">
             {description}

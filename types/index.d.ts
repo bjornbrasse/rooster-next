@@ -4,6 +4,7 @@
 import type { ActionFunction, LoaderFunction } from 'remix';
 import type { User, Role } from '@prisma/client';
 import React from 'react';
+import { z } from 'zod';
 
 type NonNullProperties<Type> = {
   [Key in keyof Type]-?: Exclude<Type[Key], null | undefined>;
@@ -250,3 +251,14 @@ export {
 
 // export * from './simplecast';
 // export * from './transistor';
+
+// This type infer errors from a ZodType, as produced by `flatten()` of a parsed schema.
+export type inferSafeParseErrors<
+  T extends z.ZodType<any, any, any>,
+  U = string,
+> = {
+  formErrors?: U[];
+  fieldErrors?: {
+    [P in keyof z.infer<T>]?: U[];
+  };
+};

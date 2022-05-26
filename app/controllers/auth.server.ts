@@ -3,6 +3,8 @@ import { DepartmentEmployee, Organisation, User } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { customRandom, random, urlAlphabet } from 'nanoid';
 import { db } from '../utils/db.server';
+import { sendEmail } from '~/utils/email';
+import { passwordResetEmail } from '~/utils/email/templates';
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -99,6 +101,31 @@ export async function getUserPasswordReset({ email }: { email: string }) {
   });
 
   return user;
+}
+
+export async function sendPasswordResetToken(
+  args: { email: string; userId?: never } | { email?: never; userId: string },
+) {
+  const passwordResetToken = customRandom(urlAlphabet, 48, random)();
+
+  const user = await db.user.update({
+    where: { email: args?.email, id: args?.userId },
+    data: { passwordResetToken },
+    select: { firstName: true, email: true, passwordResetToken: true },
+  });
+
+  if (!user) return false;
+
+  sendEmail(
+    [user.email],
+    passwordResetEmail(
+      user.firstName,
+      `/auth/passwordReset?token=${user.passwordResetToken}`,
+    ),
+    'pwrt',
+  );
+
+  return true;
 }
 
 export function getUserSession(request: Request) {

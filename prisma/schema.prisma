@@ -166,7 +166,7 @@ model User {
   role                  Role                 @default(USER)
   firstName             String
   lastName              String
-  initials              String
+  initials              String?
   email                 String               @unique
   passwordHash          String?
   passwordResetToken    String?

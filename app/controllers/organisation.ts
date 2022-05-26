@@ -21,14 +21,22 @@ export type OrganisationWithEmployees = Prisma.OrganisationGetPayload<
   typeof organisationWithEmployees
 >;
 
-export const getOrganisation = async ({
-  where,
-  include,
-}: {
-  where: Prisma.OrganisationWhereUniqueInput;
-  include?: Prisma.OrganisationInclude;
-}) => {
-  return await db.organisation.findUnique({ where, include });
+export const getOrganisation = async (
+  args: { id: string; slug?: never } | { id?: never; slug: string },
+) => {
+  let organisation: Organisation | null;
+
+  if (args?.id) {
+    organisation = await db.organisation.findUnique({
+      where: { id: args.id },
+    });
+  } else {
+    organisation = await db.organisation.findUnique({
+      where: { slug: args.slug },
+    });
+  }
+
+  return organisation;
 };
 
 export const findOrganisation = async ({

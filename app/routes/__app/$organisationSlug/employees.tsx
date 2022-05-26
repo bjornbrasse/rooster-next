@@ -1,19 +1,21 @@
 import * as React from 'react';
-import { User } from '@prisma/client';
+import { Organisation, User } from '@prisma/client';
 import { getUsers } from '~/controllers/user.server';
-import { LoaderFunction, Outlet, useLoaderData } from 'remix';
+import { LoaderFunction, Outlet, useLoaderData, useMatches } from 'remix';
 import { ColumnLookupView } from '~/components/column-lookp-view';
+import { Await, BBLoader } from 'types';
+import { useMatch } from 'react-router';
 
 type LoaderData = {
-  employees: User[];
+  employees: Awaited<ReturnType<typeof getUsers>>;
 };
 
-export const loader: LoaderFunction = async ({
+export const loader: BBLoader<{ organisationSlug: string }> = async ({
   params,
 }): Promise<LoaderData> => {
-  const { organisationId } = params;
-
-  const employees = await getUsers({ organisationId: String(organisationId) });
+  const employees = await getUsers({
+    organisationSlug: params.organisationSlug,
+  });
 
   return { employees };
 };
