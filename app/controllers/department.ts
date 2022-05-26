@@ -4,14 +4,14 @@ import {
   DepartmentEmployee,
   DepartmentPresence,
   DepartmentPresenceDay,
-  Organisation,
   User,
 } from '@prisma/client';
-import { json, redirect } from 'remix';
+import { redirect } from 'remix';
 
 export const createDepartment = async ({
   department,
   organisationSlug,
+  createdById,
 }: {
   department: {
     name: string;
@@ -19,29 +19,29 @@ export const createDepartment = async ({
     slug: string;
   };
   organisationSlug: string;
-}): Promise<Department> => {
+  createdById: string;
+}) => {
   return await db.department.create({
     data: {
       ...department,
+      createdById,
       organisation: { connect: { slug: organisationSlug } },
     },
   });
 };
 
-export const getDepartment = async ({
-  departmentId,
-  departmentSlug,
-}: {
-  departmentId?: string;
-  departmentSlug?: string;
-}): Promise<Department & { organisation: Organisation }> => {
-  const department = await db.department.findFirst({
-    where: { OR: { id: departmentId, slug: departmentSlug } },
+export const getDepartment = async (
+  args:
+    | {
+        id: string;
+        slug?: never;
+      }
+    | { id?: never; slug: string },
+) => {
+  const department = await db.department.findUnique({
+    where: { id: args?.id, slug: args?.slug },
     include: { organisation: true },
   });
-
-  // if(!department) throw new Error('Error')
-  if (!department) throw redirect('/organisations');
 
   return department;
 };

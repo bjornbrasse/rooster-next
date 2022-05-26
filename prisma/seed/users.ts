@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
+import { Organisation, PrismaClient, User } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 export type NewAdminUserData = {
@@ -10,9 +10,9 @@ export type NewAdminUserData = {
   passwordHash: string;
 };
 
-export type NewUserData = Pick<
+export type UserData = Pick<
   User,
-  'firstName' | 'lastName' | 'initials' | 'email' | 'passwordHash'
+  'firstName' | 'lastName' | 'email' | 'passwordHash'
 > & {
   organisationSlug: string;
   // defaultDepartmentSlug: string;
@@ -29,29 +29,59 @@ export async function seedAdminUser({
       firstName: 'Bjorn',
       lastName: 'Brassé',
       initials: 'BB',
-      email: 'bpbrasse@bra-c.nl',
+      email: 'bjorn@admin.nl',
       role: 'ADMIN',
-      passwordHash: await bcrypt.hash('appel', 10),
+      passwordHash: await bcrypt.hash('admin', 10),
     },
   });
 }
 
-// export async function seedUsers({
-//   db,
-//   adminUser,
-// }: {
-//   db: PrismaClient;
-//   adminUser: User;
-// }): Promise<User[]> {
-//   const newUsers: NewUserData[] = await usersData();
+export async function seedUsers({
+  db,
+  organisations,
+}: {
+  db: PrismaClient;
+  organisations: Organisation[];
+}): Promise<User[]> {
+  const userData: UserData[] = await (async () => [
+    {
+      email: 'barbara@etz.nl',
+      firstName: 'Barbara',
+      lastName: 'Maat',
+      passwordHash: await bcrypt.hash('etz', 10),
+      organisationSlug: organisations[0].slug,
+    },
+    {
+      email: 'mark@etz.nl',
+      firstName: 'Mark',
+      lastName: 'Jansen',
+      passwordHash: await bcrypt.hash('etz', 10),
+      organisationSlug: organisations[0].slug,
+    },
+    {
+      email: 'tessa@etz.nl',
+      firstName: 'Tessa',
+      lastName: 'Leenders',
+      passwordHash: await bcrypt.hash('etz', 10),
+      organisationSlug: organisations[0].slug,
+    },
+    {
+      email: 'marieke@cze.nl',
+      firstName: 'Marieke',
+      lastName: 'Kerskes',
+      passwordHash: await bcrypt.hash('cze', 10),
+      organisationSlug: organisations[1].slug,
+    },
+  ])();
 
-//   const res = await Promise.all(
-//     newUsers.map((newUser) => {
-//       return db.user.create({
-//         data: { ...newUser, createdById: adminUser.id },
-//       });
-//     }),
-//   );
-
-//   return [adminUser];
-// }
+  return await Promise.all(
+    userData.map(({ organisationSlug, ...user }) => {
+      return db.user.create({
+        data: {
+          ...user,
+          organisation: { connect: { slug: organisationSlug } },
+        },
+      });
+    }),
+  );
+}
