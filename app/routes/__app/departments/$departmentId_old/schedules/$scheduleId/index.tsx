@@ -9,7 +9,7 @@ import {
 import { Link, LoaderFunction, redirect, useLoaderData } from 'remix';
 import Container from '~/components/Container';
 import MemberForm from '~/components/forms/MemberForm';
-import TaskForm from '~/components/forms/TaskForm';
+import TaskForm from '~/components/forms/task-form';
 import { useDialog } from '~/contexts/dialog';
 import { getSchedule } from '~/controllers/schedule.server';
 

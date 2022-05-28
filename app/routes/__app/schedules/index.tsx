@@ -35,7 +35,7 @@ export default function Schedules() {
               {schedule.name}
             </Link> */}
             <Link
-              to={`/${schedule.department.organisation.slug}/${schedule.department.slug}/${schedule.slug}`}
+              to={`${schedule.id}`}
               className="text-blue-600 underline hover:text-red-500"
             >
               {schedule.name}

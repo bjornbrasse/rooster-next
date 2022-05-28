@@ -1,12 +1,12 @@
-import * as React from "react";
-import { Task } from "@prisma/client";
-import { useFetcher } from "remix";
-import { ActionData } from "~/routes/_api/task";
-import { useDialog } from "~/contexts/dialog";
+import * as React from 'react';
+import { Task } from '@prisma/client';
+import { useFetcher } from 'remix';
+import { ActionData } from '~/routes/_api/task';
+import { useDialog } from '~/contexts/dialog';
 
 const TaskForm = ({
   onSaved: savedHandler,
-  redirectTo = "/",
+  redirectTo = '/',
   departmentId,
   task,
 }: {
@@ -35,7 +35,7 @@ const TaskForm = ({
     <fetcher.Form method="post" action="/_api/task">
       <input type="hidden" name="departmentId" value={departmentId} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
-      <input type="hidden" name="taskId" value={task?.id} />
+      {/* <input type="hidden" name="taskId" value={task?.id} /> */}
 
       <fieldset className="flex flex-col">
         <label htmlFor="firstName">Taak</label>

@@ -6,7 +6,7 @@ import { Outlet, useParams } from 'remix';
 import { BBHandle, BBLoader, Breadcrumb, LoaderDataBase } from 'types';
 import DialogButton from '~/components/DialogButton';
 import ScheduleForm from '~/components/forms/ScheduleForm';
-import TaskForm from '~/components/forms/TaskForm';
+import TaskForm from '~/components/forms/task-form';
 import { UserForm } from '~/components/forms/user-form';
 import Navigator from '~/components/Navigator';
 import Tabs from '~/components/Tabs';

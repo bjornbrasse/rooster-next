@@ -1,56 +1,47 @@
 import { Task } from '@prisma/client';
-import type { ActionFunction } from 'remix';
+import { ActionFunction, json } from 'remix';
+import { inferSafeParseErrors } from 'types';
 import { z } from 'zod';
 import { requireUserId } from '~/controllers/auth.server';
 import { createTask } from '~/controllers/task.server';
 import { badRequest } from '~/utils/helpers';
 
-export type ActionData = { task: Task };
+const schema = z.object({
+  taskId: z.string().optional(),
+  departmentId: z.string(),
+  name: z.string(),
+  createdById: z.string().cuid(),
+});
 
-export const action: ActionFunction = async ({
-  request,
-  params,
-}): Promise<ActionData | Response> => {
+export type ActionData = {
+  fields?: z.input<typeof schema>;
+  errors?: inferSafeParseErrors<typeof schema>;
+  task?: Awaited<ReturnType<typeof createTask>>;
+};
+
+export const action: ActionFunction = async ({ request }) => {
   const userId = await requireUserId(request);
 
-  const Validator = z.object({
-    taskId: z.string().optional(),
-    departmentId: z.string(),
-    name: z.string(),
+  const result = schema.safeParse({
+    ...Object.fromEntries(await request.formData()),
+    createdById: userId,
   });
 
-  let task: Task | null = null;
-
-  try {
-    const data = Validator.parse(Object.fromEntries(await request.formData()));
-
-    task = await createTask(data);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.log('er treedt een Zod-fout op', error.flatten());
-
-      return badRequest(error.format());
-    }
-    console.log('er treedt een fout op', error);
-  }
-
-  // const fieldErrors: FieldErrors = {
-  // firstName: validateText(firstName, {
-  //   min: { length: 2, errorMessage: 'MOORE than 2' },
-  // }),
-  // };
-  // if (Object.values(fieldErrors).some(Boolean))
-  //   return badRequest<ActionData>({
-  //     error: { fields: fieldErrors },
-  //     fields,
-  //   });
-
-  if (!task)
-    return badRequest({
-      error: { form: 'Something went wrong.' },
+  if (!result.success)
+    return badRequest<ActionData>({
+      errors: result.error.flatten(),
     });
 
-  return { task };
+// const { taskId, ...data } = result;
+  const task = await createTask(result.data);
+
+  if (!task)
+    return badRequest<ActionData>({
+      fields: result.data,
+      errors: { formErrors: ['Task not created'] },
+    });
+
+  return json<ActionData>({ task });
 };
 
 export default () => null;

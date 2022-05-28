@@ -41,17 +41,23 @@ export const createDepartment = async (
   });
 };
 
-export const getDepartment = async (
-  args:
-    | {
-        id: string;
-        slug?: never;
-      }
-    | { id?: never; slug: string },
-) => {
+export const getDepartment = async ({
+  userId,
+  ...args
+}: { userId: string } & (
+  | {
+      id: string;
+      slug?: never;
+    }
+  | { id?: never; slug: string }
+)) => {
   const department = await db.department.findUnique({
     where: { id: args?.id, slug: args?.slug },
-    include: { organisation: true },
+    include: {
+      tasks: true,
+      organisation: true,
+      employees: { where: { userId } },
+    },
   });
 
   return department;

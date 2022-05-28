@@ -1,15 +1,13 @@
 import { db } from '~/utils/db.server';
 import { Task } from '@prisma/client';
 
-export const createTask = async ({
-  name,
-  departmentId,
-}: {
+export const createTask = async (data: {
   name: string;
   departmentId: string;
+  createdById: string;
 }): Promise<Task> => {
   return await db.task.create({
-    data: { name, departmentId },
+    data,
   });
 };
 

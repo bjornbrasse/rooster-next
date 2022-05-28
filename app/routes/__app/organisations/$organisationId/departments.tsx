@@ -34,7 +34,11 @@ export default function DepartmentsLayout() {
         >
           {departments.map(({ id, name }) => (
             <List.ListItem
-              item={{ id, caption: name, to: (id: string) => `${id}/tasks` }}
+              item={{
+                id,
+                caption: name,
+                to: (id: string) => `/departments/${id}/tasks`,
+              }}
               key={id}
             />
           ))}
