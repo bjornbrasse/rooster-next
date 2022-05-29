@@ -1,15 +1,15 @@
-import { Schedule } from "@prisma/client";
+import { Schedule } from '@prisma/client';
 import {
   Link,
   LoaderFunction,
   useFetcher,
   useLoaderData,
   useParams,
-} from "remix";
-import Container from "~/components/Container";
-import DialogButton from "~/components/DialogButton";
-import ScheduleForm from "~/components/forms/ScheduleForm";
-import { getSchedules } from "~/controllers/schedule.server";
+} from 'remix';
+import { Container } from '~/components/container';
+import DialogButton from '~/components/DialogButton';
+import ScheduleForm from '~/components/forms/ScheduleForm';
+import { getSchedules } from '~/controllers/schedule.server';
 
 type LoaderData = {
   schedules: Schedule[];
@@ -42,7 +42,7 @@ export default function Schedules() {
   const { departmentId } = useParams();
 
   return (
-    <Container flex={"col"}>
+    <Container flex={'col'}>
       {schedules.map((schedule) => (
         <ScheduleItem schedule={schedule} key={schedule.id} />
       ))}

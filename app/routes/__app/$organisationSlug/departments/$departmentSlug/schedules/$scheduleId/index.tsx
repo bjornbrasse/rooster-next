@@ -1,8 +1,8 @@
-import { Schedule } from "@prisma/client";
-import { LoaderFunction, redirect } from "remix";
-import { useLoaderData } from "remix";
-import Container from "~/components/Container";
-import { getSchedule } from "~/controllers/schedule.server";
+import { Schedule } from '@prisma/client';
+import { LoaderFunction, redirect } from 'remix';
+import { useLoaderData } from 'remix';
+import { Container } from '~/components/container';
+import { getSchedule } from '~/controllers/schedule.server';
 
 type LoaderData = {
   schedule: Schedule;
@@ -11,7 +11,7 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({ params }) => {
   const schedule = await getSchedule({ scheduleId: String(params.scheduleId) });
 
-  if (!schedule) return redirect("/");
+  if (!schedule) return redirect('/');
 
   return { schedule };
 };

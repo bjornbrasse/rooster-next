@@ -14,29 +14,13 @@ export const createOrganisation = async ({
   return organisation;
 };
 
-const organisationWithEmployees = Prisma.validator<Prisma.OrganisationArgs>()({
-  include: { employees: true },
-});
-export type OrganisationWithEmployees = Prisma.OrganisationGetPayload<
-  typeof organisationWithEmployees
->;
-
 export const getOrganisation = async (
   args: { id: string; slug?: never } | { id?: never; slug: string },
 ) => {
-  let organisation: Organisation | null;
-
-  if (args?.id) {
-    organisation = await db.organisation.findUnique({
-      where: { id: args.id },
-    });
-  } else {
-    organisation = await db.organisation.findUnique({
-      where: { slug: args.slug },
-    });
-  }
-
-  return organisation;
+  return await db.organisation.findUnique({
+    where: { id: args?.id, slug: args?.slug },
+    include: { departments: true, employees: true },
+  });
 };
 
 export const findOrganisation = async ({

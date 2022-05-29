@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link, Outlet } from 'remix';
 import schedule from '~/routes/_api/schedule';
-import Container from './Container';
+import Container from './container';
 
 const TabPage: React.FC = () => {
   return (

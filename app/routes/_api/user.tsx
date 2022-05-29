@@ -1,100 +1,45 @@
-import { User } from "@prisma/client";
-import type { ActionFunction } from "remix";
-import { createUser } from "~/controllers/user.server";
-import { badRequest } from "~/utils/helpers";
-import { validateText } from "~/utils/validation";
+import { User } from '@prisma/client';
+import { ActionFunction, json } from 'remix';
+import { inferSafeParseErrors } from 'types';
+import { z } from 'zod';
+import { requireUserId } from '~/controllers/auth.server';
+import { createUser } from '~/controllers/user.server';
+import { badRequest } from '~/utils/helpers';
 
-// type ActionData = {
-//   formError?: string;
-//   fields?: {
-//     id: string;
-//     firstName: string;
-//     lastName: string;
-//     email: string;
-//   };
-//   fieldErrors?: {
-//     firstName: string | undefined;
-//     lastName: string | undefined;
-//     email: string | undefined;
-//   };
-// };
-type Fields = {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-};
+const schema = z.object({
+  email: z.string().email(),
+  firstName: z.string(),
+  lastName: z.string(),
+  initials: z.string().optional(),
+  organisationId: z.string().cuid(),
+});
 
-type FieldErrors = {
-  firstName?: string[] | undefined;
-  lastName?: string[] | undefined;
-  email?: string[] | undefined;
-};
+export type ActionData =
+  | {
+      fields?: z.input<typeof schema>;
+      errors?: inferSafeParseErrors<typeof schema>;
+    }
+  | { user: User };
 
-export type UserActionData = {
-  error?: {
-    form?: string;
-    fields?: FieldErrors;
-  };
-  fields?: Fields;
-  user?: User | null;
-};
+export const action: ActionFunction = async ({ request }) => {
+  const userId = await requireUserId(request);
 
-export const action: ActionFunction = async ({ request, params }) => {
-  const form = await request.formData();
+  const result = schema.safeParse(Object.fromEntries(await request.formData()));
 
-  const firstName = form.get("firstName");
-  const lastName = form.get("lastName");
-  const email = form.get("email");
-  const departmentId = form.get("departmentId");
-  const organisationId = form.get("organisationId");
-
-  if (
-    typeof firstName !== "string" ||
-    typeof lastName !== "string" ||
-    typeof email !== "string" ||
-    typeof departmentId !== "string" ||
-    typeof organisationId !== "string"
-  ) {
-    return badRequest<UserActionData>({
-      error: { form: `Form not submitted correctly.` },
-    });
-  }
-  const fields = { firstName, lastName, email, initials: "Test" };
-
-  const fieldErrors: FieldErrors = {
-    firstName: validateText(firstName, {
-      min: { length: 2, errorMessage: "MOORE than 2" },
-    }),
-    lastName: validateText(lastName, {
-      max: { length: 4, errorMessage: "MAX 4" },
-    }),
-  };
-  if (Object.values(fieldErrors).some(Boolean))
-    return badRequest<UserActionData>({
-      error: { fields: fieldErrors },
-      fields,
-    });
+  if (!result.success)
+    return badRequest<ActionData>({ errors: result.error.flatten() });
 
   const user = await createUser({
-    userData: { ...fields, organisationId, departmentId },
+    data: result.data,
   });
-  // const user = await db.user.create({
-  //   data: {
-  //     firstName,
-  //     lastName,
-  //     email,
-  //     passwordHash: '123',
-  //     organisationId,
-  //   },
-  // });
 
   if (!user)
-    return badRequest<UserActionData>({
-      error: { form: "Something went wrong." },
-      fields,
+    return badRequest<ActionData>({
+      errors: { formErrors: ['User was no created'] },
+      fields: result.data,
     });
 
-  return { user };
+  return json<ActionData>({ user });
 };
 
 export default () => null;

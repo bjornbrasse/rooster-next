@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Link, LoaderFunction, Outlet, useLoaderData } from 'remix';
 import { BBLoader } from 'types';
 import { ColumnLookupView } from '~/components/column-lookp-view';
-import Container from '~/components/Container';
+import Container from '~/components/container';
 import { requireUser } from '~/controllers/auth.server';
 import { getTasks } from '~/controllers/task.server';
 

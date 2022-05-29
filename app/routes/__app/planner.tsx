@@ -9,7 +9,7 @@ import {
   useLoaderData,
   useSearchParams,
 } from 'remix';
-import Container from '~/components/Container';
+import { Container } from '~/components/container';
 import PlannerWeekView from '~/components/planners/WeekPlanner';
 import PlannerViewToggleButtons, {
   View,

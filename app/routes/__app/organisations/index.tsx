@@ -1,5 +1,4 @@
 import { Organisation } from '@prisma/client';
-import { NavigationType } from 'react-router';
 import { Link, LoaderFunction, useLoaderData, useNavigate } from 'remix';
 import TRL from '~/components/TRL';
 import { db } from '~/utils/db.server';
@@ -24,7 +23,7 @@ export default function Organisations() {
   const { organisations } = useLoaderData<LoaderData>();
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="flex h-full w-full flex-col">
       <Navigator caption="Organisaties" />
       {/* <div
         id="header"
@@ -47,8 +46,8 @@ export default function Organisations() {
           <tbody>
             {organisations.map((organisation) => (
               <TRL
-                to={`${organisation.id}/departments`}
-                className="border-b border-gray-300 hover:bg-blue-300 cursor-pointer"
+                to={`${organisation.id}`}
+                className="cursor-pointer border-b border-gray-300 hover:bg-blue-300"
                 key={organisation.id}
               >
                 <td>{organisation.nameShort}</td>

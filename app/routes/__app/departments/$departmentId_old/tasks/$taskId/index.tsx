@@ -11,7 +11,7 @@ import {
   useSubmit,
   useTransition,
 } from 'remix';
-import Container from '~/components/Container';
+import { Container } from '~/components/container';
 import { getTask } from '~/controllers/task.server';
 import { z } from 'zod';
 import { db } from '~/utils/db.server';

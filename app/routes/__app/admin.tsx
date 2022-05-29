@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { LoaderFunction } from 'remix';
-import Container from '~/components/Container';
+import { Container } from '~/components/container';
 import { Section } from '~/components/section';
 import { requireUser } from '~/controllers/auth.server';
 

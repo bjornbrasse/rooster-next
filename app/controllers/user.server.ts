@@ -8,7 +8,7 @@ export const createUser = async ({
   data,
 }: {
   data: Prisma.UserCreateInput;
-}): Promise<User> => {
+}) => {
   return await db.user.create({
     // data: {
     //   ...userDataWithoutPassword,

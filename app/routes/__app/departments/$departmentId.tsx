@@ -9,6 +9,7 @@ import ScheduleForm from '~/components/forms/ScheduleForm';
 import TaskForm from '~/components/forms/task-form';
 import { UserForm } from '~/components/forms/user-form';
 import { Frame } from '~/components/frame';
+import { Header } from '~/components/header';
 import Navigator from '~/components/Navigator';
 import Tabs from '~/components/Tabs';
 import { useDialog } from '~/contexts/dialog';
@@ -72,24 +73,15 @@ export default function DepartmentLayout() {
 
   return (
     <div className="flex h-full w-full flex-col border-4 border-red-600 p-4">
-      <div
-        id="header"
-        className="mb-12 flex items-center space-x-2 border-b-2 border-blue-700 p-2 text-xl"
-      >
+      <Header>
         <Link to={`/organisations/${department.organisationId}`}>
           {department.organisation.name}
         </Link>
         <i className="fas fa-angle-right"></i>
         <p>{department.name}</p>
-      </div>
+      </Header>
       <div id="content" className="flex flex-col space-y-4 px-24">
-        <div>
-          <p className="text-lg text-blue-400">Medewerkers</p>
-          <div
-            id="frame"
-            className="h-24 rounded-lg border border-stone-400"
-          ></div>
-        </div>
+        <Frame title="Medewerkers"></Frame>
         <Frame
           buttons={
             <button

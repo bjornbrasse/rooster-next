@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 
 export const Frame: FC<{ buttons?: ReactNode; title: string }> = ({
   buttons,
@@ -13,7 +13,7 @@ export const Frame: FC<{ buttons?: ReactNode; title: string }> = ({
       </div>
       <div
         id="frame"
-        className="rounded-t-l-none h-24 rounded-md border border-stone-400 p-2"
+        className="rounded-t-l-none flex flex-col rounded-md border border-stone-400 p-2"
       >
         {children}
       </div>

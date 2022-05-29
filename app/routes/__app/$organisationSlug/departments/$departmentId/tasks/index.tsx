@@ -2,7 +2,7 @@ import { Task } from '@prisma/client';
 import * as React from 'react';
 import { Link, LoaderFunction, Outlet, useLoaderData } from 'remix';
 import { ColumnLookupView } from '~/components/column-lookp-view';
-import Container from '~/components/Container';
+import Container from '~/components/container';
 import { getTasks } from '~/controllers/task.server';
 
 type LoaderData = {

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { ActionFunction, Form, json, redirect, useLoaderData } from 'remix';
 import { BBLoader } from 'types';
 import { setPasswordResetToken } from '~/controllers/auth.server';
@@ -13,9 +12,9 @@ type LoaderData = {
 
 export const loader: BBLoader<{
   organisationSlug: string;
-  userId: string;
+  employeeId: string;
 }> = async ({ params, request }) => {
-  const user = await getUser({ id: params.userId });
+  const user = await getUser({ id: params.employeeId });
 
   if (!user) return redirect(`/${params.organisationSlug}`);
 

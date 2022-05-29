@@ -1,5 +1,5 @@
-import { Department, Schedule } from "@prisma/client";
-import * as React from "react";
+import { Department, Schedule } from '@prisma/client';
+import * as React from 'react';
 import {
   Link,
   LoaderFunction,
@@ -8,10 +8,10 @@ import {
   redirect,
   useMatches,
   useParams,
-} from "remix";
-import Container from "~/components/Container";
-import { getDepartment } from "~/controllers/department";
-import { getSchedules } from "~/controllers/schedule.server";
+} from 'remix';
+import { Container } from '~/components/container';
+import { getDepartment } from '~/controllers/department';
+import { getSchedules } from '~/controllers/schedule.server';
 
 type LoaderData = {
   department: Department;
@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     departmentSlug: String(params.departmentSlug),
   });
 
-  if (!department) return redirect("/");
+  if (!department) return redirect('/');
 
   const schedules = await getSchedules({ departmentId: department?.id });
 
@@ -39,8 +39,8 @@ const Tab: React.FC<{ className?: string; to: string }> = ({
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `p-2 mx-1 flex ${
-          isActive ? "bg-primary text-accent" : "bg-gray-300"
+        `mx-1 flex p-2 ${
+          isActive ? 'bg-primary text-accent' : 'bg-gray-300'
         } rounded-t-lg ${className}`
       }
     >
@@ -53,15 +53,15 @@ export default function DepartmentLayout() {
   const { departmentSlug, organisationSlug, scheduleId } = useParams();
 
   const tabs: { caption: string; to: string }[] = [
-    { caption: "Algemeen", to: `/${organisationSlug}/${departmentSlug}/` },
-    { caption: "Medewerkers", to: "employees/" },
-    { caption: "Roosters", to: "schedules/" },
+    { caption: 'Algemeen', to: `/${organisationSlug}/${departmentSlug}/` },
+    { caption: 'Medewerkers', to: 'employees/' },
+    { caption: 'Roosters', to: 'schedules/' },
   ];
 
   const data = useMatches().find(
     (m) =>
       m.pathname ===
-      `/${organisationSlug}/${departmentSlug}/schedules/${scheduleId}`
+      `/${organisationSlug}/${departmentSlug}/schedules/${scheduleId}`,
   )?.data as { schedule: Schedule };
 
   const schedule = data?.schedule;
@@ -69,12 +69,12 @@ export default function DepartmentLayout() {
   return (
     <Container padding={false}>
       <div id="header" className="flex border-b border-primary">
-        <div id="tabs" className="mt-4 px-2 flex items-end">
+        <div id="tabs" className="mt-4 flex items-end px-2">
           {tabs.map((tab) => (
             <Tab to={tab.to}>{tab.caption}</Tab>
           ))}
           {schedule && (
-            <Tab to={`schedules/${schedule.id}`} className="pl-4 py-1">
+            <Tab to={`schedules/${schedule.id}`} className="py-1 pl-4">
               <p>{schedule.name}</p>
               <Link
                 to={`/${organisationSlug}/${departmentSlug}/schedules/`}

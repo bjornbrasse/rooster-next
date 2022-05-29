@@ -82,7 +82,7 @@ const Field = React.forwardRef<
   const descriptionId = `${inputId}-description`;
 
   return (
-    <div className={clsx('mb-8', className)}>
+    <div className={clsx('mb-2', className)}>
       <div className="flex items-baseline justify-between gap-2 px-1">
         <Label htmlFor={inputId}>{label}</Label>
         {error?.length ? (

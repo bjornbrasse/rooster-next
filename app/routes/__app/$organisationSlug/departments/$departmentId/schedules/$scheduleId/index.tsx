@@ -7,7 +7,7 @@ import {
   User,
 } from '@prisma/client';
 import { Link, LoaderFunction, redirect, useLoaderData } from 'remix';
-import Container from '~/components/Container';
+import { Container } from '~/components/container';
 import MemberForm from '~/components/forms/MemberForm';
 import TaskForm from '~/components/forms/task-form';
 import { useDialog } from '~/contexts/dialog';

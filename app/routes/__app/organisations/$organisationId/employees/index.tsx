@@ -1,7 +1,7 @@
 import { User } from '@prisma/client';
 import * as React from 'react';
 import { LoaderFunction, useLoaderData } from 'remix';
-import Container from '~/components/Container';
+import { Container } from '~/components/container';
 import { getOrganisationEmployees, getUsers } from '~/controllers/user.server';
 
 export default function OrganisationEmployees() {

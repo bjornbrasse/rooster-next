@@ -21,6 +21,8 @@ export const UserForm = ({
   const fetcher = useFetcher<UserActionData>();
   const [changingPassword, setChangingPassword] = React.useState(false);
 
+  const fieldErrors = fetcher?.data?.errors?.fieldErrors;
+
   React.useEffect(() => {
     if (fetcher.data?.user) {
       savedHandler(fetcher.data.user);
@@ -28,9 +30,8 @@ export const UserForm = ({
   }, [fetcher]);
 
   return (
-    <fetcher.Form method="post" action="/_api/user2">
+    <fetcher.Form method="post" action="/_api/user">
       <input type="hidden" name="userId" value={user?.id} />
-      <input type="hidden" name="departmentId" value={departmentId} />
       <input type="hidden" name="organisationId" value={organisationId} />
       {/* <input type="hidden" name="redirectTo" value={redirectTo} /> */}
       {/* <fieldset className="flex flex-col"> */}
@@ -44,12 +45,8 @@ export const UserForm = ({
         label="Achternaam"
         error={fetcher.data?.errors?.lastName}
       />
-      <Field name="email" label="Email" error={fetcher.data?.errors?.email} />
-      <Field
-        name="initials"
-        label="Initialen"
-        error={fetcher.data?.errors?.initials}
-      />
+      <Field name="email" label="Email" error={fieldErrors?.email} />
+      <Field name="initials" label="Initialen" error={fieldErrors?.initials} />
       {/* <button
           type="button"
           onClick={() => setChangingPassword(!changingPassword)}

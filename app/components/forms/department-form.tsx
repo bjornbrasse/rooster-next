@@ -3,18 +3,14 @@ import { Department } from '@prisma/client';
 import { useFetcher } from 'remix';
 import { ActionData } from '~/routes/_api/department';
 
-export default function DepartmentForm({
-  // onSaved: savedHandler,
-  department,
-  organisationSlug,
-  redirectTo = `/${organisationSlug}/departments`,
-}: {
-  // onSaved: (user: User) => void;
+export default function DepartmentForm(args: {
+  onSaved: (department: Department) => void;
   department?: Department;
   redirectTo?: string;
-  organisationSlug: string;
+  organisationId: string;
 }) {
   const fetcher = useFetcher<ActionData>();
+  const { department, organisationId, redirectTo } = args;
 
   React.useEffect(() => {
     if (fetcher.data?.department) {
@@ -24,7 +20,7 @@ export default function DepartmentForm({
 
   return (
     <fetcher.Form method="post" action="/_api/department">
-      <input type="hidden" name="organisationSlug" value={organisationSlug} />
+      <input type="hidden" name="organisationId" value={organisationId} />
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <fieldset className="flex flex-col">
         <label htmlFor="name">Naam</label>
@@ -42,7 +38,7 @@ export default function DepartmentForm({
           type="text"
           name="nameShort"
           id="nameShort"
-          defaultValue={department?.nameShort}
+          defaultValue={department?.nameShort ?? ''}
         />
         <label htmlFor="slug">Slug</label>
         <input
