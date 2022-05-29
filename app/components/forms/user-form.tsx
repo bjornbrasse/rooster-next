@@ -39,6 +39,7 @@ export const UserForm = ({
         name="firstName"
         label="Voornaam"
         error={fetcher.data?.errors?.firstName}
+        autoFocus
       />
       <Field
         name="lastName"

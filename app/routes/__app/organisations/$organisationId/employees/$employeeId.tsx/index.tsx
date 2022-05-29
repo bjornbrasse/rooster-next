@@ -7,18 +7,18 @@ import { passwordResetEmail } from '~/utils/email/templates';
 import { badRequest } from '~/utils/helpers';
 
 type LoaderData = {
-  user: Exclude<Awaited<ReturnType<typeof getUser>>, null>;
+  employee: Exclude<Awaited<ReturnType<typeof getUser>>, null>;
 };
 
 export const loader: BBLoader<{
-  organisationSlug: string;
   employeeId: string;
-}> = async ({ params, request }) => {
-  const user = await getUser({ id: params.employeeId });
+  organisationId: string;
+}> = async ({ params }) => {
+  const employee = await getUser({ id: params.employeeId });
 
-  if (!user) return redirect(`/${params.organisationSlug}`);
+  if (!employee) return redirect(`/organisations/${params.organisationId}`);
 
-  return json({ user });
+  return json({ employee });
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -55,13 +55,15 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 export default function OrganisationEmployee() {
-  const { user } = useLoaderData() as LoaderData;
+  const {
+    employee: { firstName, lastName },
+  } = useLoaderData() as LoaderData;
 
   return (
     <div>
       <p>Medewerker</p>
-      <p>{user.firstName}</p>
-      <p>{user.lastName}</p>
+      <p>{firstName}</p>
+      <p>{lastName}</p>
       <Form method="post">
         <button className="btn btn-save" name="_action" value="resetPassword">
           Reset Wachtwoord

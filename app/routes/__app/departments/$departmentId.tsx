@@ -74,6 +74,10 @@ export default function DepartmentLayout() {
   return (
     <div className="flex h-full w-full flex-col border-4 border-red-600 p-4">
       <Header>
+        <Link to="/organisations" className="mr-1 flex space-x-2">
+          <i className="fas fa-angle-left"></i>
+          <i className="fas fa-building"></i>
+        </Link>
         <Link to={`/organisations/${department.organisationId}`}>
           {department.organisation.name}
         </Link>
