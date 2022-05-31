@@ -5,20 +5,15 @@ import { Link } from 'remix';
 import { useSchedule } from '~/hooks/useSchedule';
 import useDate from '~/hooks/useDate';
 import { WEEKDAYS } from '~/utils/date';
+import { getSchedule } from '~/controllers/schedule.server';
 
 interface IProps {
   bookings: (Booking & { user: User })[];
   date: Date;
-  schedule: Schedule;
-  tasks: Task[];
+  schedule: Exclude<Awaited<ReturnType<typeof getSchedule>>, null>;
 }
 
-export const WeekPlanner: React.FC<IProps> = ({
-  bookings,
-  date,
-  schedule,
-  tasks,
-}) => {
+export const WeekPlanner: React.FC<IProps> = ({ bookings, date, schedule }) => {
   const { getWeekDays } = useDate(date);
   const { addToSelection } = useSchedule();
 
@@ -55,7 +50,7 @@ export const WeekPlanner: React.FC<IProps> = ({
           </tr>
         </thead>
         <tbody>
-          {tasks.map((task) => (
+          {schedule.scheduleTasks.map(({ task }) => (
             <tr key={task.id}>
               <td>{task.name}</td>
               {weekDays.map((day, index) => {
