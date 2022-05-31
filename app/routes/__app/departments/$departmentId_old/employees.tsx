@@ -11,7 +11,7 @@ import { TypeOf } from 'zod';
 import * as React from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { DnDItemTypes } from '~/utils/dnd';
-import { getDepartmentEmployees } from '~/controllers/department';
+import { getDepartmentEmployees } from '~/controllers/department.server';
 import { ColumnLookupView } from '~/components/column-lookp-view';
 import { BBLoader } from 'types';
 

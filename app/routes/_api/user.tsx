@@ -16,10 +16,11 @@ const schema = z.object({
 
 export type ActionData =
   | {
+      success: false;
       fields?: z.input<typeof schema>;
       errors?: inferSafeParseErrors<typeof schema>;
     }
-  | { user: User };
+  | { success: true; user: User };
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireUserId(request);
@@ -27,7 +28,10 @@ export const action: ActionFunction = async ({ request }) => {
   const result = schema.safeParse(Object.fromEntries(await request.formData()));
 
   if (!result.success)
-    return badRequest<ActionData>({ errors: result.error.flatten() });
+    return badRequest<ActionData>({
+      success: false,
+      errors: result.error.flatten(),
+    });
 
   const user = await createUser({
     data: result.data,
@@ -35,11 +39,12 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (!user)
     return badRequest<ActionData>({
+      success: false,
       errors: { formErrors: ['User was no created'] },
       fields: result.data,
     });
 
-  return json<ActionData>({ user });
+  return json<ActionData>({ success: true, user });
 };
 
 export default () => null;

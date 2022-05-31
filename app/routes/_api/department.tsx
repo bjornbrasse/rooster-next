@@ -1,85 +1,45 @@
-import type { ActionFunction } from 'remix';
-import { Department } from '@prisma/client';
+import { ActionFunction, json } from 'remix';
 import { badRequest } from '~/utils/helpers';
-import { validateText } from '~/utils/validation';
-import { createDepartment } from '~/controllers/department';
+import { createDepartment } from '~/controllers/department.server';
+import { z } from 'zod';
+import { inferSafeParseErrors } from 'types';
+import { requireUserId } from '~/controllers/auth.server';
 
-type Fields = {
-  name?: string;
-  nameShort?: string;
-  slug?: string;
-};
+const schema = z.object({
+  name: z.string(),
+  nameShort: z.string().optional(),
+  slug: z.string(),
+  organisationId: z.string().cuid(),
+});
 
-type FieldErrors = {
-  name?: string[] | undefined;
-  nameShort?: string[] | undefined;
-  slug?: string[] | undefined;
-};
-
-export type ActionData = {
-  error?: {
-    form?: string;
-    fields?: FieldErrors;
-  };
-  fields?: Fields;
-  department?: Department | null;
-};
+export type ActionData =
+  | {
+      success: false;
+      fields?: z.input<typeof schema>;
+      errors?: inferSafeParseErrors<typeof schema>;
+    }
+  | { success: true; department: Awaited<ReturnType<typeof createDepartment>> };
 
 export const action: ActionFunction = async ({ request }) => {
-  const form = await request.formData();
+  const userId = await requireUserId(request);
 
-  const name = form.get('name');
-  const nameShort = form.get('nameShort');
-  const slug = form.get('slug');
-  const organisationSlug = form.get('organisationSlug');
-
-  if (
-    typeof name !== 'string' ||
-    typeof nameShort !== 'string' ||
-    typeof slug !== 'string' ||
-    typeof organisationSlug !== 'string'
-  ) {
-    return badRequest<ActionData>({
-      error: { form: `Form not submitted correctly.` },
-    });
+  const result = schema.safeParse(Object.fromEntries(await request.formData()));
+  if (!result.success) {
+    return badRequest({ error: result.error.flatten() });
   }
-  const fields = { name, nameShort, slug };
 
-  const fieldErrors: FieldErrors = {
-    name: validateText(name, {
-      min: { length: 2, errorMessage: 'MOORE than 2' },
-    }),
-    nameShort: validateText(nameShort, {
-      max: { length: 4, errorMessage: 'MAX 4' },
-    }),
-  };
-  if (Object.values(fieldErrors).some(Boolean))
-    return badRequest<ActionData>({
-      error: { fields: fieldErrors },
-      fields,
-    });
-
-  const user = await createDepartment({
-    department: { name, nameShort, slug },
-    organisationSlug,
+  const department = await createDepartment({
+    ...result.data,
+    createdById: userId,
   });
-  // const user = await db.user.create({
-  //   data: {
-  //     firstName,
-  //     lastName,
-  //     email,
-  //     passwordHash: '123',
-  //     organisationId,
-  //   },
-  // });
 
-  if (!user)
+  if (!department)
     return badRequest<ActionData>({
-      error: { form: 'Something went wrong.' },
-      fields,
+      success: false,
+      errors: { formErrors: ['Department not created'] },
     });
 
-  return { user };
+  return json<ActionData>({ success: true, department });
 };
 
 export default () => null;

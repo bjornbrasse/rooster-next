@@ -1,6 +1,6 @@
 import { Organisation } from '@prisma/client';
 import { Link, LoaderFunction, useLoaderData, useNavigate } from 'remix';
-import TRL from '~/components/TRL';
+import TRL from '~/components/table-row-with-navigation';
 import { db } from '~/utils/db.server';
 import Navigator from '~/components/Navigator';
 import { requireUser } from '~/controllers/auth.server';

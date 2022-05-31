@@ -125,13 +125,14 @@ model ScheduleMember {
 }
 
 model ScheduleTask {
-  id         String   @id @default(cuid())
-  schedule   Schedule @relation(fields: [scheduleId], references: [id])
-  scheduleId String
-  task       Task     @relation(fields: [taskId], references: [id])
-  taskId     String
-  assignedAt DateTime @default(now())
-  assignedBy String?
+  id           String   @id @default(cuid())
+  schedule     Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId   String
+  task         Task     @relation(fields: [taskId], references: [id])
+  taskId       String
+  assignedAt   DateTime @default(now())
+  assignedBy   User     @relation(name: "ScheduleTaskAssignedBy", fields: [assignedById], references: [id])
+  assignedById String
 
   @@unique([scheduleId, taskId])
 }
@@ -184,4 +185,5 @@ model User {
   tasksCreated          Task[]
   organisationsCreated  Organisation[]       @relation(name: "OrganisationCreatedBy")
   schedulesCreated      Schedule[]           @relation(name: "ScheduleCreatedBy")
+  scheduleTasksAssigned ScheduleTask[]       @relation(name: "ScheduleTaskAssignedBy")
 }

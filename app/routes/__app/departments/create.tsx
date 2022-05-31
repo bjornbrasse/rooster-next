@@ -3,7 +3,7 @@ import { inferSafeParseErrors } from 'types';
 import { z } from 'zod';
 import { Field } from '~/components/form-elements';
 import { requireUserId } from '~/controllers/auth.server';
-import { createDepartment } from '~/controllers/department';
+import { createDepartment } from '~/controllers/department.server';
 import { badRequest } from '~/utils/helpers';
 
 const schema = z.object({

@@ -8,7 +8,7 @@ import {
 } from 'remix';
 import { Container } from '~/components/container';
 import DialogButton from '~/components/DialogButton';
-import ScheduleForm from '~/components/forms/ScheduleForm';
+import ScheduleForm from '~/components/forms/schedule-form';
 import { getSchedules } from '~/controllers/schedule.server';
 
 type LoaderData = {

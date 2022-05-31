@@ -1,22 +1,20 @@
-import { Department, Organisation, Task, User } from '@prisma/client';
-import { Link, LoaderFunction, MetaFunction } from 'remix';
-import { useLoaderData, useLocation } from 'remix';
+import { Schedule, Task, User } from '@prisma/client';
+import { useState } from 'react';
+import { useDrop } from 'react-dnd';
+import { json, Link, MetaFunction } from 'remix';
+import { useLoaderData } from 'remix';
 import { redirect } from 'remix';
-import { Outlet, useParams } from 'remix';
-import { BBHandle, BBLoader, Breadcrumb, LoaderDataBase } from 'types';
-import DialogButton from '~/components/DialogButton';
-import ScheduleForm from '~/components/forms/ScheduleForm';
+import { BBHandle, BBLoader, LoaderDataBase } from 'types';
+import { Container } from '~/components/container';
+import { DraggableListItem } from '~/components/dragable-list-item';
+import ScheduleForm from '~/components/forms/schedule-form';
 import TaskForm from '~/components/forms/task-form';
-import { UserForm } from '~/components/forms/user-form';
 import { Frame } from '~/components/frame';
 import { Header } from '~/components/header';
-import Navigator from '~/components/Navigator';
-import Tabs from '~/components/Tabs';
 import { useDialog } from '~/contexts/dialog';
-import { requireUser, requireUserId } from '~/controllers/auth.server';
-import { getDepartment, getDepartmentEmployee } from '~/controllers/department';
-import useLocalStorage from '~/hooks/useLocalStorage';
-import DepartmentCreate from './create';
+import { requireUserId } from '~/controllers/auth.server';
+import { getDepartment } from '~/controllers/department.server';
+import { DnDItemTypes } from '~/utils/dnd';
 
 export const meta: MetaFunction = ({ data }) => {
   return { title: data.department.name };
@@ -28,7 +26,6 @@ export const handle: BBHandle = {
 
 type LoaderData = LoaderDataBase & {
   department: Exclude<Awaited<ReturnType<typeof getDepartment>>, null>;
-  departmentEmployee: Awaited<ReturnType<typeof getDepartmentEmployee>>;
 };
 
 export const loader: BBLoader<{ departmentId: string }> = async ({
@@ -37,81 +34,145 @@ export const loader: BBLoader<{ departmentId: string }> = async ({
 }) => {
   const userId = await requireUserId(request);
 
-  const department = await getDepartment({ id: departmentId, userId });
+  const department = await getDepartment({ departmentId });
 
   if (!department) {
     return redirect('/home');
   }
 
-  // const departmentEmployee = await getDepartmentEmployee({
-  //   departmentId,
-  //   userId,
-  // });
-
-  // const breadcrumbs: Breadcrumb[] = [
-  //   {
-  //     caption: department.organisation.name,
-  //     to: `/organisations/${department.organisation.id}`,
-  //   },
-  //   {
-  //     caption: department.name,
-  //     to: `/departments/${department.id}`,
-  //   },
-  // ];
-
-  // return { breadcrumbs, department, departmentEmployee };
-  return { department };
+  return json<LoaderData>({ department });
 };
 
 export default function DepartmentLayout() {
   const { department } = useLoaderData() as LoaderData;
   const { closeDialog, openDialog } = useDialog();
-  const [prevDepartmentTaskId] = useLocalStorage(
-    'prev-department-task-id',
-    null,
-  );
+  const [isEditingEmployees, setIsEditingEmployees] = useState(false);
+
+  const [{ canDrop, isHovering }, dropRef] = useDrop(() => ({
+    accept: DnDItemTypes.EMPLOYEE,
+    canDrop: ({ user }) => true,
+    drop: (item: { user: User }) => null,
+    // openDialog(
+    //   'Voeg taak toe aan rooster',
+    //   <ScheduleTaskForm
+    //     onSaved={(scheduleTask: ScheduleTask) => closeDialog()}
+    //     schedule={schedule}
+    //     task={item.task}
+    //   />,
+    // ),
+    collect: (monitor) => ({
+      canDrop: !!monitor.canDrop(),
+      isHovering: !!monitor.isOver(),
+    }),
+  }));
 
   return (
-    <div className="flex h-full w-full flex-col border-4 border-red-600 p-4">
-      <Header>
-        <Link to="/organisations" className="mr-1 flex space-x-2">
-          <i className="fas fa-angle-left"></i>
-          <i className="fas fa-building"></i>
-        </Link>
-        <Link to={`/organisations/${department.organisationId}`}>
-          {department.organisation.name}
-        </Link>
-        <i className="fas fa-angle-right"></i>
-        <p>{department.name}</p>
-      </Header>
-      <div id="content" className="flex flex-col space-y-4 px-24">
-        <Frame title="Medewerkers"></Frame>
-        <Frame
-          buttons={
-            <button
-              onClick={() =>
-                openDialog(
-                  'Nieuwe Taak',
-                  <TaskForm
-                    onSaved={function (task: Task): void {
-                      throw new Error('Function not implemented.');
-                    }}
-                    departmentId={department.id}
-                  />,
-                  'Maak een nieuwe taak aan',
-                )
-              }
-            >
-              <i className="fas fa-plus"></i>
-            </button>
-          }
-          title="Taken"
-        >
-          {department.tasks.map((task) => (
-            <div>{task.name}</div>
-          ))}
-        </Frame>
-      </div>
+    <div className="flex h-full">
+      <Container>
+        <Header>
+          <Link to="/organisations" className="mr-1 flex space-x-2">
+            <i className="fas fa-angle-left"></i>
+            <i className="fas fa-building"></i>
+          </Link>
+          <Link to={`/organisations/${department.organisationId}`}>
+            {department.organisation.name}
+          </Link>
+          <i className="fas fa-angle-right"></i>
+          <p>{department.name}</p>
+        </Header>
+        <div id="content" className="flex flex-col space-y-4 px-24">
+          <Frame
+            buttons={
+              <button
+                onClick={() => {
+                  setIsEditingEmployees((prevValue) => !prevValue);
+                }}
+              >
+                <i className="fas fa-pencil-alt"></i>
+              </button>
+            }
+            canDrop={canDrop}
+            isHovering={isHovering}
+            title="Medewerkers"
+            ref={dropRef}
+          >
+            {department.employees.map(({ user }) => (
+              <div className="flex justify-between" key={user.id}>
+                {`${user.firstName} ${user.lastName}`}
+                {isEditingEmployees && (
+                  <button>
+                    <i className="fas fa-trash"></i>
+                  </button>
+                )}
+              </div>
+            ))}
+          </Frame>
+          <Frame
+            buttons={
+              <button
+                onClick={() =>
+                  openDialog(
+                    'Nieuwe Taak',
+                    <TaskForm
+                      onSaved={(task: Task) => {
+                        closeDialog();
+                      }}
+                      departmentId={department.id}
+                    />,
+                    'Maak een nieuwe taak aan',
+                  )
+                }
+              >
+                <i className="fas fa-plus"></i>
+              </button>
+            }
+            title="Taken"
+          >
+            {department.tasks.map((task) => (
+              <div>{task.name}</div>
+            ))}
+          </Frame>
+          <Frame
+            buttons={
+              <button
+                onClick={() =>
+                  openDialog(
+                    'Nieuw Rooster',
+                    <ScheduleForm
+                      onSaved={(schedule: Schedule) => {
+                        closeDialog();
+                      }}
+                      departmentId={department.id}
+                    />,
+                    'Maak een nieuw rooster aan.',
+                  )
+                }
+              >
+                <i className="fas fa-plus"></i>
+              </button>
+            }
+            title="Roosters"
+          >
+            {department.schedules.map((schedule) => (
+              <Link to={`/schedules/${schedule.id}`} key={schedule.id}>
+                {schedule.name}
+              </Link>
+            ))}
+          </Frame>
+        </div>
+      </Container>
+      {isEditingEmployees && (
+        <div className="w-72 border border-red-400 p-2">
+          <h1 className="mb-4">Medewerkers</h1>
+          <ul className="list-none">
+            {department.organisation.employees.map((employee) => (
+              <DraggableListItem item={employee} type={DnDItemTypes.EMPLOYEE}>
+                {`${employee.firstName} ${employee.lastName}`}
+              </DraggableListItem>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

@@ -41,22 +41,26 @@ export const createDepartment = async (
   });
 };
 
-export const getDepartment = async ({
-  userId,
-  ...args
-}: { userId: string } & (
-  | {
-      id: string;
-      slug?: never;
-    }
-  | { id?: never; slug: string }
-)) => {
+export const getDepartment = async (
+  args:
+    | {
+        departmentId: string;
+        organisationId_slug?: never;
+      }
+    | {
+        departmentId?: never;
+        organisationId_slug: { organisationId: string; slug: string };
+      },
+) => {
   const department = await db.department.findUnique({
-    where: { id: args?.id, slug: args?.slug },
+    where: args?.departmentId
+      ? { id: args.departmentId }
+      : { organisationId_slug: args.organisationId_slug },
     include: {
       tasks: true,
-      organisation: true,
-      employees: { where: { userId } },
+      schedules: { orderBy: { name: 'asc' } },
+      organisation: { include: { employees: true } },
+      employees: true,
     },
   });
 

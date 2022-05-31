@@ -1,3 +1,5 @@
 export const DnDItemTypes = {
-  ORGANISATIONEMPLOYEE: 'organisationEmployee'
-}
+  EMPLOYEE: 'employee',
+  TASK: 'task',
+  ORGANISATIONEMPLOYEE: 'organisationEmployee',
+};

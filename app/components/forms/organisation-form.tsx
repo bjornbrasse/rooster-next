@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Organisation } from '@prisma/client';
 import { useFetcher } from 'remix';
-import { ActionData } from '~/routes/__api/organisation';
+import { ActionData } from '~/routes/_api/organisation';
 
 export default function OrganisationForm({
   // onSaved: savedHandler,
@@ -23,7 +23,7 @@ export default function OrganisationForm({
   }, [fetcher]);
 
   return (
-    <fetcher.Form method="post" action="/__api/organisation">
+    <fetcher.Form method="post" action="/_api/organisation">
       <input type="hidden" name="redirectTo" value={redirectTo} />
       <fieldset className="flex flex-col">
         <label htmlFor="name">Naam</label>
@@ -41,7 +41,7 @@ export default function OrganisationForm({
           type="text"
           name="nameShort"
           id="nameShort"
-          defaultValue={organisation?.nameShort}
+          defaultValue={organisation?.nameShort ?? ''}
         />
         <label htmlFor="slug">Slug</label>
         <input

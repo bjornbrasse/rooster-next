@@ -2,7 +2,7 @@ import { Schedule } from '@prisma/client';
 import dayjs from 'dayjs';
 import { Link, LoaderFunction, useLoaderData } from 'remix';
 import { BBLoader } from 'types';
-import { getDepartments } from '~/controllers/department';
+import { getDepartments } from '~/controllers/department.server';
 import { getSchedules } from '~/controllers/schedule.server';
 
 type LoaderData = {

@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { User } from '@prisma/client';
 import { useFetcher } from 'remix';
-// import { UserActionData } from '~/routes/_api/user';
-import { ActionData as UserActionData } from '~/routes/_api/user2';
+import { ActionData as UserActionData } from '~/routes/_api/user';
 import { Field } from '~/components/form-elements';
 
 export const UserForm = ({
@@ -21,11 +20,11 @@ export const UserForm = ({
   const fetcher = useFetcher<UserActionData>();
   const [changingPassword, setChangingPassword] = React.useState(false);
 
-  const fieldErrors = fetcher?.data?.errors?.fieldErrors;
+  const data = fetcher?.data;
 
   React.useEffect(() => {
-    if (fetcher.data?.user) {
-      savedHandler(fetcher.data.user);
+    if (data?.success && data.user) {
+      savedHandler(data.user);
     }
   }, [fetcher]);
 
@@ -38,16 +37,30 @@ export const UserForm = ({
       <Field
         name="firstName"
         label="Voornaam"
-        error={fetcher.data?.errors?.firstName}
+        error={
+          data && !data.success ? data.errors?.fieldErrors?.firstName : null
+        }
         autoFocus
       />
       <Field
         name="lastName"
         label="Achternaam"
-        error={fetcher.data?.errors?.lastName}
+        error={
+          data && !data.success ? data.errors?.fieldErrors?.lastName : null
+        }
       />
-      <Field name="email" label="Email" error={fieldErrors?.email} />
-      <Field name="initials" label="Initialen" error={fieldErrors?.initials} />
+      <Field
+        name="email"
+        label="Email"
+        error={data && !data.success ? data.errors?.fieldErrors?.email : null}
+      />
+      <Field
+        name="initials"
+        label="Initialen"
+        error={
+          data && !data.success ? data.errors?.fieldErrors?.initials : null
+        }
+      />
       {/* <button
           type="button"
           onClick={() => setChangingPassword(!changingPassword)}

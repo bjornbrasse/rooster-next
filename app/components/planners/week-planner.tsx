@@ -23,6 +23,7 @@ export const WeekPlanner: React.FC<IProps> = ({
   const { addToSelection } = useSchedule();
 
   const weekDays = getWeekDays();
+  // const tasks = schedule.tasks;
 
   return (
     <div>

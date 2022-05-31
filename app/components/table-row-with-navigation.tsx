@@ -1,7 +1,7 @@
-import React from "react";
-import { useNavigate } from "remix";
+import { FC } from 'react';
+import { useNavigate } from 'remix';
 
-const TRL: React.FC<{ className?: string; to: string }> = ({
+const TRL: FC<{ className?: string; to: string }> = ({
   children,
   className,
   to,

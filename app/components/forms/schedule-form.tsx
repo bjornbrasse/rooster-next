@@ -1,7 +1,8 @@
-import * as React from 'react';
 import { Schedule } from '@prisma/client';
 import { useFetcher } from 'remix';
 import { ActionData } from '~/routes/_api/schedule';
+import { useEffect } from 'react';
+import { Field } from '../form-elements';
 
 export default function ScheduleForm({
   departmentId,
@@ -9,33 +10,31 @@ export default function ScheduleForm({
   schedule,
 }: {
   departmentId: string;
-  onSaved: () => void;
+  onSaved: (schedule: Schedule) => void;
   schedule?: Schedule;
 }) {
   const fetcher = useFetcher<ActionData>();
+  const data = fetcher?.data;
 
-  React.useEffect(() => {
-    if (fetcher.data?.schedule && fetcher.state === 'idle') {
-      savedHandler();
+  useEffect(() => {
+    if (data?.success && fetcher.state === 'idle') {
+      savedHandler(data.schedule);
     }
   }, [fetcher]);
 
   return (
     <fetcher.Form method="post" action="/_api/schedule">
       <input type="hidden" name="departmentId" value={departmentId} />
-      <fieldset className="flex flex-col">
-        <label htmlFor="name">Naam</label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          defaultValue={schedule?.name}
-          autoFocus={true}
-        />
-        {fetcher.data?.error?.fields?.name && (
-          <p>Fout - {fetcher.data?.error?.fields?.name}</p>
-        )}
-      </fieldset>
+      <Field
+        name="name"
+        label="Naam"
+        error={data && !data.success ? data.errors?.fieldErrors?.name : null}
+      />
+      <Field
+        name="slug"
+        label="Slug"
+        error={data && !data.success ? data.errors?.fieldErrors?.name : null}
+      />
       <button type="submit" className="btn btn-save">
         Opslaan
       </button>

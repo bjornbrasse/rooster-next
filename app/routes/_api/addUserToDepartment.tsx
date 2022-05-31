@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 import type { ActionFunction } from "remix";
 import { getUser } from "~/controllers/auth.server";
-import { getDepartment } from "~/controllers/department";
+import { getDepartment } from "~/controllers/department.server";
 import { createUser } from "~/controllers/user.server";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/helpers";

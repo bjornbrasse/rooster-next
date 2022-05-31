@@ -1,21 +1,20 @@
-import {
-  Department,
-  DepartmentEmployee,
-  Schedule,
-  ScheduleMember,
-  Task,
-  User,
-} from '@prisma/client';
-import { Link, LoaderFunction, redirect, useLoaderData } from 'remix';
+import { Schedule, ScheduleTask, Task } from '@prisma/client';
+import { useState } from 'react';
+import { useDrop } from 'react-dnd';
+import { Link, redirect, useLoaderData } from 'remix';
 import { BBLoader } from 'types';
 import { Container } from '~/components/container';
+import { DraggableListItem } from '~/components/dragable-list-item';
 import MemberForm from '~/components/forms/MemberForm';
-import TaskForm from '~/components/forms/task-form';
+import ScheduleTaskForm from '~/components/forms/schedule-task-form';
+import { Frame } from '~/components/frame';
+import { TaskListItem } from '~/components/task-list-item';
 import { useDialog } from '~/contexts/dialog';
 import { getSchedule } from '~/controllers/schedule.server';
+import { DnDItemTypes } from '~/utils/dnd';
 
 type LoaderData = {
-  schedule: Awaited<ReturnType<typeof getSchedule>>;
+  schedule: Exclude<Awaited<ReturnType<typeof getSchedule>>, null>;
 };
 
 export const loader: BBLoader<{ scheduleId: string }> = async ({
@@ -29,76 +28,120 @@ export const loader: BBLoader<{ scheduleId: string }> = async ({
 };
 
 export default function Schedule() {
-  const { openDialog } = useDialog();
-  const { schedule } = useLoaderData<LoaderData>();
+  const { closeDialog, openDialog } = useDialog();
+  const { schedule } = useLoaderData() as LoaderData;
+  const [isEditingMembers, setIsEditingMembers] = useState(false);
+  const [isEditingTasks, setIsEditingTasks] = useState(false);
+
+  const [{ canDrop, isHovering }, dropRef] = useDrop(() => ({
+    accept: DnDItemTypes.TASK,
+    canDrop: ({ task }) =>
+      !schedule.scheduleTasks.find((st) => st.taskId === task.id),
+    drop: (item: { task: Task }) =>
+      openDialog(
+        'Voeg taak toe aan rooster',
+        <ScheduleTaskForm
+          onSaved={(scheduleTask: ScheduleTask) => closeDialog()}
+          schedule={schedule}
+          task={item.task}
+        />,
+      ),
+    collect: (monitor) => ({
+      canDrop: !!monitor.canDrop(),
+      isHovering: !!monitor.isOver(),
+    }),
+  }));
 
   return (
-    <Container>
-      <div className="mb-4">
-        <h1>{schedule.name}</h1>
-        <Link
-          to={`/departments/${schedule.departmentId}`}
-          className="text-gray-500 underline decoration-solid hover:text-blue-600"
-        >
-          {schedule.department.name}
-        </Link>
-      </div>
-      <div className="flex justify-between bg-gray-200 px-2 py-1">
-        <h2>Leden</h2>
-        <button
-          onClick={() =>
-            openDialog(
-              'Gebruiker als lid toevoegen',
-              <MemberForm
-                onSaved={function (task: Task): void {
-                  throw new Error('Function not implemented.');
+    <div className="flex h-full">
+      <Container>
+        <div className="mb-4">
+          <Link
+            to={`/${schedule.department.organisation.slug}/${schedule.department.slug}/${schedule.slug}`}
+          >
+            {schedule.name}
+          </Link>
+          <Link
+            to={`/departments/${schedule.departmentId}`}
+            className="text-gray-500 underline decoration-solid hover:text-blue-600"
+          >
+            {schedule.department.name}
+          </Link>
+        </div>
+        <div id="content" className="flex flex-col space-y-8">
+          <Frame
+            buttons={
+              <button
+                onClick={() => {
+                  setIsEditingTasks(false);
+                  setIsEditingMembers((prevValue) => !prevValue);
                 }}
-                redirectTo={''}
-                scheduleId={schedule.id}
-                departmentEmployees={schedule.department.employees.map((e) => ({
-                  ...e.user,
-                }))}
-              />,
-            )
-          }
-        >
-          <i className="fas fa-plus"></i>
-        </button>
-      </div>
-      <div className="mb-2 px-1.5">
-        {schedule.scheduleMembers
-          .map((sm) => ({ user: sm.user }))
-          .sort(({ user: a }, { user: b }) =>
-            a.lastName < b.lastName ? -1 : 0,
-          )
-          .map(({ user }) => (
-            <div key={user.id}>{user.lastName}</div>
-          ))}
-      </div>
-      <div className="flex justify-between bg-gray-200 px-2 py-1">
-        <h2>Taken</h2>
-        <button
-          onClick={() =>
-            openDialog(
-              'Nieuwe taak',
-              <TaskForm
-                onSaved={function (task: Task): void {
-                  throw new Error('Function not implemented.');
+              >
+                <i className="fas fa-pencil-alt"></i>
+              </button>
+            }
+            title="Leden"
+          >
+            {schedule.scheduleMembers
+              .map((sm) => ({ user: sm.user }))
+              .sort(({ user: a }, { user: b }) =>
+                a.lastName < b.lastName ? -1 : 0,
+              )
+              .map(({ user }) => (
+                <div key={user.id}>{user.lastName}</div>
+              ))}
+          </Frame>
+          <Frame
+            buttons={
+              <button
+                onClick={() => {
+                  setIsEditingMembers(false);
+                  setIsEditingTasks((prevValue) => !prevValue);
                 }}
-                redirectTo={''}
-                departmentId={''}
-              />,
-            )
-          }
-        >
-          <i className="fas fa-plus"></i>
-        </button>
-      </div>
-      <div className="px-1.5">
-        {schedule.scheduleTasks.map(({ task }) => (
-          <div key={task.id}>{task.name}</div>
-        ))}
-      </div>
-    </Container>
+              >
+                <i className="fas fa-pencil-alt"></i>
+              </button>
+            }
+            canDrop={canDrop}
+            isHovering={isHovering}
+            title="Taken"
+            ref={dropRef}
+          >
+            {schedule.scheduleTasks.map(({ task }) => (
+              <div className="flex justify-between" key={task.id}>
+                {task.name}
+                {isEditingTasks && (
+                  <button>
+                    <i className="fas fa-trash"></i>
+                  </button>
+                )}
+              </div>
+            ))}
+          </Frame>
+        </div>
+      </Container>
+      {isEditingMembers && (
+        <div className="w-72 border border-red-400 p-2">
+          <h1 className="mb-4">Medewerkers {schedule.department.name}</h1>
+          <ul className="list-none">
+            {schedule.department.employees.map(({ user }) => (
+              <DraggableListItem item={user} type={DnDItemTypes.EMPLOYEE}>
+                {`${user.firstName} ${user.lastName}`}
+              </DraggableListItem>
+            ))}
+          </ul>
+        </div>
+      )}
+      {isEditingTasks && (
+        <div className="w-72 border border-red-400 p-2">
+          <h1 className="mb-4">Taken</h1>
+          <ul className="list-none">
+            {schedule.department.tasks.map((task) => (
+              <TaskListItem task={task} />
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }

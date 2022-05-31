@@ -1,17 +1,16 @@
 import { ActionFunction, json } from 'remix';
-import { Schedule } from '@prisma/client';
+import { ScheduleTask } from '@prisma/client';
 import { badRequest } from '~/utils/helpers';
-import { validateText } from '~/utils/validation';
 import { createSchedule } from '~/controllers/schedule.server';
 import { z } from 'zod';
 import { inferSafeParseErrors } from 'types';
 import { requireUserId } from '~/controllers/auth.server';
+import { db } from '~/utils/db.server';
 
 const schema = z.object({
-  createdById: z.string().cuid(),
-  departmentId: z.string().cuid(),
-  name: z.string(),
-  slug: z.string(),
+  assignedById: z.string().cuid(),
+  scheduleId: z.string().cuid(),
+  taskId: z.string().cuid(),
 });
 
 export type ActionData =
@@ -22,7 +21,7 @@ export type ActionData =
     }
   | {
       success: true;
-      schedule: Schedule;
+      scheduleTask: ScheduleTask;
     };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -30,25 +29,23 @@ export const action: ActionFunction = async ({ request }) => {
 
   const result = schema.safeParse({
     ...Object.fromEntries(await request.formData()),
-    createdById: userId,
+    assignedById: userId,
   });
-
   if (!result.success)
     return badRequest<ActionData>({
       success: false,
       errors: result.error.flatten(),
     });
 
-  const schedule = await createSchedule(result.data);
-
-  if (!schedule)
+  const scheduleTask = await db.scheduleTask.create({ data: result.data });
+  if (!scheduleTask)
     return badRequest<ActionData>({
       success: false,
-      errors: { formErrors: ['Schedule not created'] },
+      errors: { formErrors: ['Schedule-Task not created'] },
       fields: result.data,
     });
 
-  return json<ActionData>({ success: true, schedule });
+  return json<ActionData>({ success: true, scheduleTask });
 };
 
 export default () => null;

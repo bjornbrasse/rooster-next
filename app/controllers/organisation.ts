@@ -17,10 +17,14 @@ export const createOrganisation = async ({
 export const getOrganisation = async (
   args: { id: string; slug?: never } | { id?: never; slug: string },
 ) => {
-  return await db.organisation.findUnique({
-    where: { id: args?.id, slug: args?.slug },
-    include: { departments: true, employees: true },
+  const organisation = await db.organisation.findFirst({
+    where: { OR: [{ id: args?.id }, { slug: args?.slug }] },
+    include: { departments: { orderBy: { name: 'asc' } }, employees: true },
   });
+
+  console.log('organisatie gevonden?', organisation);
+
+  return organisation;
 };
 
 export const findOrganisation = async ({

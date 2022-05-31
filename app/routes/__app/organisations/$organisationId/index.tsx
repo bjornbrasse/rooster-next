@@ -33,6 +33,7 @@ export default function Organisation() {
         <Frame title="Algemeen">
           <h1>{organisation?.name}</h1>
         </Frame>
+
         <Frame
           buttons={
             <button

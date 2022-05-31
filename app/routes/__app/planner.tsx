@@ -26,7 +26,7 @@ var customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
 
 type LoaderData = {
-  bookings: (Booking & { user: User })[];
+  bookings: Awaited<ReturnType<typeof getBookings>>;
   schedule: Awaited<ReturnType<typeof getSchedule>>;
   schedules: Schedule[];
 };

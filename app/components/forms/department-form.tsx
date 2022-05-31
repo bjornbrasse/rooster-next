@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect } from 'react';
 import { Department } from '@prisma/client';
 import { useFetcher } from 'remix';
 import { ActionData } from '~/routes/_api/department';
@@ -12,9 +12,9 @@ export default function DepartmentForm(args: {
   const fetcher = useFetcher<ActionData>();
   const { department, organisationId, redirectTo } = args;
 
-  React.useEffect(() => {
-    if (fetcher.data?.department) {
-      // savedHandler(fetcher.data.department);
+  useEffect(() => {
+    if (fetcher.data?.success) {
+      console.log('het is gelukt!!');
     }
   }, [fetcher]);
 
@@ -30,8 +30,8 @@ export default function DepartmentForm(args: {
           id="name"
           defaultValue={department?.name}
         />
-        {fetcher.data?.error?.fields?.name && (
-          <p>Fout - {fetcher.data?.error?.fields?.name}</p>
+        {!fetcher.data?.success && fetcher.data?.errors?.fieldErrors?.name && (
+          <p>Fout - {fetcher.data.errors.fieldErrors.name}</p>
         )}
         <label htmlFor="nameShort">Korte naam</label>
         <input

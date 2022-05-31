@@ -1,22 +1,14 @@
 import { db } from '~/utils/db.server';
-import { Schedule } from '@prisma/client';
 import { redirect } from 'remix';
 
-export const createSchedule = async ({
-  schedule,
-  departmentId,
-}: {
-  schedule: {
-    name: string;
-    slug: string;
-  };
+export const createSchedule = async (data: {
+  createdById: string;
+  name: string;
+  slug: string;
   departmentId: string;
-}): Promise<Schedule | null> => {
+}) => {
   return await db.schedule.create({
-    data: {
-      ...schedule,
-      department: { connect: { id: departmentId } },
-    },
+    data,
   });
 };
 
@@ -31,19 +23,26 @@ export const getSchedules = async ({
   });
 };
 
-export const getSchedule = async ({ scheduleId }: { scheduleId?: string }) => {
-  const schedule = await db.schedule.findUnique({
-    where: { id: scheduleId },
+export const getSchedule = async (
+  args:
+    | { scheduleId: string; departmentId_slug?: never }
+    | {
+        scheduleId?: never;
+        departmentId_slug: { departmentId: string; slug: string };
+      },
+) => {
+  return await db.schedule.findUnique({
+    where: { id: args?.scheduleId, departmentId_slug: args?.departmentId_slug },
     include: {
       department: {
-        include: { employees: { include: { user: true } }, tasks: true },
+        include: {
+          employees: { include: { user: true } },
+          organisation: true,
+          tasks: true,
+        },
       },
       scheduleMembers: { include: { user: true } },
       scheduleTasks: { include: { task: true } },
     },
   });
-
-  if (!schedule) throw redirect('/');
-
-  return schedule;
 };

@@ -7,7 +7,7 @@ import {
 } from '~/components/forms/presence-form';
 import { Section } from '~/components/section';
 import { useDialog } from '~/contexts/dialog';
-import { getDepartmentEmployee } from '~/controllers/department';
+import { getDepartmentEmployee } from '~/controllers/department.server';
 import { BBLoader } from '~/types';
 import { WEEKDAYS } from '~/utils/date';
 
