@@ -32,7 +32,7 @@ export const loader: BBLoader<{ departmentId: string }> = async ({
   params: { departmentId },
   request,
 }) => {
-  const userId = await requireUserId(request);
+  await requireUserId(request);
 
   const department = await getDepartment({ departmentId });
 
@@ -50,8 +50,8 @@ export default function DepartmentLayout() {
 
   const [{ canDrop, isHovering }, dropRef] = useDrop(() => ({
     accept: DnDItemTypes.EMPLOYEE,
-    canDrop: ({ user }) => true,
-    drop: (item: { user: User }) => null,
+    canDrop: ({ employee }) => true,
+    drop: (item: { employee: User }) => console.log('drop 2', item.employee),
     // openDialog(
     //   'Voeg taak toe aan rooster',
     //   <ScheduleTaskForm
