@@ -1,5 +1,5 @@
 import { db } from '~/utils/db.server';
-import { Task } from '@prisma/client';
+import { Prisma, Task } from '@prisma/client';
 
 export const createTask = async (data: {
   name: string;
@@ -17,4 +17,14 @@ export const getTask = async ({ taskId }: { taskId: string }) => {
 
 export const getTasks = async (args: { departmentId: string }) => {
   return await db.task.findMany({ where: { departmentId: args.departmentId } });
+};
+
+export const updateTask = async ({
+  data,
+  taskId: id,
+}: {
+  data: Prisma.TaskUpdateInput;
+  taskId: string;
+}) => {
+  return await db.task.update({ where: { id }, data });
 };

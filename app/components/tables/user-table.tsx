@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import * as React from 'react';
+import { useState } from 'react';
 import { Link } from 'remix';
 import LinkedTableData from '../LinkedTableData';
 
@@ -10,19 +10,19 @@ interface IProps {
   users: User[];
 }
 
-const UserTable: React.FC<IProps> = ({ baseUrl, users }) => {
-  const [order, setOrder] = React.useState<Sort>('firstName');
+export const UserTable: React.FC<IProps> = ({ baseUrl, users }) => {
+  const [order, setOrder] = useState<Sort>('firstName');
 
   return (
     <table className="w-full table-auto border-2 border-blue-600">
-      <thead className="text-left bg-red-300 border-b-2 border-gray-600 sticky top-0">
+      <thead className="sticky top-0 border-b-2 border-gray-600 bg-red-300 text-left">
         <th onClick={() => setOrder('firstName')}>
           Voornaam
           {order === 'firstName' && <i className="fas fa-sort-down" />}
         </th>
         <th
           onClick={() => setOrder('lastName')}
-          className="border-r border-gray-400 cursor-pointer"
+          className="cursor-pointer border-r border-gray-400"
         >
           Achternaam
         </th>
@@ -38,13 +38,13 @@ const UserTable: React.FC<IProps> = ({ baseUrl, users }) => {
             return a.lastName < b.lastName ? -1 : 0;
           })
           .map((user) => (
-            <tr className="hover:bg-blue-200 cursor-pointer" key={user.id}>
+            <tr className="cursor-pointer hover:bg-blue-200" key={user.id}>
               <LinkedTableData href={`${baseUrl}/${user.id}`}>
                 {user.firstName}
               </LinkedTableData>
               <LinkedTableData
                 href={`${baseUrl}/${user.id}`}
-                className="px-1 border-r border-gray-400"
+                className="border-r border-gray-400 px-1"
               >
                 {user.lastName}
               </LinkedTableData>
@@ -62,5 +62,3 @@ const UserTable: React.FC<IProps> = ({ baseUrl, users }) => {
     </table>
   );
 };
-
-export default UserTable;

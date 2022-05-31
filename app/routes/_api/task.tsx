@@ -1,9 +1,9 @@
 import { Task } from '@prisma/client';
-import { ActionFunction, json } from 'remix';
+import { ActionFunction, json, redirect } from 'remix';
 import { inferSafeParseErrors } from 'types';
 import { z } from 'zod';
 import { requireUserId } from '~/controllers/auth.server';
-import { createTask } from '~/controllers/task.server';
+import { createTask, updateTask } from '~/controllers/task.server';
 import { badRequest } from '~/utils/helpers';
 
 const schema = z.object({
@@ -12,6 +12,7 @@ const schema = z.object({
   departmentId: z.string().optional(),
   description: z.string().optional(),
   name: z.string(),
+  nameShort: z.string().optional(),
   taskId: z.string().optional(),
 });
 
@@ -43,12 +44,14 @@ export const action: ActionFunction = async ({ request }) => {
   switch (_action) {
     case 'create':
       task = await createTask({ departmentId: data.departmentId!, ...data });
+    case 'update':
+      task = await updateTask({ taskId: taskId!, data });
   }
   if (!task)
     return badRequest<ActionData>({
       success: false,
       fields: result.data,
-      errors: { formErrors: ['Task not created'] },
+      errors: { formErrors: [`Task not ${_action}d`] },
     });
 
   return json<ActionData>({ success: true, task });

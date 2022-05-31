@@ -33,32 +33,34 @@ const TaskForm = ({
   }, [fetcher]);
 
   return (
-    <fetcher.Form method="post" action="/_api/task">
+    <fetcher.Form method="post" action="/_api/task" noValidate>
       {args?.departmentId && (
         <input type="hidden" name="departmentId" value={args.departmentId} />
       )}
       <input type="hidden" name="redirectTo" value={redirectTo} />
-      {/* <input type="hidden" name="taskId" value={task?.id} /> */}
+      <input type="hidden" name="taskId" value={args.task?.id} />
 
       <fieldset className="flex flex-col">
-        <label htmlFor="firstName">Taak</label>
-        <input
-          type="text"
+        <Field
+          label="Naam"
           name="name"
           id="name"
-          defaultValue={args?.task ? args.task.name : ''}
+          defaultValue={args.task?.name ?? ''}
           ref={focusRef}
         />
-        {/* {fetcher.data?.error?.fields?.name && (
-          <p>Fout - {fetcher.data?.error?.fields?.name}</p>
-        )} */}
+        <Field
+          name="nameShort"
+          label="Korte naam"
+          defaultValue={args.task?.nameShort ?? ''}
+        />
+        <Field
+          name="description"
+          label="Omschrijving"
+          defaultValue={args.task?.description ?? ''}
+          type={'textarea'}
+          rows={10}
+        />
       </fieldset>
-      <Field
-        name="description"
-        label="Omschrijving"
-        type={'textarea'}
-        rows={10}
-      />
       <button
         className="btn btn-save"
         name="_action"

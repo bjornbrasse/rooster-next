@@ -5,6 +5,7 @@ import { Container } from '~/components/container';
 import DepartmentForm from '~/components/forms/department-form';
 import { UserForm } from '~/components/forms/user-form';
 import { Frame } from '~/components/frame';
+import { UserTable } from '~/components/tables/user-table';
 import { useDialog } from '~/contexts/dialog';
 import { getOrganisation } from '~/controllers/organisation';
 
@@ -54,11 +55,7 @@ export default function Organisation() {
           }
           title="Medewerkers"
         >
-          {organisation.employees.map((employee) => (
-            <Link to={`./employees/${employee.id}`} key={employee.id}>
-              {employee.firstName}
-            </Link>
-          ))}
+          <UserTable baseUrl={''} users={organisation.employees} />
         </Frame>
         <Frame
           buttons={

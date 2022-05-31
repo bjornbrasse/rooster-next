@@ -138,9 +138,7 @@ export default function DepartmentLayout() {
                   openDialog(
                     'Taak bewerken',
                     <TaskForm
-                      onSaved={function (task: Task): void {
-                        throw new Error('Function not implemented.');
-                      }}
+                      onSaved={(task: Task) => closeDialog()}
                       task={task}
                     />,
                   )
