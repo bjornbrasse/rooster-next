@@ -57,10 +57,10 @@ export const getDepartment = async (
       ? { id: args.departmentId }
       : { organisationId_slug: args.organisationId_slug },
     include: {
-      tasks: true,
-      schedules: { orderBy: { name: 'asc' } },
+      employees: { include: { user: true } },
       organisation: { include: { employees: true } },
-      employees: true,
+      schedules: { orderBy: { name: 'asc' } },
+      tasks: true,
     },
   });
 

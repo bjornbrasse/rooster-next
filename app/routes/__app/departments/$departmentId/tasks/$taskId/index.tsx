@@ -21,20 +21,20 @@ import useLocalStorage from '~/hooks/useLocalStorage';
 import { BBLoader } from 'types';
 
 type LoaderData = {
-  task: Task;
+  task: Exclude<Awaited<ReturnType<typeof getTask>>, null>;
 };
 
 export const loader: BBLoader<{ taskId: string }> = async ({
-  params,
+  params: { taskId },
   request,
 }): Promise<LoaderData | Response> => {
   const url = new URL(request.url);
 
-  const task = await getTask(params.taskId);
+  const task = await getTask({ taskId });
 
   if (!task) return redirect(url.pathname);
 
-  return { task };
+  return json<LoaderData>({ task });
 };
 
 export const action: ActionFunction = async ({ request }) => {

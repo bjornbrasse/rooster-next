@@ -11,7 +11,7 @@ export const createTask = async (data: {
   });
 };
 
-export const getTask = async (taskId: string) => {
+export const getTask = async ({ taskId }: { taskId: string }) => {
   return await db.task.findFirst({ where: { id: taskId } });
 };
 

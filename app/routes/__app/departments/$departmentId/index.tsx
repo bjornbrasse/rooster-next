@@ -97,7 +97,10 @@ export default function DepartmentLayout() {
             ref={dropRef}
           >
             {department.employees.map(({ user }) => (
-              <div className="flex justify-between" key={user.id}>
+              <div
+                className="flex cursor-pointer justify-between hover:bg-blue-300"
+                key={user.id}
+              >
                 {`${user.firstName} ${user.lastName}`}
                 {isEditingEmployees && (
                   <button>
@@ -129,7 +132,22 @@ export default function DepartmentLayout() {
             title="Taken"
           >
             {department.tasks.map((task) => (
-              <div>{task.name}</div>
+              <div
+                className="cursor-pointer px-1 hover:bg-blue-300"
+                onClick={() =>
+                  openDialog(
+                    'Taak bewerken',
+                    <TaskForm
+                      onSaved={function (task: Task): void {
+                        throw new Error('Function not implemented.');
+                      }}
+                      task={task}
+                    />,
+                  )
+                }
+              >
+                {task.name}
+              </div>
             ))}
           </Frame>
           <Frame

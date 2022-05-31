@@ -3,18 +3,19 @@ import { Task } from '@prisma/client';
 import { useFetcher } from 'remix';
 import { ActionData } from '~/routes/_api/task';
 import { useDialog } from '~/contexts/dialog';
+import { Field } from '../form-elements';
 
 const TaskForm = ({
   onSaved: savedHandler,
   redirectTo = '/',
-  departmentId,
-  task,
+  ...args
 }: {
   onSaved: (task: Task) => void;
   redirectTo?: string;
-  departmentId: string;
-  task?: Task;
-}) => {
+} & (
+  | { departmentId: string; task?: never }
+  | { departmentId?: never; task: Task }
+)) => {
   const fetcher = useFetcher<ActionData>();
   const focusRef = React.useRef<HTMLInputElement>(null);
 
@@ -25,7 +26,7 @@ const TaskForm = ({
   }, [focusRef]);
 
   React.useEffect(() => {
-    if (fetcher.data?.task) {
+    if (fetcher.data?.success && fetcher.data.task) {
       savedHandler(fetcher.data.task);
       // return setTimeout(() => closeDialog(), 100);
     }
@@ -33,18 +34,37 @@ const TaskForm = ({
 
   return (
     <fetcher.Form method="post" action="/_api/task">
-      <input type="hidden" name="departmentId" value={departmentId} />
+      {args?.departmentId && (
+        <input type="hidden" name="departmentId" value={args.departmentId} />
+      )}
       <input type="hidden" name="redirectTo" value={redirectTo} />
       {/* <input type="hidden" name="taskId" value={task?.id} /> */}
 
       <fieldset className="flex flex-col">
         <label htmlFor="firstName">Taak</label>
-        <input type="text" name="name" id="name" ref={focusRef} />
+        <input
+          type="text"
+          name="name"
+          id="name"
+          defaultValue={args?.task ? args.task.name : ''}
+          ref={focusRef}
+        />
         {/* {fetcher.data?.error?.fields?.name && (
           <p>Fout - {fetcher.data?.error?.fields?.name}</p>
         )} */}
       </fieldset>
-      <button type="submit" className="btn btn-save">
+      <Field
+        name="description"
+        label="Omschrijving"
+        type={'textarea'}
+        rows={10}
+      />
+      <button
+        className="btn btn-save"
+        name="_action"
+        type="submit"
+        value={args.task?.id ? 'update' : 'create'}
+      >
         Opslaan
       </button>
     </fetcher.Form>
