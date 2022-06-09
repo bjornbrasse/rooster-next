@@ -87,6 +87,7 @@ model Organisation {
   name        String
   nameShort   String?
   slug        String       @unique
+  emailDomain String
   departments Department[]
   employees   User[]       @relation(name: "UserOrganisation")
 }

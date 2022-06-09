@@ -30,6 +30,10 @@ export const ScheduleContext = React.createContext<TScheduleContext>({
   showSelectionDrawer: false,
 });
 
+export const useSchedule = () => {
+  return React.useContext(ScheduleContext);
+};
+
 export const ScheduleProvider = ({
   children,
 }: {
@@ -38,7 +42,7 @@ export const ScheduleProvider = ({
   const [selection, setSelection] = useLocalStorage<Moment[]>('selection', []);
   const [showSelectionDrawer, setShowSelectionDrawer] = useLocalStorage(
     'showSelectionDrawer',
-    true
+    true,
   );
 
   const addToSelection = ({ date, task, bookings }: Moment) => {
@@ -60,7 +64,7 @@ export const ScheduleProvider = ({
     const newSelection = selection.filter(
       (moment) =>
         dayjs(moment.date).date() !== dayjs(date).date() &&
-        moment.task.id !== task.id
+        moment.task.id !== task.id,
     );
     setSelection(newSelection);
   };

@@ -22,8 +22,6 @@ export const getOrganisation = async (
     include: { departments: { orderBy: { name: 'asc' } }, employees: true },
   });
 
-  console.log('organisatie gevonden?', organisation);
-
   return organisation;
 };
 

@@ -227,6 +227,8 @@ type BBAction<
 
 type GitHubFile = { path: string; content: string };
 
+export type UserSecure = Omit<User, 'passwordHash'>;
+
 export {
   NonNullProperties,
   Await,

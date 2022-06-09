@@ -1,7 +1,7 @@
 import * as React from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarView } from '@/utils/enums';
-import { convertArrayToObject, convertMAP } from '@/utils/helper';
+import { convertArrayToObject, convertMAP } from '~/utils/helpers';
 import { tasks } from 'data/tasks';
 
 export type RowType = 'task' | 'person';
@@ -34,14 +34,14 @@ type TUseCalendar = {
 
 export function useCalendar(): TUseCalendar {
   const [activeDate, setActiveDate] = React.useState<Dayjs>(
-    dayjs().startOf('date')
+    dayjs().startOf('date'),
   );
   const [calendarView, setCalendarView] = React.useState<CalendarView>(
-    CalendarView.Week
+    CalendarView.Week,
   );
   const [showDateSelector, setShowDateSelector] = React.useState(false);
-  const [firstDay, setFirstDay] = React.useState<Dayjs>(null);
-  const [lastDay, setLastDay] = React.useState<Dayjs>(null);
+  const [firstDay, setFirstDay] = React.useState<Dayjs | null>(null);
+  const [lastDay, setLastDay] = React.useState<Dayjs | null>(null);
   const [rowType, setRowType] = React.useState<RowType>('task');
 
   const moveCalendarView = (direction: 'previous' | 'next') => {
@@ -52,8 +52,8 @@ export function useCalendar(): TUseCalendar {
           ? 'month'
           : calendarView === CalendarView.Day
           ? 'day'
-          : 'week'
-      )
+          : 'week',
+      ),
     );
   };
 

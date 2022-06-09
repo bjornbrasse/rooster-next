@@ -51,7 +51,7 @@ export default function DepartmentLayout() {
   const [{ canDrop, isHovering }, dropRef] = useDrop(() => ({
     accept: DnDItemTypes.EMPLOYEE,
     canDrop: ({ employee }) => true,
-    drop: (item: { employee: User }) => console.log('drop 2', item.employee),
+    drop: (item: { employee: User }) => console.log('drop 2', item),
     // openDialog(
     //   'Voeg taak toe aan rooster',
     //   <ScheduleTaskForm

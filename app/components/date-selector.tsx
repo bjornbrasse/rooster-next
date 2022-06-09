@@ -10,34 +10,33 @@ dayjs.extend(utc);
 
 export const DateSelector: React.FC<{
   date: Date;
-  selectDateHandler?: (date: Date) => void;
-  setDate: React.Dispatch<React.SetStateAction<Date>>;
-}> = ({ date, selectDateHandler, setDate }) => {
+}> = ({ date: activeDate }) => {
   const previousMonthDays = React.useMemo(() => {
     const days: Dayjs[] = [];
-    const numberOfPreviousMonthDays = (dayjs(date).date(1).weekday() + 6) % 7;
+    const numberOfPreviousMonthDays =
+      (dayjs(activeDate).date(1).weekday() + 6) % 7;
 
     for (let i = 0; i < numberOfPreviousMonthDays; i++) {
       days.push(
-        dayjs(date)
+        dayjs(activeDate)
           .date(1)
           .add(i - numberOfPreviousMonthDays, 'day'),
       );
     }
 
     return days;
-  }, [date]);
+  }, [activeDate]);
 
   const monthDays = React.useMemo(() => {
     const days: Dayjs[] = [];
-    const numberOfMonthDays = dayjs(date).daysInMonth();
+    const numberOfMonthDays = dayjs(activeDate).daysInMonth();
 
     for (let i = 0; i < numberOfMonthDays; i++) {
-      days.push(dayjs(date).date(1).add(i, 'day'));
+      days.push(dayjs(activeDate).date(1).add(i, 'day'));
     }
 
     return days;
-  }, [date]);
+  }, [activeDate]);
 
   const nextMonthDays = React.useMemo(() => {
     const days: Dayjs[] = [];
@@ -45,51 +44,49 @@ export const DateSelector: React.FC<{
       7 - ((previousMonthDays.length + monthDays.length) % 7);
 
     for (let i = 0; i < numberOfNextMonthDays; i++) {
-      days.push(dayjs(date).date(1).add(1, 'month').add(i, 'day'));
+      days.push(dayjs(activeDate).date(1).add(1, 'month').add(i, 'day'));
     }
 
     return days;
-  }, [date]);
+  }, [activeDate]);
 
   const MenuButton: React.FC<{
     className?: string;
     icon: string;
-    onClick: () => void;
-  }> = ({ className, icon, onClick: clickHandler }) => (
+    name: string;
+    value: string;
+  }> = ({ className, icon, name, value }) => (
     <button
-      onClick={clickHandler}
       className={`rounded-md border border-gray-300 px-2 text-gray-300 hover:bg-blue-600 hover:text-white ${className}`}
+      name={name}
+      value={value}
     >
       <i className={icon} />
     </button>
   );
 
-  const SelectMonthButton: React.FC<{ value: 'previous' | 'next' }> = ({
-    value,
-  }) => (
+  const SelectMonthButton: React.FC<{
+    value: 'previous' | 'next';
+  }> = ({ value }) => (
     <MenuButton
       icon={`fas fa-chevron-${value === 'previous' ? 'left' : 'right'}`}
-      onClick={() =>
-        setDate(
-          dayjs(date)
-            .add(value === 'next' ? 1 : -1, 'month')
-            .toDate(),
-        )
-      }
+      name="date"
+      value={dayjs(activeDate)
+        .add(value === 'next' ? 1 : -1, 'month')
+        .format('YYMMDD')}
     />
   );
 
   const DateField: React.FC<{
-    activeDate: Date;
     date: Date;
-  }> = ({ activeDate, date }) => {
+  }> = ({ date }) => {
     const isActiveDate = dayjs(date).isSame(activeDate, 'day');
     const isCurrentMonth = date.getMonth() === activeDate.getMonth();
     const isToday = dayjs(date).isSame(new Date(), 'day');
 
     return (
-      <p
-        onClick={() => setDate(date)}
+      <button
+        // onClick={() => setDate(date)}
         className={`${
           isActiveDate
             ? 'rounded-full bg-blue-500 text-white'
@@ -97,30 +94,36 @@ export const DateSelector: React.FC<{
         } ${isCurrentMonth ? 'text-gray-800' : 'text-gray-300'} ${
           isToday ? 'rounded-md border border-blue-900' : ''
         }`}
+        name="date"
+        type="submit"
+        value={dayjs(date).format('YYMMDD')}
       >
         {dayjs(date).date()}
-      </p>
+      </button>
     );
   };
 
   return (
-    <>
+    <Form method="get" replace>
       <div className="mb-2 flex justify-between">
         <div className="flex">
           <SelectMonthButton value="previous" />
-          {!dayjs(date).isSame(new Date(), 'month') && (
+          {!dayjs(activeDate).isSame(new Date(), 'month') && (
             <MenuButton
               className="ml-1"
               icon="fas fa-calendar-day"
-              onClick={() => setDate(new Date())}
+              name="date"
+              value={dayjs().format('YYMMDD')}
             />
           )}
         </div>
         <div className="flex text-xl md:text-2xl">
           <p className="text-center font-bold">
-            {MONTHS[dayjs(date).month()].name}
+            {MONTHS[dayjs(activeDate).month()].name}
           </p>
-          <p className="ml-2 text-center text-gray-400">{date.getFullYear()}</p>
+          <p className="ml-2 text-center text-gray-400">
+            {activeDate.getFullYear()}
+          </p>
         </div>
         <SelectMonthButton value="next" />
       </div>
@@ -133,15 +136,15 @@ export const DateSelector: React.FC<{
       </div>
       <div className="lg:text-md justify-centerpt-2 my-2 grid grid-cols-7 items-center text-center text-lg">
         {previousMonthDays.map((day, i) => (
-          <DateField activeDate={date} date={day.toDate()} key={i} />
+          <DateField date={day.toDate()} key={i} />
         ))}
         {monthDays.map((day, i) => (
-          <DateField activeDate={date} date={day.toDate()} key={i} />
+          <DateField date={day.toDate()} key={i} />
         ))}
         {nextMonthDays.map((day, i) => (
-          <DateField activeDate={date} date={day.toDate()} key={i} />
+          <DateField date={day.toDate()} key={i} />
         ))}
       </div>
-    </>
+    </Form>
   );
 };

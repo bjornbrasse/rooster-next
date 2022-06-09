@@ -10,14 +10,8 @@ import {
 import { BBLoader, User } from 'types';
 import { Container } from '~/components/container';
 import { Header } from '~/components/header';
-import organisation from '~/routes/_api/organisation';
-import { db } from '~/utils/db.server';
+import { getOrganisation } from '~/controllers/organisation';
 
-const getOrganisation = async (id: string) => {
-  return await db.organisation.findUnique({
-    where: { id },
-  });
-};
 type LoaderData = {
   organisation: Exclude<Awaited<ReturnType<typeof getOrganisation>>, null>;
 };
@@ -25,7 +19,7 @@ type LoaderData = {
 export const loader: BBLoader<{ organisationId: string }> = async ({
   params,
 }) => {
-  const organisation = await getOrganisation(params.organisationId);
+  const organisation = await getOrganisation({ id: params.organisationId });
 
   if (!organisation) return redirect('/organisations');
 

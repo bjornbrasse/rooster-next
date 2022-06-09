@@ -57,7 +57,11 @@ export const getDepartment = async (
       ? { id: args.departmentId }
       : { organisationId_slug: args.organisationId_slug },
     include: {
-      employees: { include: { user: true } },
+      employees: {
+        include: {
+          user: { select: { id: true, firstName: true, lastName: true } },
+        },
+      },
       organisation: { include: { employees: true } },
       schedules: { orderBy: { name: 'asc' } },
       tasks: true,

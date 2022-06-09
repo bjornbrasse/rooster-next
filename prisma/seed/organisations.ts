@@ -7,7 +7,7 @@ import {
 } from '@prisma/client';
 import organisation from '~/routes/_api/organisation';
 
-type OrganisationData = Pick<Organisation, 'name' | 'slug'> & {
+type OrganisationData = Pick<Organisation, 'name' | 'slug' | 'emailDomain'> & {
   departments: (Pick<Department, 'name' | 'slug'> & {
     schedules?: Pick<Schedule, 'name' | 'slug'>[];
   })[];
@@ -18,6 +18,7 @@ const organisationData: OrganisationData[] = [
     name: 'Elisabeth-TweeSteden Ziekenhuis',
     nameShort: 'ETZ',
     slug: 'etz',
+    emailDomain: '@etz.nl',
     departments: [
       {
         name: 'Ziekenhuisapotheek',
@@ -30,6 +31,7 @@ const organisationData: OrganisationData[] = [
     name: 'Catharina Ziekenhuis Eindhoven',
     nameShort: 'CZE',
     slug: 'cze',
+    emailDomain: '@cze.nl',
     departments: [{ name: 'Cardiologie', slug: 'cardiologie' }],
   },
 ];
