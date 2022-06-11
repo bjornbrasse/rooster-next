@@ -1,7 +1,7 @@
 import { Schedule, Task, User } from '@prisma/client';
 import { useState } from 'react';
 import { useDrop } from 'react-dnd';
-import { json, Link, MetaFunction } from 'remix';
+import { json, Link, MetaFunction, useFetcher } from 'remix';
 import { useLoaderData } from 'remix';
 import { redirect } from 'remix';
 import { BBHandle, BBLoader, LoaderDataBase } from 'types';
@@ -43,15 +43,27 @@ export const loader: BBLoader<{ departmentId: string }> = async ({
   return json<LoaderData>({ department });
 };
 
-export default function DepartmentLayout() {
+export default function Department() {
   const { department } = useLoaderData() as LoaderData;
   const { closeDialog, openDialog } = useDialog();
   const [isEditingEmployees, setIsEditingEmployees] = useState(false);
+  const fetcher = useFetcher();
 
-  const [{ canDrop, isHovering }, dropRef] = useDrop(() => ({
+  const [{ canDrop: canDropEmployee, isHovering }, dropRef] = useDrop(() => ({
     accept: DnDItemTypes.EMPLOYEE,
-    canDrop: ({ employee }) => true,
-    drop: (item: { employee: User }) => console.log('drop 2', item),
+    canDrop: ({ organisationEmployee }) =>
+      !department.employees.find(
+        ({ employee }) => employee.id === organisationEmployee.id,
+      ),
+    drop: (item: { organisationEmployee: User }) => {
+      fetcher.submit(
+        {
+          departmentId: department.id,
+          employeeId: item.organisationEmployee.id,
+        },
+        { method: 'post', action: '/_api/department/addEmployee' },
+      );
+    },
     // openDialog(
     //   'Voeg taak toe aan rooster',
     //   <ScheduleTaskForm
@@ -91,17 +103,17 @@ export default function DepartmentLayout() {
                 <i className="fas fa-pencil-alt"></i>
               </button>
             }
-            canDrop={canDrop}
+            canDrop={canDropEmployee}
             isHovering={isHovering}
             title="Medewerkers"
             ref={dropRef}
           >
-            {department.employees.map(({ user }) => (
+            {department.employees.map(({ employee }) => (
               <div
                 className="flex cursor-pointer justify-between hover:bg-blue-300"
-                key={user.id}
+                key={employee.id}
               >
-                {`${user.firstName} ${user.lastName}`}
+                {`${employee.firstName} ${employee.lastName}`}
                 {isEditingEmployees && (
                   <button>
                     <i className="fas fa-trash"></i>
@@ -138,7 +150,10 @@ export default function DepartmentLayout() {
                   openDialog(
                     'Taak bewerken',
                     <TaskForm
-                      onSaved={(task: Task) => closeDialog()}
+                      onSaved={(task: Task) => {
+                        console.log('werkt dit?');
+                        closeDialog();
+                      }}
                       task={task}
                     />,
                   )

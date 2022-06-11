@@ -47,10 +47,11 @@ model DepartmentEmployee {
   id                  String               @id @default(cuid())
   department          Department           @relation(fields: [departmentId], references: [id])
   departmentId        String
-  user                User                 @relation(fields: [userId], references: [id])
-  userId              String
+  employee            User                 @relation(fields: [employeeId], references: [id])
+  employeeId          String
   assignedAt          DateTime             @default(now())
-  assignedBy          String?
+  assignedBy          User                 @relation(name: "DepartmentEmployeeAssignedBy", fields: [assignedById], references: [id])
+  assignedById        String
   isDefaultDepartment Boolean              @default(false)
   departmentPresences DepartmentPresence[]
   canViewEmployees    Boolean              @default(false)
@@ -60,7 +61,7 @@ model DepartmentEmployee {
   canCreateTask       Boolean              @default(false)
   taskAuthorisations  CRUD[]
 
-  @@unique([departmentId, userId])
+  @@unique([departmentId, employeeId])
 }
 
 model DepartmentPresence {
@@ -114,15 +115,15 @@ model Schedule {
 }
 
 model ScheduleMember {
-  id         String   @id @default(cuid())
-  schedule   Schedule @relation(fields: [scheduleId], references: [id])
-  scheduleId String
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
-  assignedAt DateTime @default(now())
-  assignedBy String?
+  id           String   @id @default(cuid())
+  schedule     Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId   String
+  member       User     @relation(fields: [memberId], references: [id])
+  memberId     String
+  assignedAt   DateTime @default(now())
+  assignedById String
 
-  @@unique([scheduleId, userId])
+  @@unique([scheduleId, memberId])
 }
 
 model ScheduleTask {
@@ -134,6 +135,8 @@ model ScheduleTask {
   assignedAt   DateTime @default(now())
   assignedBy   User     @relation(name: "ScheduleTaskAssignedBy", fields: [assignedById], references: [id])
   assignedById String
+  startDate    DateTime
+  endDate      DateTime
 
   @@unique([scheduleId, taskId])
 }
@@ -164,27 +167,28 @@ model Task {
 }
 
 model User {
-  id                    String               @id @default(cuid())
-  createdAt             DateTime             @default(now())
-  updatedAt             DateTime             @updatedAt
-  role                  Role                 @default(USER)
-  firstName             String
-  lastName              String
-  initials              String?
-  email                 String               @unique
-  passwordHash          String?
-  passwordResetToken    String?
-  emailValidationToken  String?
-  organisation          Organisation?        @relation(name: "UserOrganisation", fields: [organisationId], references: [id])
-  organisationId        String?
-  departmentEmployees   DepartmentEmployee[]
-  canViewOrganisations  Boolean              @default(false)
-  canCreateOrganisation Boolean              @default(false)
-  bookings              Booking[]
-  departmentsCreated    Department[]         @relation(name: "DepartmentCreatedBy")
-  schedules             ScheduleMember[]
-  tasksCreated          Task[]
-  organisationsCreated  Organisation[]       @relation(name: "OrganisationCreatedBy")
-  schedulesCreated      Schedule[]           @relation(name: "ScheduleCreatedBy")
-  scheduleTasksAssigned ScheduleTask[]       @relation(name: "ScheduleTaskAssignedBy")
+  id                          String               @id @default(cuid())
+  createdAt                   DateTime             @default(now())
+  updatedAt                   DateTime             @updatedAt
+  role                        Role                 @default(USER)
+  firstName                   String
+  lastName                    String
+  initials                    String?
+  email                       String               @unique
+  passwordHash                String?
+  passwordResetToken          String?
+  emailValidationToken        String?
+  organisation                Organisation?        @relation(name: "UserOrganisation", fields: [organisationId], references: [id])
+  organisationId              String?
+  departmentEmployeesAssigned DepartmentEmployee[] @relation(name: "DepartmentEmployeeAssignedBy")
+  canViewOrganisations        Boolean              @default(false)
+  canCreateOrganisation       Boolean              @default(false)
+  bookings                    Booking[]
+  departmentsCreated          Department[]         @relation(name: "DepartmentCreatedBy")
+  schedules                   ScheduleMember[]
+  tasksCreated                Task[]
+  organisationsCreated        Organisation[]       @relation(name: "OrganisationCreatedBy")
+  schedulesCreated            Schedule[]           @relation(name: "ScheduleCreatedBy")
+  scheduleTasksAssigned       ScheduleTask[]       @relation(name: "ScheduleTaskAssignedBy")
+  DepartmentEmployee          DepartmentEmployee[]
 }

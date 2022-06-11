@@ -5,16 +5,18 @@ import { z } from 'zod';
 import { requireUserId } from '~/controllers/auth.server';
 import { createTask, updateTask } from '~/controllers/task.server';
 import { badRequest } from '~/utils/helpers';
+import { db } from '~/utils/db.server';
 
 const schema = z.object({
   _action: z.enum(['create', 'update']),
-  createdById: z.string().cuid(),
-  departmentId: z.string().optional(),
+  departmentId: z.string().cuid().optional(),
   description: z.string().optional(),
   name: z.string(),
   nameShort: z.string().optional(),
+  scheduleId: z.string().cuid().or(z.undefined()),
   taskId: z.string().optional(),
 });
+
 
 export type ActionData =
   | {
@@ -29,7 +31,6 @@ export const action: ActionFunction = async ({ request }) => {
 
   const result = schema.safeParse({
     ...Object.fromEntries(await request.formData()),
-    createdById: userId,
   });
   if (!result.success)
     return badRequest<ActionData>({
@@ -37,15 +38,26 @@ export const action: ActionFunction = async ({ request }) => {
       errors: result.error.flatten(),
     });
 
-  const { _action, taskId, ...data } = result.data;
+  const { _action, taskId, scheduleId, ...data } = result.data;
 
   let task: Task | null = null;
 
   switch (_action) {
     case 'create':
-      task = await createTask({ departmentId: data.departmentId!, ...data });
+      console.log('DIT IS HET', result.data);
+
+      task = await db.task.create({
+        data: {
+          departmentId: data.departmentId!,
+          ...data,
+          createdById: userId,
+        },
+      });
+      break;
     case 'update':
+      console.log('KOMT HIER???');
       task = await updateTask({ taskId: taskId!, data });
+      break;
   }
   if (!task)
     return badRequest<ActionData>({

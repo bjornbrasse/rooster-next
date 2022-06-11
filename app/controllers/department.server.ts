@@ -52,14 +52,14 @@ export const getDepartment = async (
         organisationId_slug: { organisationId: string; slug: string };
       },
 ) => {
-  const department = await db.department.findUnique({
+  return await db.department.findUnique({
     where: args?.departmentId
       ? { id: args.departmentId }
       : { organisationId_slug: args.organisationId_slug },
     include: {
       employees: {
         include: {
-          user: { select: { id: true, firstName: true, lastName: true } },
+          employee: { select: { id: true, firstName: true, lastName: true } },
         },
       },
       organisation: { include: { employees: true } },
@@ -67,13 +67,11 @@ export const getDepartment = async (
       tasks: true,
     },
   });
-
-  return department;
 };
 
 type ReturnType = Promise<
   DepartmentEmployee & {
-    user: User;
+    employee: User;
     departmentPresences: (DepartmentPresence & {
       departmentPresenceDays: DepartmentPresenceDay[];
     })[];
@@ -92,9 +90,10 @@ export async function getDepartmentEmployee({
 }: {
   departmentEmployeeId?: string;
 }): ReturnType;
-export async function getDepartmentEmployee(callSignatures: {
+
+export async function getDepartmentEmployee(args: {
   departmentId?: string;
-  userId?: string;
+  employeeId?: string;
   departmentEmployeeId?: string;
 }): ReturnType {
   // let departmentEmployee:
@@ -104,12 +103,12 @@ export async function getDepartmentEmployee(callSignatures: {
   //     })
   //   | null = null;
 
-  const { departmentId, userId, departmentEmployeeId: id } = callSignatures;
+  const { departmentId, employeeId, departmentEmployeeId: id } = args;
 
   const departmentEmployee = await db.departmentEmployee.findFirst({
-    where: { OR: [{ id }, { AND: [{ departmentId, userId }] }] },
+    where: { OR: [{ id }, { AND: [{ departmentId, employeeId }] }] },
     include: {
-      user: true,
+      employee: true,
       departmentPresences: { include: { departmentPresenceDays: true } },
     },
   });

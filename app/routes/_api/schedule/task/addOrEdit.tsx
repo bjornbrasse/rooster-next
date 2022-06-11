@@ -7,11 +7,22 @@ import { inferSafeParseErrors } from 'types';
 import { requireUserId } from '~/controllers/auth.server';
 import { db } from '~/utils/db.server';
 
-const schema = z.object({
+const baseSchema = z.object({
   assignedById: z.string().cuid(),
+  endDate: z.date(),
   scheduleId: z.string().cuid(),
+  startDate: z.date(),
   taskId: z.string().cuid(),
 });
+
+const schema = z.preprocess((arg) => {
+  const obj = Object(arg);
+
+  obj.endDate = new Date(obj.endDate);
+  obj.startDate = new Date(obj.startDate);
+
+  return obj;
+}, baseSchema);
 
 export type ActionData =
   | {

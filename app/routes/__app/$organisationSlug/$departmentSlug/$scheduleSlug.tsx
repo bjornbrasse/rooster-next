@@ -9,11 +9,27 @@ import { useSchedule } from '~/hooks/useSchedule';
 import { requireUserId } from '~/controllers/auth.server';
 import { getDepartment } from '~/controllers/department.server';
 import { getOrganisation } from '~/controllers/organisation';
-import { getSchedule } from '~/controllers/schedule.server';
 import { useDateGrid } from '~/hooks/useDateGrid';
 import clsx from 'clsx';
+import { db } from '~/utils/db.server';
 
 dayjs.extend(customParseFormat);
+
+const getSchedule = async ({
+  departmentId,
+  scheduleSlug,
+}: {
+  departmentId: string;
+  scheduleSlug: string;
+}) => {
+  return await db.schedule.findUnique({
+    where: { departmentId_slug: { departmentId, slug: scheduleSlug } },
+    include: {
+      scheduleMembers: { include: { member: true } },
+      scheduleTasks: { include: { task: true } },
+    },
+  });
+};
 
 type LoaderData = {
   schedule: Exclude<Awaited<ReturnType<typeof getSchedule>>, null>;
@@ -58,10 +74,8 @@ export const loader: BBLoader<{
   if (!department) return redirect('/s');
 
   const schedule = await getSchedule({
-    departmentId_slug: {
-      departmentId: department.id,
-      slug: params.scheduleSlug,
-    },
+    departmentId: department.id,
+    scheduleSlug: params.scheduleSlug,
   });
   if (!schedule) return redirect('/s2');
 
@@ -126,9 +140,9 @@ export default function Planner() {
             onSelect={(taskId: string) => addToSelection({ date })}
             rows={
               view === 'person'
-                ? schedule.scheduleMembers.map(({ user }) => ({
-                    id: user.id,
-                    caption: `${user.firstName} ${user.lastName}`,
+                ? schedule.scheduleMembers.map(({ member }) => ({
+                    id: member.id,
+                    caption: `${member.firstName} ${member.lastName}`,
                   }))
                 : schedule.scheduleTasks.map(({ task }) => ({
                     id: task.id,

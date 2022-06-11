@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Link } from 'remix';
 import { WEEKDAYS } from '~/utils/date';
 import { getSchedule } from '~/controllers/schedule.server';
+import { useSchedule } from '~/hooks/useSchedule';
 
 export const DateGrid: React.FC<{
   activeDate: Date;
@@ -22,6 +23,8 @@ export const DateGrid: React.FC<{
   schedule,
   view,
 }) => {
+  const { addToSelection } = useSchedule();
+
   return (
     <table className="relative">
       <thead className="bg-gray-200">

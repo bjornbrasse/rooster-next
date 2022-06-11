@@ -36,12 +36,12 @@ export const getSchedule = async (
     include: {
       department: {
         include: {
-          employees: { include: { user: true } },
+          employees: { include: { employee: true } },
           organisation: true,
           tasks: true,
         },
       },
-      scheduleMembers: { include: { user: true } },
+      scheduleMembers: { include: { member: true } },
       scheduleTasks: { include: { task: true } },
     },
   });

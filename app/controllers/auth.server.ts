@@ -6,6 +6,7 @@ import { db } from '../utils/db.server';
 import { sendEmail } from '~/utils/email';
 import { passwordResetEmail } from '~/utils/email/templates';
 import { badRequest } from '~/utils/helpers';
+import { UserSecure } from 'types';
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -132,16 +133,26 @@ export async function getUserId(request: Request) {
   return userId && typeof userId === 'string' ? userId : null;
 }
 
-export async function getUser(request: Request) {
+export async function getUser(request: Request): Promise<UserSecure | null> {
   const userId = await getUserId(request);
 
-  return await db.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: userId ?? '' },
     include: {
       organisation: true,
-      // departmentEmployees: true,
     },
   });
+
+  if (!user) return null;
+
+  const {
+    emailValidationToken,
+    passwordHash,
+    passwordResetToken,
+    ...userSecure
+  } = user;
+
+  return userSecure;
 }
 
 export async function login({
@@ -153,17 +164,17 @@ export async function login({
 }) {
   const user = await db.user.findUnique({
     where: { email },
-    include: { organisation: true, departmentEmployees: true },
+    include: { organisation: true },
   });
+
   if (!user) return null;
 
-  const isCorrectPassword = await bcrypt.compare(
-    password,
-    user.passwordHash ?? '',
-  );
+  const { passwordHash, ...userSecure } = user;
+
+  const isCorrectPassword = await bcrypt.compare(password, passwordHash ?? '');
   if (!isCorrectPassword) return null;
 
-  return user;
+  return userSecure;
 }
 
 export async function logout(request: Request) {
@@ -213,7 +224,7 @@ export async function requireUser(
   options: { isAdmin?: boolean; redirectTo?: string } = {
     redirectTo: '/auth/login',
   },
-): Promise<User> {
+): Promise<UserSecure> {
   const user = await getUser(request);
 
   if (!user) throw redirect(`/auth/login?redirectTo=${options.redirectTo}`);

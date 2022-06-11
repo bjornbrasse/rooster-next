@@ -1,4 +1,10 @@
-import { Schedule, ScheduleTask, Task } from '@prisma/client';
+import {
+  Schedule,
+  ScheduleMember,
+  ScheduleTask,
+  Task,
+  User,
+} from '@prisma/client';
 import { useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { Link, redirect, useLoaderData } from 'remix';
@@ -6,12 +12,17 @@ import { BBLoader } from 'types';
 import { Container } from '~/components/container';
 import { DraggableListItem } from '~/components/dragable-list-item';
 import MemberForm from '~/components/forms/MemberForm';
+import ScheduleMemberForm from '~/components/forms/schedule-member-form';
 import ScheduleTaskForm from '~/components/forms/schedule-task-form';
+import TaskForm from '~/components/forms/task-form';
 import { Frame } from '~/components/frame';
 import { TaskListItem } from '~/components/task-list-item';
 import { useDialog } from '~/contexts/dialog';
 import { getSchedule } from '~/controllers/schedule.server';
 import { DnDItemTypes } from '~/utils/dnd';
+import { links as scheduleTaskFormLinks } from '~/components/forms/schedule-task-form';
+
+export const links = () => [...scheduleTaskFormLinks()];
 
 type LoaderData = {
   schedule: Exclude<Awaited<ReturnType<typeof getSchedule>>, null>;
@@ -32,6 +43,25 @@ export default function Schedule() {
   const { schedule } = useLoaderData() as LoaderData;
   const [isEditingMembers, setIsEditingMembers] = useState(false);
   const [isEditingTasks, setIsEditingTasks] = useState(false);
+
+  const [{ canDropMember, isHoveringMember }, dropRefMember] = useDrop(() => ({
+    accept: DnDItemTypes.EMPLOYEE,
+    canDrop: ({ member }) =>
+      !schedule.scheduleMembers.find(({ memberId }) => memberId === member.id),
+    drop: (item: { member: User }) =>
+      openDialog(
+        'Voeg team-lid toe aan rooster',
+        <ScheduleMemberForm
+          onSaved={(scheduleMember: ScheduleMember) => closeDialog()}
+          schedule={schedule}
+          member={item.member}
+        />,
+      ),
+    collect: (monitor) => ({
+      canDropMember: !!monitor.canDrop(),
+      isHoveringMember: !!monitor.isOver(),
+    }),
+  }));
 
   const [{ canDrop, isHovering }, dropRef] = useDrop(() => ({
     accept: DnDItemTypes.TASK,
@@ -80,10 +110,13 @@ export default function Schedule() {
                 <i className="fas fa-pencil-alt"></i>
               </button>
             }
+            canDrop={canDropMember}
+            isHovering={isHoveringMember}
+            ref={dropRefMember}
             title="Leden"
           >
             {schedule.scheduleMembers
-              .map((sm) => ({ user: sm.user }))
+              .map((sm) => ({ user: sm.member }))
               .sort(({ user: a }, { user: b }) =>
                 a.lastName < b.lastName ? -1 : 0,
               )
@@ -124,9 +157,9 @@ export default function Schedule() {
         <div className="w-72 border border-red-400 p-2">
           <h1 className="mb-4">Medewerkers {schedule.department.name}</h1>
           <ul className="list-none">
-            {schedule.department.employees.map(({ user }) => (
-              <DraggableListItem item={user} type={DnDItemTypes.EMPLOYEE}>
-                {`${user.firstName} ${user.lastName}`}
+            {schedule.department.employees.map(({ employee }) => (
+              <DraggableListItem item={employee} type={DnDItemTypes.EMPLOYEE}>
+                {`${employee.firstName} ${employee.lastName}`}
               </DraggableListItem>
             ))}
           </ul>
@@ -134,7 +167,24 @@ export default function Schedule() {
       )}
       {isEditingTasks && (
         <div className="w-72 border border-red-400 p-2">
-          <h1 className="mb-4">Taken</h1>
+          <div className="flex justify-between">
+            <h1 className="mb-4">{`Taken van ${schedule.department.name}`}</h1>
+            <button
+              className="btn btn-save h-8 w-8"
+              onClick={() =>
+                openDialog(
+                  'Maak Taak',
+                  <TaskForm
+                    departmentId={schedule.departmentId}
+                    onSaved={(task: Task) => closeDialog()}
+                    scheduleId={schedule.id}
+                  />,
+                )
+              }
+            >
+              <i className="fas fa-plus"></i>
+            </button>
+          </div>
           <ul className="list-none">
             {schedule.department.tasks.map((task) => (
               <TaskListItem task={task} />
