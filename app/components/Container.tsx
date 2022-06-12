@@ -7,7 +7,7 @@ export const Container: React.FC<{
 }> = ({ children, className, flex = 'col', padding = true }) => {
   return (
     <div
-      className={`h-full w-full ${padding ? 'p-4' : null} flex ${
+      className={`h-full w-full ${padding ? 'px-12 py-8' : null} flex ${
         flex === 'col' ? 'flex-col' : null
       } ${className}`}
     >

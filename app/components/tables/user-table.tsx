@@ -16,18 +16,20 @@ export const UserTable: React.FC<IProps> = ({ baseUrl, users }) => {
   return (
     <table className="w-full table-auto border-2 border-blue-600">
       <thead className="sticky top-0 border-b-2 border-gray-600 bg-red-300 text-left">
-        <th onClick={() => setOrder('firstName')}>
-          Voornaam
-          {order === 'firstName' && <i className="fas fa-sort-down" />}
-        </th>
-        <th
-          onClick={() => setOrder('lastName')}
-          className="cursor-pointer border-r border-gray-400"
-        >
-          Achternaam
-        </th>
-        <th>Email</th>
-        {/* <th>Edit</th> */}
+        <tr>
+          <th onClick={() => setOrder('firstName')}>
+            Voornaam
+            {order === 'firstName' && <i className="fas fa-sort-down" />}
+          </th>
+          <th
+            onClick={() => setOrder('lastName')}
+            className="cursor-pointer border-r border-gray-400"
+          >
+            Achternaam
+          </th>
+          <th>Email</th>
+          {/* <th>Edit</th> */}
+        </tr>
       </thead>
       <tbody className="overflow-auto">
         {users

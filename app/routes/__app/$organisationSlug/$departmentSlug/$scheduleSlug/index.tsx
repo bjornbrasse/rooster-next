@@ -15,7 +15,7 @@ import { db } from '~/utils/db.server';
 
 dayjs.extend(customParseFormat);
 
-const getSchedule = async ({
+export const getSchedule = async ({
   departmentId,
   scheduleSlug,
 }: {
@@ -88,27 +88,38 @@ export default function Planner() {
 
   const date = dayjs(searchParams.get('date'), 'YYMMDD').toDate();
   const period = searchParams.get('period');
-  const view = searchParams.get('view');
+  const view = searchParams.get('view') as 'person' | 'task';
 
   const { scheduleDays } = useDateGrid(date, period as 'month' | 'week');
 
   const { addToSelection } = useSchedule();
+
+  const styles = 'border border-gray-400 bg-red-400 p-2 text-lg';
 
   return (
     <div className="flex h-full">
       <div className="flex-1 overflow-hidden p-4">
         <h1>{schedule.name}</h1>
 
-        <div className="my-4 mr-2 inline-block border-2 border-red-400">
+        <div className="my-4 mr-2 inline-block flex border-2 border-red-400">
           <Link
-            className={clsx({ 'bg-blue-400': period === 'week' })}
+            className={clsx(
+              styles,
+              {
+                'bg-blue-400': period === 'week',
+              },
+              styles,
+              'rounded-l-md',
+            )}
             to={`?date=${dayjs(date).format('YYMMDD')}&period=week`}
             replace
           >
             W
           </Link>
           <Link
-            className={clsx({ 'bg-blue-400': period === 'month' })}
+            className={clsx(styles, 'rounded-r-md', {
+              'bg-blue-400': period === 'month',
+            })}
             to={`?date=${dayjs(date).format('YYMMDD')}&period=month`}
             replace
           >

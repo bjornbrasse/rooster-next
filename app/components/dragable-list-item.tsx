@@ -5,7 +5,7 @@ import { useDrag } from 'react-dnd';
 import { DnDItemTypes } from '~/utils/dnd';
 
 export const DraggableListItem: FC<{
-  item: User | Task;
+  item: {id: string; firstName: string; lastName: string} | Task;
   type: string;
 }> = ({ children, item, type }) => {
   const [{ isDragging }, dragRef] = useDrag(

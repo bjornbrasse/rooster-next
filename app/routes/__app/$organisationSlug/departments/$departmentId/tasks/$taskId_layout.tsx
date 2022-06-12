@@ -1,12 +1,12 @@
-import { Department, Task } from "@prisma/client";
-import * as React from "react";
-import { Outlet, useMatches, useParams } from "remix";
+import { Department, Task } from '@prisma/client';
+import * as React from 'react';
+import { Outlet, useMatches, useParams } from 'remix';
 
 export default function DepartmentTaskLayout() {
   const { departmentId, taskId } = useParams();
 
   const data = useMatches().find(
-    (m) => m.pathname === `/departments/${departmentId}/tasks/${taskId}/index`
+    (m) => m.pathname === `/departments/${departmentId}/tasks/${taskId}/index`,
   )?.data as { tasks: Task[] };
 
   return (

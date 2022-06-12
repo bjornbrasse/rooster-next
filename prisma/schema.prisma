@@ -191,4 +191,11 @@ model User {
   schedulesCreated            Schedule[]           @relation(name: "ScheduleCreatedBy")
   scheduleTasksAssigned       ScheduleTask[]       @relation(name: "ScheduleTaskAssignedBy")
   DepartmentEmployee          DepartmentEmployee[]
+  preferences                 UserPreferences?
+}
+
+model UserPreferences {
+  user     User    @relation(fields: [userId], references: [id])
+  userId   String  @unique
+  darkMode Boolean @default(false)
 }

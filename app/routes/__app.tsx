@@ -40,7 +40,7 @@ export default function App() {
   }, breadcrumbs);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="dark flex h-full flex-col">
       <Navbar user={user} />
       <div id="Content" className="flex h-full flex-col bg-gray-100">
         {breadcrumbs.length > 0 && (
@@ -51,7 +51,7 @@ export default function App() {
             }))}
           />
         )}
-        <div className="flex-grow">
+        <div className="flex-grow bg-white text-white dark:bg-zinc-800">
           <Outlet />
         </div>
       </div>

@@ -1,41 +1,42 @@
-import * as React from "react";
-import { NavLink } from "remix";
+import clsx from 'clsx';
+import { FC } from 'react';
+import { NavLink } from 'remix';
 
-const Tab: React.FC<{ className?: string; to: string }> = ({
-  children,
-  className,
-  to,
-}) => {
+interface TabProps {
+  href: string;
+  icon: string;
+}
+
+export const Tab: FC<TabProps> = ({ href, icon }) => {
   return (
     <NavLink
-      to={to}
       className={({ isActive }) =>
-        `px-2 py-1 flex ${
-          isActive ? "bg-primary text-accent" : "bg-gray-300 hover:bg-sky-300"
-        } rounded-t-lg ${className}`
+        clsx(
+          'flex h-12 w-12 items-center justify-center border-y border-l text-xl',
+          {
+            'rounded-l-lg border-white text-white': isActive,
+            'border-neutral-700 text-neutral-700': !isActive,
+          },
+        )
       }
+      to={href}
     >
-      {children}
+      <i className={icon}></i>
     </NavLink>
   );
 };
 
-const Tabs: React.FC<{ actions?: React.ReactNode }> & {
-  Tab: React.FC<{ className?: string; to: string }>;
-} = ({ actions, children }) => {
+export const Tabs: FC & {
+  Tab: React.FC<TabProps>;
+} = ({ children }) => {
   return (
     <div
-      id="Tabs"
-      className="px-2 flex justify-between items-center border-b-2 border-slate-500"
+      id="tabs"
+      className="flex h-full flex-col space-y-2 border-r-2 border-white py-4 pl-4"
     >
-      <div id="Tabs" className="pt-3 flex space-x-1 items-end">
-        {children}
-      </div>
-      {actions && actions}
+      {children}
     </div>
   );
 };
 
 Tabs.Tab = Tab;
-
-export default Tabs;

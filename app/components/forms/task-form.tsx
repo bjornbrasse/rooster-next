@@ -31,13 +31,15 @@ const TaskForm = ({
   }, [fetcher]);
 
   return (
-    <fetcher.Form method="post" action="/_api/task" noValidate>
+    <fetcher.Form
+      method="post"
+      action={`/_api/task/${args.task?.id ? 'update' : 'create'}`}
+      noValidate
+    >
       {args?.departmentId && (
         <input type="hidden" name="departmentId" value={args.departmentId} />
       )}
-      <input type="hidden" name="redirectTo" value={redirectTo} />
-      <input type="hidden" name="taskId" value={args.task?.id} />
-      <input type="hidden" name="scheduleId" value={args.scheduleId} />
+      <input type="hidden" name="id" value={args.task?.id} />
 
       <fieldset className="flex flex-col">
         <Field
