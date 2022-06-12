@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { User } from '@prisma/client';
 import {
   ActionFunction,
   ErrorBoundaryComponent,
@@ -8,7 +7,11 @@ import {
   useLoaderData,
 } from 'remix';
 import { db } from '~/utils/db.server';
-import { requireUser, requireUserId } from '~/controllers/auth.server';
+import {
+  requireUser,
+  requireUserId,
+  UserSecure,
+} from '~/controllers/auth.server';
 import { useDropzone } from 'react-dropzone';
 import { classNames } from '~/utils/helpers';
 // const cloudinary = require('cloudinary').v2;
@@ -16,15 +19,15 @@ import { v2 as cloudinary } from 'cloudinary';
 import { getCloudinarySignature } from '~/utils/cloudinary.server';
 
 type LoaderData = {
-  user: User | null;
+  user: UserSecure;
 };
 
 const colors: string[] = ['#c43434', '#cac060'];
 
-export const loader: LoaderFunction = async ({
-  request,
-}): Promise<LoaderData> => {
+export const loader: LoaderFunction = async ({ request }) => {
   const user = await requireUser(request, { redirectTo: '/login' });
+
+  if (!user) return redirect('/home');
 
   return { user };
 };
@@ -88,7 +91,7 @@ export default function ProfileRoute() {
         </label>
         {colors.map((color, idx) => (
           <div
-            className="w-10 h-10"
+            className="h-10 w-10"
             style={{ backgroundColor: color }}
             key={idx}
           >
@@ -100,8 +103,8 @@ export default function ProfileRoute() {
       <div
         {...getRootProps()}
         className={classNames(
-          'w-96 h-48 flex justify-center items-center bg-red-100 border border-red-600 text-xl',
-          isDragActive ? 'bg-blue-400' : null
+          'flex h-48 w-96 items-center justify-center border border-red-600 bg-red-100 text-xl',
+          isDragActive ? 'bg-blue-400' : null,
         )}
       >
         <p>Drop file here.</p>

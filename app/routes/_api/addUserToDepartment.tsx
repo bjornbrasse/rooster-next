@@ -1,20 +1,20 @@
-import { User } from "@prisma/client";
-import type { ActionFunction } from "remix";
-import { getUser } from "~/controllers/auth.server";
-import { getDepartment } from "~/controllers/department.server";
-import { createUser } from "~/controllers/user.server";
-import { db } from "~/utils/db.server";
-import { badRequest } from "~/utils/helpers";
+import { User } from '@prisma/client';
+import type { ActionFunction } from 'remix';
+import { getUserSecure } from '~/controllers/auth.server';
+import { getDepartment } from '~/controllers/department.server';
+import { createUser } from '~/controllers/user.server';
+import { db } from '~/utils/db.server';
+import { badRequest } from '~/utils/helpers';
 
 export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
 
-  const userId = form.get("userId");
-  const departmentId = form.get("departmentId");
+  const userId = form.get('userId');
+  const departmentId = form.get('departmentId');
 
-  console.log("doet ie het?", userId, departmentId);
+  console.log('doet ie het?', userId, departmentId);
 
-  if (typeof userId !== "string" || typeof departmentId !== "string") {
+  if (typeof userId !== 'string' || typeof departmentId !== 'string') {
     return badRequest({
       error: { form: `Form not submitted correctly.` },
     });
@@ -28,12 +28,12 @@ export const action: ActionFunction = async ({ request, params }) => {
   //     // fields,
   //   });
 
-  const user = await getUser(request);
+  const user = await getUserSecure(request);
   const department = await getDepartment({ departmentId });
 
   if (!user || !department)
     return badRequest({
-      error: { form: "Something went wrong - 2" },
+      error: { form: 'Something went wrong - 2' },
       // fields,
     });
 
@@ -43,7 +43,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   if (!res)
     return badRequest({
-      error: { form: "Something went wrong - 3" },
+      error: { form: 'Something went wrong - 3' },
       // fields,
     });
 

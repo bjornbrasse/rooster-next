@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Menu, Transition } from '@headlessui/react';
-import { Link } from 'remix';
-import { User } from '@prisma/client';
+import { Fragment, useEffect, useState } from 'react';
+import { Menu, Switch, Transition } from '@headlessui/react';
+import { Link, useFetcher } from 'remix';
+import { UserSecure } from '~/controllers/auth.server';
 
 function EditInactiveIcon(props: any) {
   return (
@@ -242,7 +242,7 @@ function MenuItem({
             to={href}
             className={`grid grid-cols-[30px_1fr] items-center ${
               active ? 'bg-violet-500 text-white' : 'text-gray-900'
-            } group rounded-md w-full px-3 py-1`}
+            } group w-full rounded-md px-3 py-1`}
           >
             <i className={`${icon} text-lg`} aria-hidden="true" />
             {caption}
@@ -253,18 +253,27 @@ function MenuItem({
   );
 }
 
-const UserMenu: React.FC<{ user: User }> = ({ user }) => {
+const UserMenu: React.FC<{ user: UserSecure }> = ({ user }) => {
+  const [darkModeEnabled, setDarkModeEnabled] = useState(
+    !!user.preferences?.darkMode,
+  );
+  const fetcher = useFetcher();
+
+  useEffect(() => {
+    fetcher.submit({ user: '123' });
+  }, [darkModeEnabled]);
+
   return (
     <Menu as="div" className="relative inline-block text-left">
-      <Menu.Button className="inline-flex w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+      <Menu.Button className="inline-flex w-full rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
         {`${user.firstName} ${user.lastName}`}
         <i
-          className="fas fa-chevron-down w-5 h-5 ml-2 -mr-1 text-violet-200 hover:text-violet-100"
+          className="fas fa-chevron-down ml-2 -mr-1 h-5 w-5 text-violet-200 hover:text-violet-100"
           aria-hidden="true"
         />
       </Menu.Button>
       <Transition
-        as={React.Fragment}
+        as={Fragment}
         enter="transition ease-out duration-100"
         enterFrom="transform opacity-0 scale-95"
         enterTo="transform opacity-100 scale-100"
@@ -272,19 +281,19 @@ const UserMenu: React.FC<{ user: User }> = ({ user }) => {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 z-10 w-56 mt-1 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Menu.Items className="absolute right-0 z-10 mt-1 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <Menu.Item>
             {({ active }) => (
               <button
                 className={`${
                   active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                } group flex rounded-md items-center w-full px-2 py-2`}
+                } group flex w-full items-center rounded-md px-2 py-2`}
               >
                 {active ? (
-                  <EditActiveIcon className="w-5 h-5 mr-2" aria-hidden="true" />
+                  <EditActiveIcon className="mr-2 h-5 w-5" aria-hidden="true" />
                 ) : (
                   <EditInactiveIcon
-                    className="w-5 h-5 mr-2"
+                    className="mr-2 h-5 w-5"
                     aria-hidden="true"
                   />
                 )}
@@ -297,16 +306,16 @@ const UserMenu: React.FC<{ user: User }> = ({ user }) => {
               <button
                 className={`${
                   active ? 'bg-violet-500 text-white' : 'text-gray-900'
-                } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
               >
                 {active ? (
                   <DuplicateActiveIcon
-                    className="w-5 h-5 mr-2"
+                    className="mr-2 h-5 w-5"
                     aria-hidden="true"
                   />
                 ) : (
                   <DuplicateInactiveIcon
-                    className="w-5 h-5 mr-2"
+                    className="mr-2 h-5 w-5"
                     aria-hidden="true"
                   />
                 )}
@@ -334,6 +343,30 @@ const UserMenu: React.FC<{ user: User }> = ({ user }) => {
           {user.role === 'ADMIN' && (
             <MenuItem caption={'Admin'} href="/admin" icon="fas fa-toolbox" />
           )}
+          <Menu.Item>
+            <fetcher.Form
+              method="post"
+              action="/_api/user/toggleDarkMode"
+              replace
+            >
+              <Switch
+                checked={darkModeEnabled}
+                onChange={setDarkModeEnabled}
+                name="darkMode"
+                value="haha"
+                className={`${
+                  darkModeEnabled ? 'bg-blue-600' : 'bg-gray-200'
+                } relative inline-flex h-6 w-11 items-center rounded-full`}
+              >
+                <span className="sr-only">Enable notifications</span>
+                <span
+                  className={`${
+                    darkModeEnabled ? 'translate-x-6' : 'translate-x-1'
+                  } inline-block h-4 w-4 transform rounded-full bg-white`}
+                />
+              </Switch>
+            </fetcher.Form>
+          </Menu.Item>
           <form
             action="/_api/auth/logout"
             method="POST"
@@ -345,7 +378,7 @@ const UserMenu: React.FC<{ user: User }> = ({ user }) => {
                   type="submit"
                   className={`w-full px-2 py-1 ${
                     active ? 'bg-red-400' : 'bg-cyan-500'
-                  } text-white text-center rounded-lg hover:bg-red-400 cursor-pointer`}
+                  } cursor-pointer rounded-lg text-center text-white hover:bg-red-400`}
                 >
                   Logout
                 </button>

@@ -6,7 +6,6 @@ import { db } from '../utils/db.server';
 import { sendEmail } from '~/utils/email';
 import { passwordResetEmail } from '~/utils/email/templates';
 import { badRequest } from '~/utils/helpers';
-import { UserSecure } from 'types';
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -133,13 +132,21 @@ export async function getUserId(request: Request) {
   return userId && typeof userId === 'string' ? userId : null;
 }
 
-export async function getUser(request: Request): Promise<UserSecure | null> {
+export type UserSecure = Exclude<
+  Awaited<ReturnType<typeof getUserSecure>>,
+  null
+>;
+
+export async function getUserSecure(request: Request) {
   const userId = await getUserId(request);
+
+  if (!userId) return null;
 
   const user = await db.user.findUnique({
     where: { id: userId ?? '' },
     include: {
       organisation: true,
+      preferences: true,
     },
   });
 
@@ -225,7 +232,7 @@ export async function requireUser(
     redirectTo: '/auth/login',
   },
 ): Promise<UserSecure> {
-  const user = await getUser(request);
+  const user = await getUserSecure(request);
 
   if (!user) throw redirect(`/auth/login?redirectTo=${options.redirectTo}`);
 

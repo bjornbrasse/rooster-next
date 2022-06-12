@@ -1,5 +1,5 @@
 import { redirect } from 'remix';
-import { getUser, requireUser } from './auth.server';
+import { getUserSecure, requireUser } from './auth.server';
 
 // export async function userIsAdmin(
 //   request: Request,
@@ -13,9 +13,9 @@ import { getUser, requireUser } from './auth.server';
 export async function can(
   access: 'viewOrganisations',
   request: Request,
-  options: { redirectTo: string } = { redirectTo: '/' }
+  options: { redirectTo: string } = { redirectTo: '/' },
 ): Promise<Boolean> {
-  const user = await getUser(request);
+  const user = await getUserSecure(request);
 
   if (!user) throw redirect(options?.redirectTo ?? '/');
 

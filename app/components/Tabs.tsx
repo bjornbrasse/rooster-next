@@ -14,8 +14,10 @@ export const Tab: FC<TabProps> = ({ href, icon }) => {
         clsx(
           'flex h-12 w-12 items-center justify-center border-y border-l text-xl',
           {
-            'rounded-l-lg border-white text-white': isActive,
-            'border-neutral-700 text-neutral-700': !isActive,
+            'rounded-l-lg border-blue-700 bg-blue-600 text-white dark:border-white dark:bg-transparent ':
+              isActive,
+            'border-gray-400 text-gray-400 dark:border-neutral-700 dark:text-neutral-700':
+              !isActive,
           },
         )
       }
@@ -32,7 +34,7 @@ export const Tabs: FC & {
   return (
     <div
       id="tabs"
-      className="flex h-full flex-col space-y-2 border-r-2 border-white py-4 pl-4"
+      className="flex h-full flex-col space-y-2 border-r-2 border-blue-800 py-4 pl-4 dark:border-white"
     >
       {children}
     </div>
