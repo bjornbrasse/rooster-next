@@ -19,31 +19,22 @@ export const meta: MetaFunction = ({ data }) => ({
 });
 
 export const handle: BBHandle = {
-  id: 'Bjorn',
-  breadcrumb: (
-    args: {
-      departmentName: string;
-      departmentSlug: string;
-      organisationSlug: string;
-    } = {
-      departmentName: 'afdelingsNaam',
-      departmentSlug: 'test',
-      organisationSlug: 'organisatie',
-    },
-  ) => ({
-    caption: args.departmentName,
-    href: 'test',
+  id: 'DepartmentPage',
+  breadcrumb: ({ data }: { data: LoaderData }) => ({
+    caption: data?.department.name ?? 'Afdeling',
+    href: `/${data?.department.organisation.slug ?? 'Organisatie'}`,
   }),
 };
 
-const getDepartment = async (organisationId_slug: {
+async function getDepartment(organisationId_slug: {
   organisationId: string;
   slug: string;
-}) => {
+}) {
   return await db.department.findUnique({
     where: { organisationId_slug },
+    include: { organisation: true },
   });
-};
+}
 
 const getOrganisation = async (organisationSlug: string) => {
   return await db.organisation.findUnique({
@@ -95,7 +86,7 @@ export const loader: BBLoader<{
   return json<LoaderData>({ department, departmentTasks, organisation });
 };
 
-export default function Department() {
+export default function DepartmentPage() {
   const { department, departmentTasks, organisation } =
     useLoaderData() as LoaderData;
   const { closeDialog, openDialog } = useDialog();

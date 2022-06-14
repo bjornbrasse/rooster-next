@@ -1,7 +1,7 @@
 import { Outlet, useParams } from 'remix';
 import { Tabs } from '~/components/tabs';
 
-export default function OrganisationLayout() {
+export default function DepartmentLayout() {
   const { departmentSlug, organisationSlug, scheduleSlug } = useParams();
 
   return (

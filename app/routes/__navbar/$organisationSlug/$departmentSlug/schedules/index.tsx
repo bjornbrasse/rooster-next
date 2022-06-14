@@ -64,7 +64,7 @@ export default function DepartmentSchedules() {
               <LinkedTableData
                 href={`/${organisationSlug}/${departmentSlug}/${schedule.slug}`}
               >
-                <td>{schedule.name}</td>
+                {schedule.name}
               </LinkedTableData>
             </tr>
           ))}
