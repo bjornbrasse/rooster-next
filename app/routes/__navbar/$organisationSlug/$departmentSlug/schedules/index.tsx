@@ -1,6 +1,7 @@
-import { json, redirect, useLoaderData } from 'remix';
+import { json, redirect, useLoaderData, useParams } from 'remix';
 import { BBLoader } from 'types';
 import { Container } from '~/components/container';
+import LinkedTableData from '~/components/LinkedTableData';
 import { db } from '~/utils/db.server';
 
 async function getDepartment({
@@ -46,10 +47,29 @@ export const loader: BBLoader<{
 
 export default function DepartmentSchedules() {
   const { department } = useLoaderData() as LoaderData;
+  const { departmentSlug, organisationSlug } = useParams();
 
   return (
     <Container>
       <h1>{`Roosters van ${department.name}`}</h1>
+      <table className="border border-sky-300">
+        <thead>
+          <tr>
+            <td>Naam</td>
+          </tr>
+        </thead>
+        <tbody>
+          {department.schedules.map((schedule) => (
+            <tr key={schedule.id}>
+              <LinkedTableData
+                href={`/${organisationSlug}/${departmentSlug}/${schedule.slug}`}
+              >
+                <td>{schedule.name}</td>
+              </LinkedTableData>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </Container>
   );
 }

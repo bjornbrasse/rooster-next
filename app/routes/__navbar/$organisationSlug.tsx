@@ -6,7 +6,7 @@ export default function OrganisationLayout() {
   const { departmentSlug } = useParams();
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full w-full">
       {!departmentSlug && (
         <Tabs>
           <Tabs.Tab href={`/${organisationSlug}/`} icon="fas fa-building" />
@@ -20,9 +20,7 @@ export default function OrganisationLayout() {
           />
         </Tabs>
       )}
-      <div className="flex-1">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 }

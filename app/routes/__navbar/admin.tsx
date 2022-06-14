@@ -7,6 +7,7 @@ export default function AdminLayout() {
       <Tabs>
         <Tabs.Tab href={`/admin/organisations`} icon="fas fa-building" />
         <Tabs.Tab href={`/admin/users`} icon="fas fa-user" />
+        <Tabs.Tab href={`/admin/special-dates`} icon="fas fa-calendar-xmark" />
       </Tabs>
       <div className="flex-1">
         <Outlet />

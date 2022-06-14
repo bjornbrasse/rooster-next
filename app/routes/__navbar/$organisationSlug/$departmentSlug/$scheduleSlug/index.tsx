@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { Link, redirect, useLoaderData, useSearchParams } from 'remix';
-import { BBLoader } from 'types';
+import { BBHandle, BBLoader } from 'types';
 import { DateGrid } from '~/components/date-grid';
 import { DateSelector } from '~/components/date-selector';
 import { useSchedule } from '~/hooks/useSchedule';
@@ -11,8 +11,19 @@ import { getOrganisation } from '~/controllers/organisation';
 import { useDateGrid } from '~/hooks/useDateGrid';
 import clsx from 'clsx';
 import { db } from '~/utils/db.server';
+import { useState } from 'react';
+import { usePopper } from 'react-popper';
+import { Container } from '~/components/container';
 
 dayjs.extend(customParseFormat);
+
+export const handle: BBHandle = {
+  id: 'Bjorn',
+  breadcrumb: ({ data }: { data: LoaderData }) => ({
+    caption: data.schedule.name,
+    href: '/home',
+  }),
+};
 
 export const getSchedule = async ({
   departmentId,
@@ -85,6 +96,14 @@ export default function Schedule() {
   const { schedule } = useLoaderData() as LoaderData;
   const [searchParams] = useSearchParams();
 
+  const [referenceElement, setReferenceElement] =
+    useState<HTMLButtonElement | null>();
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
+
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'top',
+  });
+
   const date = dayjs(searchParams.get('date'), 'YYMMDD').toDate();
   const period = searchParams.get('period');
   const view = searchParams.get('view') as 'person' | 'task';
@@ -93,21 +112,33 @@ export default function Schedule() {
 
   const { addToSelection } = useSchedule();
 
-  const styles = 'border border-gray-400 bg-red-400 p-2 text-lg';
+  const styles2 = 'border border-gray-400 bg-red-400 p-2 text-lg';
 
   return (
-    <div className="flex h-full w-full">
-      <div className="flex-1 overflow-hidden p-4">
+    <Container padding="p-0" flex="flex-row">
+      <div className="grow p-4" id="content">
         <h1>{schedule.name}</h1>
+        <button ref={setReferenceElement} type="button">
+          <i className="fas fa-cog"></i>
+        </button>
+
+        <div
+          id="popup"
+          ref={setPopperElement}
+          style={{ ...styles.popper, backgroundColor: '#6161c6' }}
+          {...attributes}
+        >
+          <h1>Hallo popup</h1>
+        </div>
 
         <div className="my-4 mr-2 flex border-2 border-red-400">
           <Link
             className={clsx(
-              styles,
+              styles2,
               {
                 'bg-blue-400': period === 'week',
               },
-              styles,
+              styles2,
               'rounded-l-md',
             )}
             to={`?date=${dayjs(date).format('YYMMDD')}&period=week`}
@@ -116,7 +147,7 @@ export default function Schedule() {
             W
           </Link>
           <Link
-            className={clsx(styles, 'rounded-r-md', {
+            className={clsx(styles2, 'rounded-r-md', {
               'bg-blue-400': period === 'month',
             })}
             to={`?date=${dayjs(date).format('YYMMDD')}&period=month`}
@@ -142,11 +173,10 @@ export default function Schedule() {
           </Link>
         </div>
 
-        <div className="relative overflow-x-auto border-2 border-blue-400">
+        <div className="border-2 border-blue-400">
           <DateGrid
             activeDate={date}
             bookings={[]}
-            dates={scheduleDays}
             onSelect={(taskId: string) => addToSelection({ date })}
             rows={
               view === 'person'
@@ -178,6 +208,6 @@ export default function Schedule() {
       <div className="w-72 border border-red-400 bg-stone-200 p-4 lg:w-1/4">
         <DateSelector date={date} />
       </div>
-    </div>
+    </Container>
   );
 }
