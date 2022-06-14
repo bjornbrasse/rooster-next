@@ -1,11 +1,29 @@
 import { json, redirect, useLoaderData } from 'remix';
 import { BBLoader } from 'types';
 import { Container } from '~/components/container';
-import { getDepartment } from '~/controllers/department.server';
 import { db } from '~/utils/db.server';
 
-async function getSchedules({ departmentId }: { departmentId: string }) {
-  return await db.schedule.findMany({ where: { departmentId } });
+async function getDepartment({
+  departmentSlug,
+  organisationSlug,
+}: {
+  departmentSlug: string;
+  organisationSlug: string;
+}) {
+  return await db.department.findUnique({
+    where: {
+      organisationId_slug: {
+        organisationId:
+          (
+            await db.organisation.findUnique({
+              where: { slug: organisationSlug },
+            })
+          )?.id ?? '',
+        slug: departmentSlug,
+      },
+    },
+    include: { schedules: true },
+  });
 }
 
 type LoaderData = {
