@@ -1,10 +1,11 @@
 import { Booking, User } from '@prisma/client';
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'remix';
 import { WEEKDAYS } from '~/utils/date';
 import { useSchedule } from '~/hooks/useSchedule';
 import { getSchedule } from '~/routes/__navbar/$organisationSlug/$departmentSlug/$scheduleSlug';
+import { usePopper } from 'react-popper';
 
 interface IProps {
   activeDate: Date;
@@ -42,6 +43,14 @@ export const DateGrid: React.FC<IProps> = ({
   const dates = useMemo(
     () => getDaysArray(startDate, endDate),
     [startDate, endDate],
+  );
+
+  const [popperElementRef, setPopperElementRef] = useState();
+  const [referenceElementRef, setReferenceElementRef] = useState();
+
+  const { styles, attributes } = usePopper(
+    referenceElementRef,
+    popperElementRef,
   );
 
   return (
@@ -87,6 +96,7 @@ export const DateGrid: React.FC<IProps> = ({
 
               return (
                 <td
+                  ref={setReferenceElementRef}
                   onClick={() => selectHander(row.id)}
                   className={`cursor-pointer border border-blue-200 px-2 hover:bg-blue-200 ${
                     isCurrentDate ? 'bg-green-200' : null

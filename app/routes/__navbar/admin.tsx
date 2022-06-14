@@ -1,19 +1,16 @@
-import * as React from 'react';
-import { LoaderFunction } from 'remix';
-import { Container } from '~/components/container';
-import { Section } from '~/components/section';
-import { requireUser } from '~/controllers/auth.server';
+import { Outlet } from 'remix';
+import { Tabs } from '~/components/tabs';
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const user = requireUser(request, { isAdmin: true, redirectTo: '/home' });
-
-  return { user };
-};
-
-export default function AdminRoute() {
+export default function AdminLayout() {
   return (
-    <Container>
-      <Section caption="Speciale Dagen"></Section>
-    </Container>
+    <div className="flex h-full">
+      <Tabs>
+        <Tabs.Tab href={`/admin/organisations`} icon="fas fa-building" />
+        <Tabs.Tab href={`/admin/users`} icon="fas fa-user" />
+      </Tabs>
+      <div className="flex-1">
+        <Outlet />
+      </div>
+    </div>
   );
 }

@@ -13,7 +13,7 @@ export const UserForm = ({
 }: {
   onSaved: (user: User) => void;
   departmentId?: string;
-  organisationId: string;
+  organisationId?: string;
   redirectTo?: string;
   user?: User;
 }) => {
@@ -32,7 +32,9 @@ export const UserForm = ({
     <fetcher.Form method="post" action="/_api/user">
       <input type="hidden" name="userId" value={user?.id} />
       <input type="hidden" name="organisationId" value={organisationId} />
-      {/* <input type="hidden" name="redirectTo" value={redirectTo} /> */}
+      {/* Maak als de organisationId niet gegeven is een ComboBox om de
+      organisatie te selecteren!! */}
+
       {/* <fieldset className="flex flex-col"> */}
       <Field
         name="firstName"

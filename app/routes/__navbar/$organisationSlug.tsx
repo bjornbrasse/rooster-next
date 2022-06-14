@@ -8,19 +8,17 @@ export default function OrganisationLayout() {
   return (
     <div className="flex h-full">
       {!departmentSlug && (
-        <div id="menu">
-          <Tabs>
-            <Tabs.Tab href={`/${organisationSlug}/`} icon="fas fa-building" />
-            <Tabs.Tab
-              href={`/${organisationSlug}/employees`}
-              icon="fas fa-user"
-            />
-            <Tabs.Tab
-              href={`/${organisationSlug}/departments`}
-              icon="fas fa-users"
-            />
-          </Tabs>
-        </div>
+        <Tabs>
+          <Tabs.Tab href={`/${organisationSlug}/`} icon="fas fa-building" />
+          <Tabs.Tab
+            href={`/${organisationSlug}/employees`}
+            icon="fas fa-user"
+          />
+          <Tabs.Tab
+            href={`/${organisationSlug}/departments`}
+            icon="fas fa-users"
+          />
+        </Tabs>
       )}
       <div className="flex-1">
         <Outlet />

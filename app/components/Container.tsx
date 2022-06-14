@@ -1,17 +1,19 @@
-import * as React from 'react';
+import { FC } from 'react';
 
-export const Container: React.FC<{
-  className?: string;
-  flex?: 'row' | 'col';
+interface IProps {
+  flex?: 'flex-row' | 'flex-col';
   padding?: boolean;
-}> = ({ children, className, flex = 'col', padding = true }) => {
+}
+
+export const Container: FC<IProps & JSX.IntrinsicElements['div']> = (props) => {
   return (
     <div
-      className={`h-full w-full ${padding ? 'px-12 py-8' : null} flex ${
-        flex === 'col' ? 'flex-col' : null
-      } ${className}`}
+      // {...(props as JSX.IntrinsicElements['div'])}
+      className={`h-full w-full ${props?.padding ? 'px-12 py-8' : null} flex ${
+        props?.flex ?? 'flex-row'
+      }`}
     >
-      {children}
+      {props.children}
     </div>
   );
 };

@@ -14,10 +14,8 @@ other/postcss.ignored
 
 /cypress/videos
 /cypress/screenshots
-*.local.*
 
-/prisma/dev.db
-/prisma/seed/data.ts
+*.local.*
 
 .env
 .env.production

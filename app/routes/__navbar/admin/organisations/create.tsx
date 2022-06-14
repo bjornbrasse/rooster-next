@@ -38,7 +38,7 @@ export const action: ActionFunction = async ({ request }) => {
     return badRequest({ fieldErrors, fields });
 
   const organisation = await db.organisation.create({
-    data: { name, nameShort, slug },
+    data: { name, nameShort, slug, emailDomain: '@test.nl' },
   });
 
   if (!organisation)

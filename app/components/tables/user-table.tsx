@@ -40,7 +40,7 @@ export const UserTable: React.FC<IProps> = ({ baseUrl, users }) => {
             return a.lastName < b.lastName ? -1 : 0;
           })
           .map((user) => (
-            <tr className="cursor-pointer hover:bg-blue-200" key={user.id}>
+            <tr className="cursor-pointer hover:bg-red-300" key={user.id}>
               <LinkedTableData href={`${baseUrl}/${user.id}`}>
                 {user.firstName}
               </LinkedTableData>
@@ -54,7 +54,7 @@ export const UserTable: React.FC<IProps> = ({ baseUrl, users }) => {
                 {user.email}
               </LinkedTableData>
               <td className="text-right">
-                <Link to={`${baseUrl}/${user.id}`}>
+                <Link to={user.id}>
                   <i className="fas fa-pencil-alt" />
                 </Link>
               </td>

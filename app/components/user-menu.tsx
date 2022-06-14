@@ -326,8 +326,8 @@ const UserMenu: React.FC<{ user: UserSecure }> = ({ user }) => {
           {user.role === 'ADMIN' && (
             <MenuItem
               caption={'Organinsaties'}
-              href="/organisations"
-              icon="fas fa-user-cog"
+              href="/admin/organisations"
+              icon="fas fa-building"
             />
           )}
           <MenuItem
