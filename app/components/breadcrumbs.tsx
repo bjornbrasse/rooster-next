@@ -2,14 +2,16 @@ import * as React from 'react';
 import { Link } from 'remix';
 import { Breadcrumb } from '~/types';
 
-export const Breadcrumbs: React.FC<{
-  breadcrumbs: Array<{ caption: string; to: string }>;
-}> = ({ breadcrumbs }) => {
+interface IProps {
+  breadcrumbs: Breadcrumb[];
+}
+
+export const Breadcrumbs: React.FC<IProps> = ({ breadcrumbs }) => {
   return (
     <div id="Breadcrumbs" className="flex items-center bg-gray-300 px-4 py-1">
-      {breadcrumbs.map((bc, index) => (
-        <Link to={bc.to} key="index">
-          {bc.caption}
+      {breadcrumbs.map(({ caption, href }, index) => (
+        <Link to={typeof href === 'string' ? href : href()} key={index}>
+          {caption}
         </Link>
       ))}
     </div>

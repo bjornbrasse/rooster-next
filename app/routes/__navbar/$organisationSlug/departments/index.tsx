@@ -62,7 +62,7 @@ export default function OrganisationDepartments() {
       >
         {departments.map((department) => (
           <Link
-            to={`/${organisationSlug}/${department.slug}`}
+            to={`/${organisationSlug}/${department.slug}/employees`}
             key={department.id}
           >
             {department.name}

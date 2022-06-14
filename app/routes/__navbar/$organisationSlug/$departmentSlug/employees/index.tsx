@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useDrop } from 'react-dnd';
-import { json, useFetcher, useLoaderData, useMatches, useParams } from 'remix';
+import {
+  json,
+  redirect,
+  useFetcher,
+  useLoaderData,
+  useMatches,
+  useParams,
+} from 'remix';
 import { BBLoader, User } from 'types';
 import { Container } from '~/components/container';
 import { Frame } from '~/components/frame';
@@ -8,38 +15,46 @@ import { db } from '~/utils/db.server';
 import { DnDItemTypes } from '~/utils/dnd';
 import { LoaderData as DepartmentLoaderData } from '../index';
 
+async function getDepartment({ departmentSlug }: { departmentSlug: string }) {
+  return await db.department.findUnique({
+    where: { slug: departmentSlug },
+  });
+}
+
 async function getDepartmentEmployees({
-  departmentSlug: slug,
+  departmentId,
 }: {
-  departmentSlug: string;
+  departmentId: string;
 }) {
   return await db.departmentEmployee.findMany({
-    where: { department: { slug } },
+    where: { departmentId },
     include: { employee: true },
   });
 }
 
 type LoaderData = {
+  department: Exclude<Awaited<ReturnType<typeof getDepartment>>, null>;
   departmentEmployees: Awaited<ReturnType<typeof getDepartmentEmployees>>;
 };
 
 export const loader: BBLoader<{ departmentSlug: string }> = async ({
   params: { departmentSlug },
 }) => {
-  const departmentEmployees = await getDepartmentEmployees({ departmentSlug });
+  const department = await getDepartment({ departmentSlug });
 
-  return json<LoaderData>({ departmentEmployees });
+  if (!department) return redirect('/home');
+
+  const departmentEmployees = await getDepartmentEmployees({
+    departmentId: department.id,
+  });
+
+  return json<LoaderData>({ department, departmentEmployees });
 };
 
 export default function DepartmentEmployees() {
-  const { departmentEmployees } = useLoaderData() as LoaderData;
+  const { department, departmentEmployees } = useLoaderData() as LoaderData;
   const [isEditingEmployees, setIsEditingEmployees] = useState(false);
   const fetcher = useFetcher();
-  const { departmentSlug, organisationSlug } = useParams();
-
-  const { department } = useMatches().find(
-    (m) => m.pathname === `/${organisationSlug}/${departmentSlug}`,
-  )?.data as DepartmentLoaderData;
 
   const [{ canDrop: canDropEmployee, isHovering }, dropRef] = useDrop(() => ({
     accept: DnDItemTypes.EMPLOYEE,

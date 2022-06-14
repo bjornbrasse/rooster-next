@@ -46,12 +46,38 @@ export const getDepartment = async (
     | {
         departmentId: string;
         organisationId_slug?: never;
+        departmentSlug?: never;
+        organisationSlug?: never;
       }
     | {
         departmentId?: never;
         organisationId_slug: { organisationId: string; slug: string };
+        departmentSlug?: never;
+        organisationSlug?: never;
+      }
+    | {
+        departmentSlug: string;
+        organisationSlug: string;
+        departmentId?: never;
+        organisationId_slug?: never;
       },
 ) => {
+  if (args?.departmentSlug && args?.organisationSlug) {
+    return await db.department.findUnique({
+      where: {
+        organisationId_slug: {
+          organisationId:
+            (
+              await db.organisation.findUnique({
+                where: { slug: args.organisationSlug },
+              })
+            )?.id ?? '',
+          slug: args.departmentSlug,
+        },
+      },
+    });
+  }
+
   return await db.department.findUnique({
     where: args?.departmentId
       ? { id: args.departmentId }
@@ -158,6 +184,6 @@ export const getDepartmentEmployees = async ({
 }): Promise<{ id: string; user: User }[]> => {
   return await db.departmentEmployee.findMany({
     where: { departmentId },
-    select: { id: true, user: true },
+    select: { id: true, employee: true },
   });
 };

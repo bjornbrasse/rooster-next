@@ -1,4 +1,4 @@
-import {Outlet, useParams } from 'remix';
+import { Outlet, useParams } from 'remix';
 import { Tabs } from '~/components/tabs';
 
 export default function OrganisationLayout() {

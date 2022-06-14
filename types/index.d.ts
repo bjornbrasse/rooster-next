@@ -189,6 +189,7 @@ type BBSitemapEntry = {
 };
 
 type BBHandle = {
+  breadcrumb?: ({}: any) => Breadcrumb;
   /** this just allows us to identify routes more directly rather than relying on pathnames */
   id?: string;
   /** this is here to allow us to disable scroll restoration until Remix gives us better control */
@@ -203,7 +204,7 @@ type BBHandle = {
 
 export type Breadcrumb = {
   caption: string;
-  to: string | (() => string);
+  href: string | (() => string);
 };
 
 export type LoaderDataBase =

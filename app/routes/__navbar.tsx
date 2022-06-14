@@ -1,16 +1,13 @@
-import { Menu, Transition } from '@headlessui/react';
-import { Organisation, User } from '@prisma/client';
-import { Fragment } from 'react';
 import { LoaderFunction, NavLink, useLoaderData, useMatches } from 'remix';
 import { Link, Outlet } from 'remix';
 import { getUserSecure } from '~/controllers/auth.server';
 import UserMenu from '~/components/user-menu';
-import * as React from 'react';
-import Navigator from '~/components/Navigator';
 import { Breadcrumbs } from '~/components/breadcrumbs';
 import { Breadcrumb, LoaderDataBase } from 'types';
 import clsx from 'clsx';
 import { useSchedule } from '~/contexts/schedule';
+import { Header } from '~/components/header';
+import { useEffect } from 'react';
 
 type LoaderData = LoaderDataBase & {
   user: Awaited<ReturnType<typeof getUserSecure>>;
@@ -31,14 +28,14 @@ export default function Navbar() {
   const user = data?.user;
 
   const breadcrumbs = useMatches().reduce((acc: Breadcrumb[], match) => {
-    if (match.data?.breadcrumb) acc.push(match.data.breadcrumb as Breadcrumb);
+    if (match.data?.breadcrumb) acc.push(match.data.breadcrumb() as Breadcrumb);
 
-    match.data?.breadcrumbs?.forEach((bc: Breadcrumb) => acc.push(bc));
+    // match.data?.breadcrumbs?.forEach((bc: Breadcrumb) => acc.push(bc));
 
     return acc;
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('breadcrumbs:', breadcrumbs);
   }, breadcrumbs);
 
@@ -88,15 +85,21 @@ export default function Navbar() {
           )}
         </div>
       </div>
+      {breadcrumbs.length > 0 && (
+        <Header>
+          {/* <Link to="/organisations" className="mr-1 flex space-x-2">
+          <i className="fas fa-angle-left"></i>
+          <i className="fas fa-building"></i>
+        </Link>
+        <Link to={`/organisations/${department.organisationId}`}>
+          {organisation.name}
+        </Link>
+        <i className="fas fa-angle-right"></i>
+        <p>{department.name}</p> */}
+          <Breadcrumbs breadcrumbs={breadcrumbs} />
+        </Header>
+      )}
       <div id="Content" className="flex h-full flex-col bg-gray-100">
-        {breadcrumbs.length > 0 && (
-          <Breadcrumbs
-            breadcrumbs={breadcrumbs.map((bc) => ({
-              ...bc,
-              to: typeof bc.to === 'string' ? bc.to : bc.to(),
-            }))}
-          />
-        )}
         <div className="flex-grow bg-white text-white dark:bg-zinc-800">
           <Outlet />
         </div>

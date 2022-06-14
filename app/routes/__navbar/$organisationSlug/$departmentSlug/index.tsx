@@ -3,24 +3,37 @@ import { useState } from 'react';
 import { json, Link, MetaFunction, useFetcher } from 'remix';
 import { useLoaderData } from 'remix';
 import { redirect } from 'remix';
-import { BBHandle, BBLoader, LoaderDataBase } from 'types';
+import { BBHandle, BBLoader, Breadcrumb, LoaderDataBase } from 'types';
 import { Container } from '~/components/container';
 import { DraggableListItem } from '~/components/dragable-list-item';
 import ScheduleForm from '~/components/forms/schedule-form';
 import TaskForm from '~/components/forms/task-form';
 import { Frame } from '~/components/frame';
-import { Header } from '~/components/header';
 import { useDialog } from '~/contexts/dialog';
 import { requireUserId } from '~/controllers/auth.server';
 import { db } from '~/utils/db.server';
 import { DnDItemTypes } from '~/utils/dnd';
 
-export const meta: MetaFunction = ({ data }) => {
-  return { title: data.department.name };
-};
+export const meta: MetaFunction = ({ data }) => ({
+  title: data.department.name,
+});
 
 export const handle: BBHandle = {
   id: 'Bjorn',
+  breadcrumb: (
+    args: {
+      departmentName: string;
+      departmentSlug: string;
+      organisationSlug: string;
+    } = {
+      departmentName: 'afdelingsNaam',
+      departmentSlug: 'test',
+      organisationSlug: 'organisatie',
+    },
+  ) => ({
+    caption: args.departmentName,
+    href: 'test',
+  }),
 };
 
 const getDepartment = async (organisationId_slug: {
@@ -92,17 +105,6 @@ export default function Department() {
   return (
     <div className="flex h-full">
       <Container>
-        <Header>
-          <Link to="/organisations" className="mr-1 flex space-x-2">
-            <i className="fas fa-angle-left"></i>
-            <i className="fas fa-building"></i>
-          </Link>
-          <Link to={`/organisations/${department.organisationId}`}>
-            {organisation.name}
-          </Link>
-          <i className="fas fa-angle-right"></i>
-          <p>{department.name}</p>
-        </Header>
         <div id="content" className="flex flex-col space-y-4 px-24">
           <Frame
             buttons={
@@ -128,6 +130,7 @@ export default function Department() {
             {departmentTasks.map((task) => (
               <div
                 className="cursor-pointer px-1 hover:bg-blue-300"
+                key={task.id}
                 onClick={() =>
                   openDialog(
                     'Taak bewerken',

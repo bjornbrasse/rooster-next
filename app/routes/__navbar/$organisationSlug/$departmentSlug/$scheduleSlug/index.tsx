@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { SetStateAction, useEffect, useMemo } from 'react';
-import { Form, Link, redirect, useLoaderData, useSearchParams } from 'remix';
+import { Link, redirect, useLoaderData, useSearchParams } from 'remix';
 import { BBLoader } from 'types';
 import { DateGrid } from '~/components/date-grid';
 import { DateSelector } from '~/components/date-selector';
@@ -82,7 +81,7 @@ export const loader: BBLoader<{
   return { schedule };
 };
 
-export default function Planner() {
+export default function Schedule() {
   const { schedule } = useLoaderData() as LoaderData;
   const [searchParams] = useSearchParams();
 
@@ -97,11 +96,11 @@ export default function Planner() {
   const styles = 'border border-gray-400 bg-red-400 p-2 text-lg';
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full w-full">
       <div className="flex-1 overflow-hidden p-4">
         <h1>{schedule.name}</h1>
 
-        <div className="my-4 mr-2 inline-block flex border-2 border-red-400">
+        <div className="my-4 mr-2 flex border-2 border-red-400">
           <Link
             className={clsx(
               styles,
@@ -161,6 +160,16 @@ export default function Planner() {
                   }))
             }
             schedule={schedule}
+            startDate={dayjs()
+              .startOf('month')
+              .startOf('week')
+              .add(1, 'day')
+              .toDate()}
+            endDate={dayjs()
+              .endOf('month')
+              .endOf('week')
+              .add(1, 'day')
+              .toDate()}
             view={view}
             key={`${view} - ${date}`}
           />
