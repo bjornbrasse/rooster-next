@@ -1,5 +1,6 @@
 import {
   Links,
+  LinksFunction,
   LiveReload,
   Meta,
   Outlet,
@@ -7,7 +8,6 @@ import {
   ScrollRestoration,
   useCatch,
   useLocation,
-  useMatches,
 } from 'remix';
 import type { MetaFunction } from 'remix';
 import styles from './tailwind.css';
@@ -18,44 +18,73 @@ import { DndProvider } from 'react-dnd';
 import { ErrorPage } from './components/errors';
 import * as React from 'react';
 
-export function links() {
-  return [{ rel: 'stylesheet', href: styles, as: 'css' }];
-}
-
-export const meta: MetaFunction = () => {
-  return { title: 'Rooster' };
+export const links: LinksFunction = () => {
+  return [
+    { rel: 'stylesheet', href: styles, as: 'css' },
+    {
+      rel: 'stylesheet',
+      href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',
+      integrity:
+        'sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==',
+      crossOrigin: 'anonymous',
+      referrerPolicy: 'no-referrer',
+    },
+  ];
 };
 
-export default function App() {
+export const meta: MetaFunction = () => {
+  const description = `Schedule your team tasks`;
+  return {
+    charset: 'utf-8',
+    description,
+    keywords: 'Rooster',
+    // 'twitter:image': 'https://remix-jokes.lol/social.png',
+    // 'twitter:card': 'summary_large_image',
+    // 'twitter:creator': '@remix_run',
+    // 'twitter:site': '@remix_run',
+    // 'twitter:title': 'Remix Jokes',
+    // 'twitter:description': description,
+    visualViewport: 'width=device-width,initial-scale=1',
+  };
+};
+
+function Document({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title?: string;
+}) {
   return (
     <html lang="en">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-          integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
-        />
+        {title ? <title>{title}</title> : null}
         <Links />
       </head>
       <body className="h-screen">
-        <DndProvider backend={HTML5Backend}>
-          <ScheduleProvider>
-            <DialogProvider>
-              <Outlet />
-            </DialogProvider>
-          </ScheduleProvider>
-        </DndProvider>
         <div id="dialog" />
-        <ScrollRestoration />
-        <Scripts />
+        <div id="portal" />
+        {children}
         {process.env.NODE_ENV === 'development' && <LiveReload />}
+        {/* <Scripts /> */}
+        <ScrollRestoration />
       </body>
     </html>
+  );
+}
+
+export default function App() {
+  return (
+    <Document>
+      <DndProvider backend={HTML5Backend}>
+        <ScheduleProvider>
+          <DialogProvider>
+            <Outlet />
+          </DialogProvider>
+        </ScheduleProvider>
+      </DndProvider>
+    </Document>
   );
 }
 
@@ -88,4 +117,17 @@ export function CatchBoundary() {
     );
   }
   throw new Error(`Unhandled error: ${caught.status}`);
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.error(error);
+
+  return (
+    <Document title="Uh-oh!">
+      <div className="error-container">
+        <h1>App Error</h1>
+        <pre>{error.message}</pre>
+      </div>
+    </Document>
+  );
 }
