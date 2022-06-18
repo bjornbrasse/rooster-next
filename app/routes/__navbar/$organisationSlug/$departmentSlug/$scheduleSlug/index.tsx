@@ -20,7 +20,7 @@ dayjs.extend(customParseFormat);
 export const handle: BBHandle = {
   id: 'Bjorn',
   breadcrumb: ({ data }: { data: LoaderData }) => ({
-    caption: data.schedule.name,
+    caption: data?.schedule.name ?? 'Rooster',
     href: '/home',
   }),
 };
@@ -115,7 +115,12 @@ export default function Schedule() {
   const styles2 = 'border border-gray-400 bg-red-400 p-2 text-lg';
 
   return (
-    <Container padding="p-0" flex="flex-row">
+    <Container
+      padding="p-0"
+      flex="flex-col"
+      className="border border-green-400"
+      id="schedule-slug-page"
+    >
       <div className="grow p-4" id="content">
         <h1>{schedule.name}</h1>
         <button ref={setReferenceElement} type="button">

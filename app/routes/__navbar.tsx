@@ -27,9 +27,9 @@ export default function Navbar() {
   const data = useLoaderData() as LoaderData;
   const user = data?.user;
 
-  // const breadcrumbs = useMatches()
-  //   .filter((match) => match?.handle?.breadcrumb)
-  //   .map((match) => match.handle.breadcrumb(match.data) as Breadcrumb);
+  const breadcrumbs = useMatches()
+    .filter((match) => match?.handle?.breadcrumb)
+    .map((match) => match.handle.breadcrumb(match.data) as Breadcrumb);
 
   // .reduce((acc: Breadcrumb[], match) => {
   //   if (match.data?.breadcrumb) acc.push(match.data.breadcrumb() as Breadcrumb);
@@ -88,12 +88,12 @@ export default function Navbar() {
             </div>
           </div>
           {breadcrumbs.length > 0 && (
-            // <div className="border-b border-zinc-700 py-1 px-4 text-gray-400">
-            //   {breadcrumbs.map((breadcrumb, index) => (
-            //     <p key={index}>{breadcrumb.caption}</p>
-            //   ))}
-            // </div>
-            <h1>Hallo</h1>
+            <div className="border-b border-zinc-700 py-1 px-4 text-gray-400">
+              {breadcrumbs.map((breadcrumb, index) => (
+                <p key={index}>{breadcrumb.caption}</p>
+              ))}
+            </div>
+            // <h1>Hallo</h1>
           )}
         </div>
         <div className="flex-grow" id="navbar-content">

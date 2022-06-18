@@ -48,7 +48,7 @@ export const DateGrid: React.FC<IProps> = ({
   const [popperElementRef, setPopperElementRef] =
     useState<HTMLDivElement | null>(null);
   const [referenceElementRef, setReferenceElementRef] =
-    useState<HTMLDivElement | null>(null);
+    useState<HTMLTableDataCellElement | null>(null);
 
   const { styles, attributes } = usePopper(
     referenceElementRef,
